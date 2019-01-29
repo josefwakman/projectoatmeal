@@ -1,0 +1,20 @@
+{
+  "name": "projectoatmeal",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/josefwakman/projectoatmeal.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/josefwakman/projectoatmeal/issues"
+  },
+  "homepage": "https://github.com/josefwakman/projectoatmeal#readme"
+}
