@@ -12,6 +12,46 @@ app.engine('hbs', expressHandlebars({
     extname: '.hbs'
 }))
 
+// ---- PLACEHOLDERS - TO BE DELETED ----------------
+
+
+
+books = [
+    {
+        title: "Yo",
+        author: "Mr. X"
+    },
+    {
+        title: "Woop Woop",
+        author: "Mr. X"
+    },
+    {
+        title: "Harry Potter and the Somewhat Unengaged Chemistry Proffesor",
+        author: "Dandy MacBloom"
+    },
+    {
+        title: "A Night at the Chicago opera House",
+        author: "Andy Beepmaster"
+    },
+    {
+        title: "Harry Potter and Another Test Title",
+        author: "DandyMacBloom"
+    },
+    {
+        title: "Du bist eine Kartoffel, Harry",
+        author: "M. Bartoscheck"
+    }
+]
+
+bookTitles = [
+    "Yo", 
+    "Woop Woop",
+    "Harry Potter and the Somewhat Unengaged Chemistry Proffesor",
+    "A Night at the Chicago opera House",
+    "Harry Potter and Another Test Title",
+    "Du bist eine Kartoffel, Harry",
+]
+
 app.use(express.static(path.join(__dirname, '/public')))
 
 // Vi använder routers istället för det här sen va?
@@ -22,7 +62,23 @@ app.get('/', function(req, res) {
 })
 
 app.get('/search-books', function(req, res) { 
-    res.render("search-books.hbs")
+    model = {searched: false}
+
+    if (0 < Object.keys(req.query).length) {
+
+        lowerCaseSearch = req.query.search.toLowerCase()
+        const foundBooks = bookTitles.filter(function(str) {
+            lowerCaseStr = str.toLowerCase()
+            return lowerCaseStr.search(lowerCaseSearch) > -1
+        })
+
+        model = {
+            searched: true,
+            books: foundBooks
+        }
+    }
+
+    res.render("search-books.hbs", model)
 })
 
 app.get('/search-authors', function(req, res) {
