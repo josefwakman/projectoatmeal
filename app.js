@@ -15,7 +15,7 @@ app.engine('hbs', expressHandlebars({
 // --- GET Requests ----------
 
 app.get('/', function(req, res) {
-    res.render("home.hbs")
+    res.render("search-books.hbs")
 })
 
 
