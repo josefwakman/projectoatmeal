@@ -16,5 +16,12 @@
   "bugs": {
     "url": "https://github.com/josefwakman/projectoatmeal/issues"
   },
-  "homepage": "https://github.com/josefwakman/projectoatmeal#readme"
+  "homepage": "https://github.com/josefwakman/projectoatmeal#readme",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "bootstrap": "^4.2.1",
+    "express": "^4.16.4",
+    "express-handlebars": "^3.0.0",
+    "jquery": "^3.3.1"
+  }
 }
