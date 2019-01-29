@@ -17,8 +17,24 @@ app.use(express.static(path.join(__dirname, '/public')))
 // Vi använder routers istället för det här sen va?
 // --- GET Requests ----------
 
-app.get('/', function(req, res) {
-    res.render("home.hbs")
+app.get('/', function(req, res) { 
+    res.render("search-books.hbs")
+})
+
+app.get('/search-books', function(req, res) { 
+    res.render("search-books.hbs")
+})
+
+app.get('/search-authors', function(req, res) {
+    res.render("search-authors.hbs")
+})
+
+app.get('/administrators', function(req, res) {
+    res.render("administrators.hbs")
+})
+
+app.get('/login', function(req, res) {
+    res.render("login.hbs")
 })
 
 
