@@ -93,6 +93,16 @@ app.get('/login', function(req, res) {
     res.render("login.hbs")
 })
 
+app.get('/book', (req, res) => {
+    model = {
+        title: "placeholder title",
+        author: "placeholder author",
+        publicationDate: "19xx-xx-xx",
+        publisher: "placeholder publisher"
+    }
+    res.render("book.hbs", model)
+})
+
 
 
 app.listen(8080)
