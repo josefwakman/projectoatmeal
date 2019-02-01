@@ -66,6 +66,11 @@ books = [
         author: "Mr. X"
     },
     {
+        id: 2,
+        title: "Yippie Ka Yay",
+        author: "McClane"
+    },
+    {
         id: 3,
         title: "Harry Potter and the Somewhat Unengaged Chemistry Professor",
         author: "Dandy MacBloom"
@@ -102,10 +107,16 @@ app.get('/search-books', function(req, res) {
     if (0 < Object.keys(req.query).length) {
 
         lowerCaseSearch = req.query.search.toLowerCase()
-        const foundBooks = books.filter(function(book) {
+        let foundBooks = books.filter(function(book) {
             lowerCaseTitle = book.title.toLowerCase()
             return lowerCaseTitle.search(lowerCaseSearch) > -1
         })
+        
+        if (req.query.start) { // TODO: I framtiden ersätter vi detta med en sql-query som hämtar index x till x+5
+            const start = req.query.start
+            foundBooks = foundBooks.slice(start, start + 5)
+        }
+
         model = {
             searched: true,
             books: foundBooks
