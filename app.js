@@ -175,6 +175,13 @@ app.get('/author/:id', (req, res) => {
     res.render("author.hbs", foundAuthor[0])
 })
 
+app.get('/edit-author/:id', (req, res) => {
+    foundAuthor = authors.filter((author) => {
+        return author.id == req.params.id
+    })
+    res.render("edit-author.hbs", foundAuthor[0])
+})
+
 
 // ---------------------------------------
 
