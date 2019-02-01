@@ -106,8 +106,6 @@ app.get('/search-books', function(req, res) {
             lowerCaseTitle = book.title.toLowerCase()
             return lowerCaseTitle.search(lowerCaseSearch) > -1
         })
-        foundTitles = foundBooks.map((book) => book.title)
-        
         model = {
             searched: true,
             books: foundBooks
