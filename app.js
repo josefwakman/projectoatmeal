@@ -142,9 +142,14 @@ app.get('/book/:id', (req, res) => {
     foundBook = books.filter((book) => {
         return book.id == req.params.id
     })
-    console.log(foundBook[0]);
-    
     res.render("book.hbs", foundBook[0])
+})
+
+app.get('/edit-book/:id', (req, res) => {
+    foundBook = books.filter((book) => {
+        return book.id == req.params.id
+    })
+    res.render("edit-book.hbs", foundBook[0])
 })
 
 app.get('/author', (req, res) => {
