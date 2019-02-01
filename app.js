@@ -67,7 +67,7 @@ books = [
     },
     {
         id: 3,
-        title: "Harry Potter and the Somewhat Unengaged Chemistry Proffesor",
+        title: "Harry Potter and the Somewhat Unengaged Chemistry Professor",
         author: "Dandy MacBloom"
     },
     {
@@ -148,6 +148,13 @@ app.get('/administrator/:id', (req, res) => {
             return admin.id == req.params.id
         })
     res.render("administrator.hbs", foundAdmin[0])
+})
+
+app.get('/edit-administrator/:id', (req, res) => {
+    foundAdmin = administrators.filter((admin) => {
+            return admin.id == req.params.id
+        })
+    res.render("edit-administrator.hbs", foundAdmin[0])
 })
 
 app.get('/login', function(req, res) {
