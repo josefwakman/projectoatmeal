@@ -1,1 +1,13 @@
 <h2>Search authors</h2>
+
+<form action="/search-authors" method="get">
+    Search: <input type="text" name="search">
+    <input type="submit">
+</form>
+
+{{#if searched }}
+
+    {{#each authors}}
+        <a href="/author/">{{this}}</a><br>
+    {{/each}}
+{{/if}}
