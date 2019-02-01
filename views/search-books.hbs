@@ -8,6 +8,6 @@
 {{#if searched }}
 
     {{#each books}}
-        <a href="/book/">{{this}}</a><br>
+        <a href="/book/{{this.id}}">{{this.title}}</a><br>
     {{/each}}
 {{/if}}
