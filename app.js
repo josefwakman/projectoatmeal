@@ -37,26 +37,32 @@ administrators = [
 
 books = [
     {
+        id: 0,
         title: "Yo",
         author: "Mr. X"
     },
     {
+        id: 1,
         title: "Woop Woop",
         author: "Mr. X"
     },
     {
+        id: 3,
         title: "Harry Potter and the Somewhat Unengaged Chemistry Proffesor",
         author: "Dandy MacBloom"
     },
     {
+        id: 4,
         title: "A Night at the Chicago opera House",
         author: "Andy Beepmaster"
     },
     {
+        id: 5,
         title: "Harry Potter and Another Test Title",
         author: "DandyMacBloom"
     },
     {
+        id: 6,
         title: "Du bist eine Kartoffel, Harry",
         author: "M. Bartoscheck"
     }
@@ -85,7 +91,7 @@ app.get('/search-books', function(req, res) {
         
         model = {
             searched: true,
-            books: foundTitles
+            books: foundBooks
         }
     }
 
@@ -132,14 +138,13 @@ app.get('/login', function(req, res) {
     res.render("login.hbs")
 })
 
-app.get('/book', (req, res) => {
-    model = {
-        title: "placeholder title",
-        author: "placeholder author",
-        publicationDate: "19xx-xx-xx",
-        publisher: "placeholder publisher"
-    }
-    res.render("book.hbs", model)
+app.get('/book/:id', (req, res) => {
+    foundBook = books.filter((book) => {
+        return book.id == req.params.id
+    })
+    console.log(foundBook[0]);
+    
+    res.render("book.hbs", foundBook[0])
 })
 
 app.get('/author', (req, res) => {
