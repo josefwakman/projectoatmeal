@@ -14,7 +14,26 @@ app.engine('hbs', expressHandlebars({
 
 // ---- PLACEHOLDERS - TO BE DELETED ----------------
 
-
+administrators = [
+    {
+        id: 1776,
+        name: "Thomas Jefferson",
+        privilegies: "admin",
+        email: "tea_party_lover@us.gov",
+    },
+    {
+        id: 1789,
+        name: "Marquis de Lafayette",
+        privilegies: "admin",
+        email: "fuckyourobespierre@merde.fr",
+    },
+    {
+        id: 1812,
+        name: "Simon Bolivar",
+        privilegies: "superadmin",
+        email: "1r0n4$$@sandomingoisnicethistimeofyear.vz",
+    }
+]
 
 books = [
     {
@@ -96,7 +115,17 @@ app.get('/search-authors', function(req, res) {
 })
 
 app.get('/administrators', function(req, res) {
-    res.render("administrators.hbs")
+    model = {
+        administrators: administrators
+    }
+    res.render("administrators.hbs", model)
+})
+
+app.get('/administrator/:id', (req, res) => {
+    foundAdmin = administrators.filter((admin) => {
+            return admin.id == req.params.id
+        })
+    res.render("administrator.hbs", foundAdmin[0])
 })
 
 app.get('/login', function(req, res) {
