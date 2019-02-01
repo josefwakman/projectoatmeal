@@ -74,7 +74,25 @@ app.get('/search-books', function(req, res) {
 })
 
 app.get('/search-authors', function(req, res) {
-    res.render("search-authors.hbs")
+    model = {searched: false}
+
+    if (0 < Object.keys(req.query).length) {
+
+        lowerCaseSearch = req.query.search.toLowerCase()
+        const foundBooks = books.filter(function(book) {
+            lowerCaseAuthor = book.author.toLowerCase()
+            return lowerCaseAuthor.search(lowerCaseSearch) > -1
+        })
+        foundAuthors = foundBooks.map((book) => book.author)
+        
+        model = {
+            searched: true,
+            authors: foundAuthors
+        }
+    }
+    console.log(model);
+    
+    res.render("search-authors.hbs", model)
 })
 
 app.get('/administrators', function(req, res) {
@@ -95,6 +113,26 @@ app.get('/book', (req, res) => {
     res.render("book.hbs", model)
 })
 
+app.get('/author', (req, res) => {
+    model = {
+        name: "placeholder name",
+        bio: 'Own a musket for home defense, since thats what the founding fathers intended. Four ruffians break into my house. "What the devil?" As I grab my powdered wig and Kentucky rifle. Blow a golf ball sized hole through the first man, he is dead on the spot. Draw my pistol on the second man, miss him entirely because it is smoothbore and nails the neighbors dog. I have to resort to the cannon mounted at the top of the stairs loaded with grape shot, "Tally ho lads" the grape shot shreds two men in the blast, the sound and extra shrapnel set off car alarms. Fix bayonet and charge the last terrified rapscallion. He Bleeds out waiting on the police to arrive since triangular bayonet wounds are impossible to stitch up. Just as the founding fathers intended.',
+        books: [
+            {
+                title: "Yo yo"
+            },
+            {
+                title: "Just another placeholder"
+            },
+            {
+                title: "hold this place for me will ya?"
+            }
+        ]
+    }
+    res.render("author.hbs", model)
+})
 
+
+// ---------------------------------------
 
 app.listen(8080)
