@@ -43,15 +43,6 @@ books = [
     }
 ]
 
-bookTitles = [
-    "Yo", 
-    "Woop Woop",
-    "Harry Potter and the Somewhat Unengaged Chemistry Proffesor",
-    "A Night at the Chicago opera House",
-    "Harry Potter and Another Test Title",
-    "Du bist eine Kartoffel, Harry",
-]
-
 app.use(express.static(path.join(__dirname, '/public')))
 
 // Vi använder routers istället för det här sen va?
