@@ -1,6 +1,13 @@
 <h2>Search books</h2>
 
 <form action="/search-books" method="get">
-    Search: <input type="text" name="book_search">
+    Search: <input type="text" name="search">
     <input type="submit">
 </form>
+
+{{#if searched }}
+
+    {{#each books}}
+        <a href="/book/">{{this}}</a><br>
+    {{/each}}
+{{/if}}
