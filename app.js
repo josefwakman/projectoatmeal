@@ -5,9 +5,6 @@ const expressHandlebars = require("express-handlebars")
 const app = express()
 
 const path = require('path')
-//Events
-const events = require('events')
-const eventEmitter = new events.EventEmitter();
 
 // -----------
 
