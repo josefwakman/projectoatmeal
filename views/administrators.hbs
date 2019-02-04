@@ -1,5 +1,24 @@
-<h2>Admin page</h2>
+<h2>Admin Page</h2>
 
 {{#each administrators}}
     <a href="administrator/{{id}}">{{name}}</a><br>
 {{/each}}
+
+<div class="search-books-table-div">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each administrators}}
+            <tr>
+                <td>{{this.id}}</td>
+                <td>{{this.name}}</td>
+            </tr>
+            {{/each}}
+        </tbody>
+    </table>
+</div>

@@ -4,6 +4,9 @@ const expressHandlebars = require("express-handlebars")
 const app = express()
 
 const path = require('path')
+//Events
+const events = require('events')
+const eventEmitter = new events.EventEmitter();
 
 // -----------
 
@@ -110,6 +113,7 @@ app.get('/search-books', function(req, res) {
             searched: true,
             books: foundBooks
         }
+
     }
 
     res.render("search-books.hbs", model)
