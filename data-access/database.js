@@ -131,6 +131,15 @@ function getAuthor(id) {
     return author
 }
 
+function getBook(id) {
+    let book = books.find(book => {
+        return book.id == id
+    })
+    const foundAuthors = findAuthorsOfBook(id)
+    book.authors = foundAuthors
+    return book
+}
+
 
 function findAuthorsOfBook(ISBN) { // returns array of authors belonging to book, even if just one
     const foundBookAuthors = bookAuthors.filter((bookAuthor) => {
@@ -188,7 +197,6 @@ function searchAuthors(query) {
 
     foundAuthors = foundAuthors.map((author) => {
         const foundBooks = findBooksFromAuthor(author.id)
-        console.log("foundBooks: " + JSON.stringify(foundBooks));
         for (book of foundBooks) {
             if (author.books) {
                 author.books.push(book)
@@ -206,5 +214,7 @@ function searchAuthors(query) {
 // ---- EXPORTS ---------
 
 exports.getAuthor = getAuthor
+exports.getBook = getBook
+
 exports.searchBooks = searchBooks
 exports.searchAuthors = searchAuthors
