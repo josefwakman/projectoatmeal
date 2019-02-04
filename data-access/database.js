@@ -200,11 +200,24 @@ bookAuthors = [
 
 // -----------------
 
-function getAuthor(authorID) {
-    return authors.find((author) => {
-        return author.id == authorID
+function getAuthor(id) {
+    let author = authors.find(author => {
+        return author.id == id
     })
+    const foundBooks = findBooksFromAuthor(id)
+    author.books = foundBooks
+    return author
 }
+
+function getBook(id) {
+    let book = books.find(book => {
+        return book.id == id
+    })
+    const foundAuthors = findAuthorsOfBook(id)
+    book.authors = foundAuthors
+    return book
+}
+
 
 function findAuthorsOfBook(ISBN) { // returns array of authors belonging to book, even if just one
     const foundBookAuthors = bookAuthors.filter((bookAuthor) => {
@@ -212,9 +225,25 @@ function findAuthorsOfBook(ISBN) { // returns array of authors belonging to book
     })
     
     return foundBookAuthors.map((foundBookAuthor) => {
-        return getAuthor(foundBookAuthor.authorID)
+        return authors.find((author) => {
+            return author.id == foundBookAuthor.authorID
+        })
     }) 
 }
+
+function findBooksFromAuthor(authorID) {
+    const foundBookAuthors = bookAuthors.filter((bookAuthor) => {
+        return bookAuthor.authorID == authorID
+    })
+
+    return books.filter(book => {
+        return foundBookAuthors.find(bookAuthor => {
+            return bookAuthor.ISBN == book.ISBN
+        })
+
+    })
+}
+
 
 function searchBooks(query) {
     lowerCaseSearch = query.toLowerCase()
@@ -222,8 +251,6 @@ function searchBooks(query) {
         lowerCaseTitle = book.title.toLowerCase()
         return lowerCaseTitle.search(lowerCaseSearch) > -1
     })
-
-    console.log(foundBooks);
     
     foundBooks = foundBooks.map((book) => {
         const foundAuthors = findAuthorsOfBook(book.ISBN)
@@ -236,25 +263,36 @@ function searchBooks(query) {
         }
         return book     
     })
-    console.log(foundBooks);
-    console.log("Authors of book[0]: " + JSON.stringify(foundBooks[0].authors));
-    
     return foundBooks
 }
 
 function searchAuthors(query) {
     lowerCaseSearch = query.toLowerCase()
-    const foundAuthors = authors.filter(function(author) {
+    let foundAuthors = authors.filter(function(author) {
         lowerCaseAuthor = author.name.toLowerCase()
         return lowerCaseAuthor.search(lowerCaseSearch) > -1
     })
 
+    foundAuthors = foundAuthors.map((author) => {
+        const foundBooks = findBooksFromAuthor(author.id)
+        for (book of foundBooks) {
+            if (author.books) {
+                author.books.push(book)
+            } else {
+                author.books = [book]
+            }
+        }
+        return author
+    })
     return foundAuthors
 }
 
 
 
 // ---- EXPORTS ---------
+
+exports.getAuthor = getAuthor
+exports.getBook = getBook
 
 exports.searchBooks = searchBooks
 exports.searchAuthors = searchAuthors

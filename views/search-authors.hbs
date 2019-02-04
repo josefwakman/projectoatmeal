@@ -7,13 +7,6 @@
 <button type="submit" class="btn btn-primary">Submit</button>
 </form>
 
-{{#if searched }}
-
-    {{#each authors}}
-        <a href="/author/{{this.id}}">{{this.name}}</a><br>
-    {{/each}}
-{{/if}}
-
 <div class="search-books-table-div">
     <table class="table table-striped">
         <thead>
@@ -27,7 +20,7 @@
             {{#each authors}}
             <tr>
                 <td>{{this.id}}</td>
-                <td>{{this.name}}</td>
+                <td><a href="/author/{{this.id}}">{{this.name}}</a></td>
             </tr>
             {{/each}}
             {{/if}}

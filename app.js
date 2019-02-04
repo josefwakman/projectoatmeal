@@ -80,31 +80,19 @@ app.get('/login', function(req, res) {
 })
 
 app.get('/book/:id', (req, res) => {
-    foundBook = books.filter((book) => {
-        return book.id == req.params.id
-    })
-    res.render("book.hbs", foundBook[0])
+    res.render("book.hbs", db.getBook(req.params.id))
 })
 
 app.get('/edit-book/:id', (req, res) => {
-    foundBook = books.filter((book) => {
-        return book.id == req.params.id
-    })
-    res.render("edit-book.hbs", foundBook[0])
+    res.render("edit-book.hbs", db.getBook(req.params.id))
 })
 
 app.get('/author/:id', (req, res) => {
-    foundAuthor = authors.filter((author) => {
-        return author.id == req.params.id
-    })
-    res.render("author.hbs", foundAuthor[0])
+    res.render("author.hbs", db.getAuthor(req.params.id))
 })
 
 app.get('/edit-author/:id', (req, res) => {
-    foundAuthor = authors.filter((author) => {
-        return author.id == req.params.id
-    })
-    res.render("edit-author.hbs", foundAuthor[0])
+    res.render("edit-author.hbs", db.getAuthor(req.params.id))
 })
 
 
