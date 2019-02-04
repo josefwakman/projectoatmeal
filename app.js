@@ -97,10 +97,7 @@ app.get('/edit-book/:id', (req, res) => {
 })
 
 app.get('/author/:id', (req, res) => {
-    foundAuthor = authors.filter((author) => {
-        return author.id == req.params.id
-    })
-    res.render("author.hbs", foundAuthor[0])
+    res.render("author.hbs", db.getAuthor(req.params.id))
 })
 
 app.get('/edit-author/:id', (req, res) => {

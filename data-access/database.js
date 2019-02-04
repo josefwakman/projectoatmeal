@@ -122,10 +122,13 @@ bookAuthors = [
 
 // -----------------
 
-function getAuthors(authorID) {
-    return authors.find((author) => {
-        return author.id == authorID
+function getAuthor(id) {
+    let author = authors.find(author => {
+        return author.id == id
     })
+    const foundBooks = findBooksFromAuthor(id)
+    author.books = foundBooks
+    return author
 }
 
 
@@ -135,7 +138,9 @@ function findAuthorsOfBook(ISBN) { // returns array of authors belonging to book
     })
     
     return foundBookAuthors.map((foundBookAuthor) => {
-        return getAuthors(foundBookAuthor.authorID)
+        return authors.find((author) => {
+            return author.id == foundBookAuthor.authorID
+        })
     }) 
 }
 
@@ -144,10 +149,11 @@ function findBooksFromAuthor(authorID) {
         return bookAuthor.authorID == authorID
     })
 
-    return foundBookAuthors.map((foundBookAuthor) => {
-        return books.find((book) => {
-            return book.ISBN == foundBookAuthor.ISBN
+    return books.filter(book => {
+        return foundBookAuthors.find(bookAuthor => {
+            return bookAuthor.ISBN == book.ISBN
         })
+
     })
 }
 
@@ -170,7 +176,6 @@ function searchBooks(query) {
         }
         return book     
     })
-    
     return foundBooks
 }
 
@@ -183,7 +188,8 @@ function searchAuthors(query) {
 
     foundAuthors = foundAuthors.map((author) => {
         const foundBooks = findBooksFromAuthor(author.id)
-        for (book of books) {
+        console.log("foundBooks: " + JSON.stringify(foundBooks));
+        for (book of foundBooks) {
             if (author.books) {
                 author.books.push(book)
             } else {
@@ -192,7 +198,6 @@ function searchAuthors(query) {
         }
         return author
     })
-
     return foundAuthors
 }
 
@@ -200,5 +205,6 @@ function searchAuthors(query) {
 
 // ---- EXPORTS ---------
 
+exports.getAuthor = getAuthor
 exports.searchBooks = searchBooks
 exports.searchAuthors = searchAuthors
