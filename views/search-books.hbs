@@ -9,11 +9,6 @@
 
 {{#if searched }}
 
-    {{#each books}}
-        <a href="/book/{{this.id}}">{{this.title}}</a><br>
-    {{/each}}
-{{/if}}
-
 <div class="search-books-table-div">
     <table class="table table-striped" id="bookTable">
         <thead>
@@ -27,10 +22,12 @@
             {{#each books}}
             <tr>
                 <td>{{this.id}}</td>
-                <td>{{this.title}}</td>
+                <td><a href="/book/{{this.id}}">{{this.title}}</a></td>
             </tr>
             {{/each}}
             {{/if}}
         </tbody>
     </table>
 </div>
+
+{{/if}}
