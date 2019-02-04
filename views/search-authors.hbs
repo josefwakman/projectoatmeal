@@ -27,7 +27,7 @@
             {{#each authors}}
             <tr>
                 <td>{{this.id}}</td>
-                <td>{{this.name}}</td>
+                <td><a href="/author/{{this.id}}">{{this.name}}</a></td>
             </tr>
             {{/each}}
             {{/if}}

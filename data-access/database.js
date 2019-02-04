@@ -122,11 +122,12 @@ bookAuthors = [
 
 // -----------------
 
-function getAuthor(authorID) {
+function getAuthors(authorID) {
     return authors.find((author) => {
         return author.id == authorID
     })
 }
+
 
 function findAuthorsOfBook(ISBN) { // returns array of authors belonging to book, even if just one
     const foundBookAuthors = bookAuthors.filter((bookAuthor) => {
@@ -134,9 +135,22 @@ function findAuthorsOfBook(ISBN) { // returns array of authors belonging to book
     })
     
     return foundBookAuthors.map((foundBookAuthor) => {
-        return getAuthor(foundBookAuthor.authorID)
+        return getAuthors(foundBookAuthor.authorID)
     }) 
 }
+
+function findBooksFromAuthor(authorID) {
+    const foundBookAuthors = bookAuthors.filter((bookAuthor) => {
+        return bookAuthor.authorID == authorID
+    })
+
+    return foundBookAuthors.map((foundBookAuthor) => {
+        return books.find((book) => {
+            return book.ISBN == foundBookAuthor.ISBN
+        })
+    })
+}
+
 
 function searchBooks(query) {
     lowerCaseSearch = query.toLowerCase()
@@ -144,8 +158,6 @@ function searchBooks(query) {
         lowerCaseTitle = book.title.toLowerCase()
         return lowerCaseTitle.search(lowerCaseSearch) > -1
     })
-
-    console.log(foundBooks);
     
     foundBooks = foundBooks.map((book) => {
         const foundAuthors = findAuthorsOfBook(book.ISBN)
@@ -158,17 +170,27 @@ function searchBooks(query) {
         }
         return book     
     })
-    console.log(foundBooks);
-    console.log("Authors of book[0]: " + JSON.stringify(foundBooks[0].authors));
     
     return foundBooks
 }
 
 function searchAuthors(query) {
     lowerCaseSearch = query.toLowerCase()
-    const foundAuthors = authors.filter(function(author) {
+    let foundAuthors = authors.filter(function(author) {
         lowerCaseAuthor = author.name.toLowerCase()
         return lowerCaseAuthor.search(lowerCaseSearch) > -1
+    })
+
+    foundAuthors = foundAuthors.map((author) => {
+        const foundBooks = findBooksFromAuthor(author.id)
+        for (book of books) {
+            if (author.books) {
+                author.books.push(book)
+            } else {
+                author.books = [book]
+            }
+        }
+        return author
     })
 
     return foundAuthors
