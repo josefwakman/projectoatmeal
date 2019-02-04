@@ -1,7 +1,9 @@
 <h2>Book page</h2>
 
 <p>{{title}}</p>
-<p>{{author}} TODO: with link/s!</p>
+{{#each authors}}
+    <a href="/author/{{this.id}}">{{this.name}}</a><br>
+{{/each}}
 <p>{{publicationDate}}</p>
 <p>{{publisher}}</p>
 

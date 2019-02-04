@@ -36,9 +36,7 @@ app.get('/search-books', function(req, res) {
             searched: true,
             books: foundBooks
         }
-
     }
-
     res.render("search-books.hbs", model)
 })
 
