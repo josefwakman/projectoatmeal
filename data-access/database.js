@@ -1,3 +1,81 @@
+//Handle database connection
+const mysql = require("mysql")
+const Sequelize = require("sequelize")
+const sequelize = new Sequelize("Library", "ster1666", "gustaferik", {
+    host: "cloudservices.cxfts5ufu8vm.eu-west-2.rds.amazonaws.com",
+    dialect: "mysql",
+    define: {
+        timestamps: false
+    }
+})
+
+sequelize
+.authenticate()
+.then(() => {
+    console.log("Connection established");
+})
+.catch(err => {
+    console.error("Connection failed", err)
+})
+
+//Sequelize database models
+const Authors = sequelize.define("Author", {
+    firstName: {
+        type: Sequelize.STRING
+    },
+    lastName: {
+        type: Sequelize.STRING
+    },
+    birthYear: {
+        type: Sequelize.STRING
+    }
+})
+
+const BookAuthor = sequelize.define("BookAuthors", {
+    bookISBN: {
+        type: Sequelize.STRING
+    },
+    authorID: {
+        type: Sequelize.INTEGER,
+        primaryKey: true
+    }
+})
+
+const Classifications = sequelize.define("Classifications", {
+    signID: {
+        type: Sequelize.INTEGER,
+        primaryKey: true
+    },
+    signum: {
+        type: Sequelize.STRING
+    },
+    description: {
+        type: Sequelize.STRING
+    }
+})
+
+const Books = sequelize.define("Books", {
+    ISBN: {
+        type: Sequelize.STRING,
+        primaryKey: true
+    },
+    title: {
+        type: Sequelize.STRING
+    },
+    signID: {
+        type: Sequelize.INTEGER
+    },
+    publicationYear: {
+        type: Sequelize.STRING
+    },
+    publicationInfo: {
+        type: Sequelize.STRING
+    },
+    pages: {
+        type: Sequelize.SMALLINT
+    }
+})
+
 // ---- PLACEHOLDERS - TO BE DELETED ----------------
 
 administrators = [
