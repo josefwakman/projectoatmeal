@@ -1,3 +1,4 @@
+//Handle database connection
 const mysql = require("mysql")
 const Sequelize = require("sequelize")
 const sequelize = new Sequelize("Library", "ster1666", "gustaferik", {
@@ -17,6 +18,7 @@ sequelize
     console.error("Connection failed", err)
 })
 
+//Sequelize database models
 const Authors = sequelize.define("Author", {
     firstName: {
         type: Sequelize.STRING
