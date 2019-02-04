@@ -32,7 +32,7 @@ authors = [
     },
     {
         id: 2,
-        name: "DandyMacBloom"
+        name: "Anders von Beetow"
     },
     {
         id: 3,
@@ -84,8 +84,18 @@ function searchBooks(query) {
     return foundBooks
 }
 
+function searchAuthors(query) {
+    lowerCaseSearch = query.toLowerCase()
+        const foundAuthors = authors.filter(function(author) {
+            lowerCaseAuthor = author.name.toLowerCase()
+            return lowerCaseAuthor.search(lowerCaseSearch) > -1
+        })
+    return foundAuthors
+}
+
 
 
 // ---- EXPORTS ---------
 
 exports.searchBooks = searchBooks
+exports.searchAuthors = searchAuthors

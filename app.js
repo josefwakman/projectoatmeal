@@ -47,11 +47,7 @@ app.get('/search-authors', function(req, res) {
 
     if (0 < Object.keys(req.query).length) {
 
-        lowerCaseSearch = req.query.search.toLowerCase()
-        const foundAuthors = authors.filter(function(author) {
-            lowerCaseAuthor = author.name.toLowerCase()
-            return lowerCaseAuthor.search(lowerCaseSearch) > -1
-        })
+        const foundAuthors = db.searchAuthors(req.query.search)
         
         model = {
             searched: true,
@@ -65,6 +61,8 @@ app.get('/administrators', function(req, res) {
     model = {
         administrators: administrators
     }
+    console.log(administrators);
+    
     res.render("administrators.hbs", model)
 })
 
