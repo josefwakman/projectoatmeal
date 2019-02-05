@@ -1,3 +1,4 @@
+const db = require("./data-access/database.js")
 const express = require("express")
 const expressHandlebars = require("express-handlebars")
 
@@ -11,46 +12,6 @@ app.engine('hbs', expressHandlebars({
     defaultLayout: 'main',
     extname: '.hbs'
 }))
-
-// ---- PLACEHOLDERS - TO BE DELETED ----------------
-
-
-
-books = [
-    {
-        title: "Yo",
-        author: "Mr. X"
-    },
-    {
-        title: "Woop Woop",
-        author: "Mr. X"
-    },
-    {
-        title: "Harry Potter and the Somewhat Unengaged Chemistry Proffesor",
-        author: "Dandy MacBloom"
-    },
-    {
-        title: "A Night at the Chicago opera House",
-        author: "Andy Beepmaster"
-    },
-    {
-        title: "Harry Potter and Another Test Title",
-        author: "DandyMacBloom"
-    },
-    {
-        title: "Du bist eine Kartoffel, Harry",
-        author: "M. Bartoscheck"
-    }
-]
-
-bookTitles = [
-    "Yo", 
-    "Woop Woop",
-    "Harry Potter and the Somewhat Unengaged Chemistry Proffesor",
-    "A Night at the Chicago opera House",
-    "Harry Potter and Another Test Title",
-    "Du bist eine Kartoffel, Harry",
-]
 
 app.use(express.static(path.join(__dirname, '/public')))
 
@@ -66,33 +27,75 @@ app.get('/search-books', function(req, res) {
 
     if (0 < Object.keys(req.query).length) {
 
-        lowerCaseSearch = req.query.search.toLowerCase()
-        const foundBooks = bookTitles.filter(function(str) {
-            lowerCaseStr = str.toLowerCase()
-            return lowerCaseStr.search(lowerCaseSearch) > -1
-        })
+        const foundBooks = db.searchBooks(req.query.search)
 
         model = {
             searched: true,
             books: foundBooks
         }
     }
-
     res.render("search-books.hbs", model)
 })
 
 app.get('/search-authors', function(req, res) {
-    res.render("search-authors.hbs")
+    model = {searched: false}
+
+    if (0 < Object.keys(req.query).length) {
+
+        const foundAuthors = db.searchAuthors(req.query.search)
+        
+        model = {
+            searched: true,
+            authors: foundAuthors
+        }
+    }
+    res.render("search-authors.hbs", model)
 })
 
 app.get('/administrators', function(req, res) {
-    res.render("administrators.hbs")
+    model = {
+        administrators: administrators
+    }
+    console.log(administrators);
+    
+    res.render("administrators.hbs", model)
+})
+
+app.get('/administrator/:id', (req, res) => {
+    foundAdmin = administrators.filter((admin) => {
+            return admin.id == req.params.id
+        })
+    res.render("administrator.hbs", foundAdmin[0])
+})
+
+app.get('/edit-administrator/:id', (req, res) => {
+    foundAdmin = administrators.filter((admin) => {
+            return admin.id == req.params.id
+        })
+    res.render("edit-administrator.hbs", foundAdmin[0])
 })
 
 app.get('/login', function(req, res) {
     res.render("login.hbs")
 })
 
+app.get('/book/:id', (req, res) => {
+    res.render("book.hbs", db.getBook(req.params.id))
+})
 
+app.get('/edit-book/:id', (req, res) => {
+    res.render("edit-book.hbs", db.getBook(req.params.id))
+})
+
+app.get('/author/:id', (req, res) => {
+    res.render("author.hbs", db.getAuthor(req.params.id))
+})
+
+app.get('/edit-author/:id', (req, res) => {
+    res.render("edit-author.hbs", db.getAuthor(req.params.id))
+})
+
+
+// ---------------------------------------
 
 app.listen(8080)

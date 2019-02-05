@@ -1,13 +1,33 @@
-<h2>Search books</h2>
+<h2>Search Books</h2>
 
-<form action="/search-books" method="get">
-    Search: <input type="text" name="search">
-    <input type="submit">
+<form action="/search-books" method="get" autocomplete="off">
+    <div class="form-group form-inline">
+        <input class="form-control" type="text" name="search" id="search">
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
 </form>
 
 {{#if searched }}
 
-    {{#each books}}
-        <p>{{this}}</p>
-    {{/each}}
+<div class="search-books-table-div">
+    <table class="table table-striped" id="bookTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Title</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#if searched}}
+            {{#each books}}
+            <tr>
+                <td>{{this.id}}</td>
+                <td><a href="/book/{{this.id}}">{{this.title}}</a> - {{#each this.authors}}<a href="/author/{{this.id}}">{{this.name}} {{/each}}</a></td>
+            </tr>
+            {{/each}}
+            {{/if}}
+        </tbody>
+    </table>
+</div>
+
 {{/if}}
