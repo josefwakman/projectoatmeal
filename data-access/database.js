@@ -20,6 +20,9 @@ sequelize
 
 //Sequelize database models
 const Authors = sequelize.define("Author", {
+
+    // !!! fungerar det att skriva firstname: Sequelize.STRING ? 
+
     firstName: {
         type: Sequelize.STRING
     },
