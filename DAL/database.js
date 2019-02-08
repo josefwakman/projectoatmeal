@@ -316,6 +316,7 @@ function searchBooks(query) {
 }
 
 function searchAuthors(query) {
+    /*
     lowerCaseSearch = query.toLowerCase()
     let foundAuthors = authors.filter(function(author) {
         lowerCaseAuthor = author.name.toLowerCase()
@@ -334,6 +335,19 @@ function searchAuthors(query) {
         return author
     })
     return foundAuthors
+    */
+
+   return Authors.findAll({
+       // TODO: lägg till limit: (nummer)
+       where: {
+           [Op.or]: [
+               {firstName: {[Op.like]: "&" + query + "%"} },
+               {lastName: {[Op.like]: "%" + query + "%"} }
+           ] 
+       }
+   }).then(foundAuthors => {
+        return foundAuthors
+   })
 }
 
 

@@ -46,14 +46,33 @@ app.get('/search-authors', function(req, res) {
 
     if (0 < Object.keys(req.query).length) {
 
-        const foundAuthors = db.searchAuthors(req.query.search)
+        /* const foundAuthors = db.searchAuthors(req.query.search)
         
         model = {
             searched: true,
             authors: foundAuthors
-        }
+        } */
+
+        let foundAuthors = []
+        db.searchAuthors(req.query.search).then(authors => {
+            for (author of authors) {
+                foundAuthors.push({
+                    id: author.get('id'),
+                    name: author.get('firstName') + " " + author.get('lastName'),
+                    birthYear: author.get('birthYear')
+                })
+            }
+            console.log("foundauthors: " + JSON.stringify(foundAuthors));
+            
+            model = {
+                searched: true,
+                authors: foundAuthors
+            }
+            res.render("search-authors.hbs", model)
+        })
+    } else {
+        res.render("search-authors.hbs", model)
     }
-    res.render("search-authors.hbs", model)
 })
 
 app.get('/administrators', function(req, res) {
