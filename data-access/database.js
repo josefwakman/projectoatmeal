@@ -23,6 +23,10 @@ const Authors = sequelize.define("Author", {
 
     // !!! fungerar det att skriva firstname: Sequelize.STRING ? 
 
+    id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true
+    },
     firstName: {
         type: Sequelize.STRING
     },
@@ -203,6 +207,7 @@ bookAuthors = [
 
 // -----------------
 
+/*
 function getAuthor(id) {
     let author = authors.find(author => {
         return author.id == id
@@ -210,6 +215,13 @@ function getAuthor(id) {
     const foundBooks = findBooksFromAuthor(id)
     author.books = foundBooks
     return author
+}
+*/
+
+function getAuthor(id) {
+    return Authors.findOne({where: {id: id}}).then(author => {
+        return author
+    })
 }
 
 function getBook(id) {
@@ -296,6 +308,9 @@ function searchAuthors(query) {
 
 exports.getAuthor = getAuthor
 exports.getBook = getBook
+
+exports.findBooksFromAuthor = findBooksFromAuthor
+exports.findAuthorsOfBook = findAuthorsOfBook
 
 exports.searchBooks = searchBooks
 exports.searchAuthors = searchAuthors
