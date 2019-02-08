@@ -31,27 +31,35 @@ app.get('/search-books', function(req, res) {
 
     if (0 < Object.keys(req.query).length) {
 
-        const foundBooks = db.searchBooks(req.query.search)
+        db.searchBooks(req.query.search).then(books => {
+            let foundBooks = []
+            for (book of books) {
+                foundBooks.push({
+                    ISBN: book.get('ISBN'),
+                    title: book.get('title'),
+                    signID: book.get('signID'),
+                    publicationYear: book.get('publicationYear'),
+                    publicationInfo: book.get('publicationInfo'),
+                    pages: book.get('pages'),
+                })
+            }
+            model = {
+                searched: true,
+                books: foundBooks
+            }
+            res.render("search-books.hbs", model)
+        })
 
-        model = {
-            searched: true,
-            books: foundBooks
-        }
+        
+    } else {
+        res.render("search-books.hbs", model)
     }
-    res.render("search-books.hbs", model)
 })
 
 app.get('/search-authors', function(req, res) {
     model = {searched: false}
 
     if (0 < Object.keys(req.query).length) {
-
-        /* const foundAuthors = db.searchAuthors(req.query.search)
-        
-        model = {
-            searched: true,
-            authors: foundAuthors
-        } */
 
         let foundAuthors = []
         db.searchAuthors(req.query.search).then(authors => {
