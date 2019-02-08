@@ -18,11 +18,17 @@ sequelize
     console.error("Connection failed", err)
 })
 
+const Op = Sequelize.Op
+
 //Sequelize database models
 const Authors = sequelize.define("Author", {
 
     // !!! fungerar det att skriva firstname: Sequelize.STRING ? 
 
+    id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true
+    },
     firstName: {
         type: Sequelize.STRING
     },
@@ -34,7 +40,7 @@ const Authors = sequelize.define("Author", {
     }
 })
 
-const BookAuthor = sequelize.define("BookAuthors", {
+const BookAuthors = sequelize.define("BookAuthors", {
     bookISBN: {
         type: Sequelize.STRING
     },
@@ -204,12 +210,9 @@ bookAuthors = [
 // -----------------
 
 function getAuthor(id) {
-    let author = authors.find(author => {
-        return author.id == id
+    return Authors.findOne({where: {id: id}}).then(author => {
+        return author
     })
-    const foundBooks = findBooksFromAuthor(id)
-    author.books = foundBooks
-    return author
 }
 
 function getBook(id) {
@@ -235,15 +238,36 @@ function findAuthorsOfBook(ISBN) { // returns array of authors belonging to book
 }
 
 function findBooksFromAuthor(authorID) {
-    const foundBookAuthors = bookAuthors.filter((bookAuthor) => {
-        return bookAuthor.authorID == authorID
-    })
 
-    return books.filter(book => {
-        return foundBookAuthors.find(bookAuthor => {
-            return bookAuthor.ISBN == book.ISBN
+    return BookAuthors.findAll({
+        where: { authorID: authorID}
+    }).then(bookAuthors => {
+        let foundBooks = []
+        for (bookAuthor of bookAuthors) {
+            foundBooks.push({
+                ISBN: bookAuthor.bookISBN
+            })
+        }
+        
+        return Books.findAll({
+            where: {
+                [Op.or]: foundBooks
+            }
+        }).then(books => {
+            let booksModel = []
+            for (book of books) {
+                booksModel.push({
+                    ISBN: book.get('ISBN'),
+                    title: book.get('title'),
+                    signID: book.get('signID'),
+                    publicationYear: book.get('publicationYear'),
+                    publicationInfo: book.get('publicationInfo'),
+                    pages: book.get('pages')
+                })
+            }
+            console.log("booksModel: " +JSON.stringify(booksModel));
+            return booksModel
         })
-
     })
 }
 
@@ -296,6 +320,9 @@ function searchAuthors(query) {
 
 exports.getAuthor = getAuthor
 exports.getBook = getBook
+
+exports.findBooksFromAuthor = findBooksFromAuthor
+exports.findAuthorsOfBook = findAuthorsOfBook
 
 exports.searchBooks = searchBooks
 exports.searchAuthors = searchAuthors

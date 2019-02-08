@@ -92,7 +92,26 @@ app.get('/edit-book/:id', (req, res) => {
 })
 
 app.get('/author/:id', (req, res) => {
-    res.render("author.hbs", db.getAuthor(req.params.id))
+    const id = req.params.id
+    db.getAuthor(id).then(author => {
+        if (author) {
+            db.findBooksFromAuthor(id).then(foundBooks => {
+                const authorModel = {
+                    id: id,
+                    name: author.get('firstName') + " " + author.get('lastName'),
+                    birthYear: author.get('birthYear'),
+                    books: foundBooks
+                }
+                console.log("authorModel: " + JSON.stringify(authorModel));
+                res.render("author.hbs", authorModel)
+            })
+        } else {
+            console.log("author är null!");
+            res.render("author.hbs")
+        }
+        
+        
+    })
 })
 
 app.get('/edit-author/:id', (req, res) => {
