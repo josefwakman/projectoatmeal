@@ -84,7 +84,28 @@ app.get('/login', function(req, res) {
 })
 
 app.get('/book/:id', (req, res) => {
-    res.render("book.hbs", db.getBook(req.params.id))
+    const id = req.params.id
+    db.getBook(id).then(book => {
+        if (book) {
+            db.findAuthorsOfBook(id).then(foundAuthors => { // TODO: denna kod är kopierad och klistrad. Kanske göra funktion? 
+                const bookModel = {
+                    ISBN: book.get('ISBN'),
+                    title: book.get('title'),
+                    signID: book.get('signID'),
+                    publicationYear: book.get('publicationYear'),
+                    publicationInfo: book.get('publicationInfo'),
+                    pages: book.get('pages'),
+                    authors: foundAuthors
+                }
+                res.render("book.hbs", bookModel)
+            })
+
+        } else {
+            console.log("No book!");
+            //TODO: fix 404 page
+            res.render("book.hbs") // langa in model med no book exists?
+        }
+    })
 })
 
 app.get('/edit-book/:id', (req, res) => {

@@ -215,26 +215,48 @@ function getAuthor(id) {
     })
 }
 
-function getBook(id) {
-    let book = books.find(book => {
-        return book.id == id
+function getBook(ISBN) {
+    return Books.findOne({
+        where: {ISBN: ISBN}
+    }).then(book => {
+        console.log("I found the book" + JSON.stringify(book));
+        return book
     })
-    const foundAuthors = findAuthorsOfBook(id)
-    book.authors = foundAuthors
-    return book
 }
 
 
 function findAuthorsOfBook(ISBN) { // returns array of authors belonging to book, even if just one
-    const foundBookAuthors = bookAuthors.filter((bookAuthor) => {
-        return bookAuthor.ISBN == ISBN
-    })
-    
-    return foundBookAuthors.map((foundBookAuthor) => {
-        return authors.find((author) => {
-            return author.id == foundBookAuthor.authorID
+
+    return BookAuthors.findAll({
+        where: {bookISBN: ISBN}
+    }).then(bookAuthors => {
+        let foundAuthors = []
+        for (bookAuthor of bookAuthors) {
+            foundAuthors.push({
+                id: bookAuthor.get('authorID')
+            })
+        }
+
+        console.log("foundAuthors: " + foundAuthors);
+        
+
+        return Authors.findAll({
+            where: {
+                [Op.or]: foundAuthors
+            }
+        }).then(authors => {
+            let authorModel = []
+            for (author of authors) {
+                authorModel.push({
+                    id: author.get('id'),
+                    name: author.get('firstName') + " " + author.get('lastName'),
+                    birthYear: author.get('birthYear')
+                })
+            }
+            console.log("authorModel: " +JSON.stringify(authorModel));
+            return authorModel
         })
-    }) 
+    })
 }
 
 function findBooksFromAuthor(authorID) {
