@@ -1,4 +1,4 @@
-const db = require("./data-access/database.js")
+const db = require("../DAL/database.js")
 const express = require("express")
 const expressHandlebars = require("express-handlebars")
 
@@ -8,9 +8,13 @@ const path = require('path')
 
 // -----------
 
+//Handlebars Setup
+app.set('views', path.join(__dirname, 'views'))
+
 app.engine('hbs', expressHandlebars({
     defaultLayout: 'main',
-    extname: '.hbs'
+    extname: '.hbs',
+    layoutsDir: path.join(__dirname, 'layouts')
 }))
 
 app.use(express.static(path.join(__dirname, '/public')))
