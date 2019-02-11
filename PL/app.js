@@ -83,6 +83,49 @@ app.get('/search-authors', function(req, res) {
     }
 })
 
+app.get('/search-classifications', (req, res) => {
+    model = {
+        searched: false,
+        classifications: [],
+        books: []
+    }
+    
+    db.getClassifications().then(classifications => {
+        for (classification of classifications) {
+            model.classifications.push({
+                signID: classification.get('signID'),
+                signum: classification.get('signum'),
+                description: classification.get('description')
+            })
+        }
+        
+        if (0 < Object.keys(req.query).length) {
+            model.searched = true
+            const selectedClassification = model.classifications.find(clas => {
+                return clas.signum == req.query.classification
+            }) 
+            
+            db.findBooksWithSignID(selectedClassification.signID).then(books => {
+                for (book of books) {
+                    model.books.push({
+                        ISBN: book.get('ISBN'),
+                        title: book.get('title'),
+                        signID: book.get('signID'),
+                        publicationYear: book.get('publicationYear'),
+                        publicationInfo: book.get('publicationInfo'),
+                        pages: book.get('pages')
+                    })
+                }
+                res.render("search-classifications.hbs", model)
+            })
+            
+        } else {
+            res.render("search-classifications.hbs", model)
+        }
+    })
+    
+})
+
 app.get('/administrators', function(req, res) {
     model = {
         administrators: administrators
