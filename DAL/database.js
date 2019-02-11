@@ -127,8 +127,6 @@ function getClassifications() {
 }
 
 function findBooksWithSignID(signID) {
-    console.log("Got signID: " + signID);
-    
     return Books.findAll({
         where: {signID: signID}
     })

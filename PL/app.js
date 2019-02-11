@@ -86,8 +86,10 @@ app.get('/search-authors', function(req, res) {
 app.get('/search-classifications', (req, res) => {
     model = {
         searched: false,
-        classifications: []
+        classifications: [],
+        books: []
     }
+    
     db.getClassifications().then(classifications => {
         for (classification of classifications) {
             model.classifications.push({
@@ -102,10 +104,8 @@ app.get('/search-classifications', (req, res) => {
             const selectedClassification = model.classifications.find(clas => {
                 return clas.signum == req.query.classification
             }) 
-            console.log("Selected classification: " + selectedClassification.signum);
             
             db.findBooksWithSignID(selectedClassification.signID).then(books => {
-                model.books = []
                 for (book of books) {
                     model.books.push({
                         ISBN: book.get('ISBN'),
