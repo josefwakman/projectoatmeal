@@ -7,6 +7,18 @@
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>
 
+<form action="/books" method="post" autocomplete="off" class="create-book-form">
+<div class="form-group create-book-div">
+<input type="text" class="form-control" placeholder="ISBN" name="isbn">
+<input type="text" placeholder="Title" class="form-control" name="title">
+<input type="number" placeholder="Signum" class="form-control" name="signum">
+<input type="text" placeholder="Publication Year" class="form-control" name="publYear">
+<input type="text" placeholder="Publication Info" class="form-control" name="publInfo">
+<input type="number" placeholder="Number of Pages" class="form-control" name="pages">
+</div>
+<button type="submit" class="btn btn-primary">Create Book</button>
+</form>
+
 {{#if searched }}
 
 <div class="search-books-table-div">

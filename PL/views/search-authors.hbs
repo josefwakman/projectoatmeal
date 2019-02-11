@@ -17,12 +17,12 @@
         </thead>
         <tbody>
             {{#if searched}}
-            {{#each authors}}
-            <tr>
-                <td>{{this.id}}</td>
-                <td><a href="/author/{{this.id}}">{{this.name}}</a></td>
-            </tr>
-            {{/each}}
+                {{#each authors}}
+                <tr>
+                    <td>{{this.id}}</td>
+                    <td><a href="/author/{{this.id}}">{{this.name}}</a></td>
+                </tr>
+                {{/each}}
             {{/if}}
         </tbody>
     </table>
