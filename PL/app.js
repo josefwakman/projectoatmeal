@@ -31,14 +31,29 @@ app.get('/search-books', function(req, res) {
 
     if (0 < Object.keys(req.query).length) {
 
-        const foundBooks = db.searchBooks(req.query.search)
+        db.searchBooks(req.query.search).then(books => {
+            let foundBooks = []
+            for (book of books) {
+                foundBooks.push({
+                    ISBN: book.get('ISBN'),
+                    title: book.get('title'),
+                    signID: book.get('signID'),
+                    publicationYear: book.get('publicationYear'),
+                    publicationInfo: book.get('publicationInfo'),
+                    pages: book.get('pages'),
+                })
+            }
+            model = {
+                searched: true,
+                books: foundBooks
+            }
+            res.render("search-books.hbs", model)
+        })
 
-        model = {
-            searched: true,
-            books: foundBooks
-        }
+        
+    } else {
+        res.render("search-books.hbs", model)
     }
-    res.render("search-books.hbs", model)
 })
 
 app.get('/search-authors', function(req, res) {
@@ -46,14 +61,26 @@ app.get('/search-authors', function(req, res) {
 
     if (0 < Object.keys(req.query).length) {
 
-        const foundAuthors = db.searchAuthors(req.query.search)
-        
-        model = {
-            searched: true,
-            authors: foundAuthors
-        }
+        let foundAuthors = []
+        db.searchAuthors(req.query.search).then(authors => {
+            for (author of authors) {
+                foundAuthors.push({
+                    id: author.get('id'),
+                    name: author.get('firstName') + " " + author.get('lastName'),
+                    birthYear: author.get('birthYear')
+                })
+            }
+            console.log("foundauthors: " + JSON.stringify(foundAuthors));
+            
+            model = {
+                searched: true,
+                authors: foundAuthors
+            }
+            res.render("search-authors.hbs", model)
+        })
+    } else {
+        res.render("search-authors.hbs", model)
     }
-    res.render("search-authors.hbs", model)
 })
 
 app.get('/administrators', function(req, res) {
@@ -84,7 +111,28 @@ app.get('/login', function(req, res) {
 })
 
 app.get('/book/:id', (req, res) => {
-    res.render("book.hbs", db.getBook(req.params.id))
+    const id = req.params.id
+    db.getBook(id).then(book => {
+        if (book) {
+            db.findAuthorsOfBook(id).then(foundAuthors => { // TODO: denna kod är kopierad och klistrad. Kanske göra funktion? 
+                const bookModel = {
+                    ISBN: book.get('ISBN'),
+                    title: book.get('title'),
+                    signID: book.get('signID'),
+                    publicationYear: book.get('publicationYear'),
+                    publicationInfo: book.get('publicationInfo'),
+                    pages: book.get('pages'),
+                    authors: foundAuthors
+                }
+                res.render("book.hbs", bookModel)
+            })
+
+        } else {
+            console.log("No book!");
+            //TODO: fix 404 page
+            res.render("book.hbs") // langa in model med no book exists?
+        }
+    })
 })
 
 app.get('/edit-book/:id', (req, res) => {

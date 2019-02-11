@@ -23,7 +23,7 @@ const Op = Sequelize.Op
 //Sequelize database models
 const Authors = sequelize.define("Author", {
 
-    // !!! fungerar det att skriva firstname: Sequelize.STRING ? 
+    // !!! fungerar det att skriva firstname: Sequelize.STRING istället? 
 
     id: {
         type: Sequelize.INTEGER,
@@ -215,26 +215,41 @@ function getAuthor(id) {
     })
 }
 
-function getBook(id) {
-    let book = books.find(book => {
-        return book.id == id
+function getBook(ISBN) {
+    return Books.findOne({where: {ISBN: ISBN}}).then(book => {
+        return book
     })
-    const foundAuthors = findAuthorsOfBook(id)
-    book.authors = foundAuthors
-    return book
 }
 
 
 function findAuthorsOfBook(ISBN) { // returns array of authors belonging to book, even if just one
-    const foundBookAuthors = bookAuthors.filter((bookAuthor) => {
-        return bookAuthor.ISBN == ISBN
-    })
-    
-    return foundBookAuthors.map((foundBookAuthor) => {
-        return authors.find((author) => {
-            return author.id == foundBookAuthor.authorID
+
+    return BookAuthors.findAll({
+        where: {bookISBN: ISBN}
+    }).then(bookAuthors => {
+        let foundAuthors = []
+        for (bookAuthor of bookAuthors) {
+            foundAuthors.push({
+                id: bookAuthor.get('authorID')
+            })
+        }
+
+        return Authors.findAll({
+            where: {
+                [Op.or]: foundAuthors
+            }
+        }).then(authors => {
+            let authorModel = []
+            for (author of authors) {
+                authorModel.push({
+                    id: author.get('id'),
+                    name: author.get('firstName') + " " + author.get('lastName'),
+                    birthYear: author.get('birthYear')
+                })
+            }
+            return authorModel
         })
-    }) 
+    })
 }
 
 function findBooksFromAuthor(authorID) {
@@ -265,7 +280,6 @@ function findBooksFromAuthor(authorID) {
                     pages: book.get('pages')
                 })
             }
-            console.log("booksModel: " +JSON.stringify(booksModel));
             return booksModel
         })
     })
@@ -273,45 +287,27 @@ function findBooksFromAuthor(authorID) {
 
 
 function searchBooks(query) {
-    lowerCaseSearch = query.toLowerCase()
-    let foundBooks = books.filter(function(book) {
-        lowerCaseTitle = book.title.toLowerCase()
-        return lowerCaseTitle.search(lowerCaseSearch) > -1
+    return Books.findAll({
+        // TODO: lägg till limit: (nummer)?
+        where: { title: { [Op.like]: "%" + query + "%"} }
+    }).then(foundBooks => {
+         return foundBooks
     })
-    
-    foundBooks = foundBooks.map((book) => {
-        const foundAuthors = findAuthorsOfBook(book.ISBN)
-        for (author of foundAuthors) {
-            if (book.authors) {
-                book.authors.push(author)
-            } else {
-                book.authors = [author]
-            }
-        }
-        return book     
-    })
-    return foundBooks
 }
 
 function searchAuthors(query) {
-    lowerCaseSearch = query.toLowerCase()
-    let foundAuthors = authors.filter(function(author) {
-        lowerCaseAuthor = author.name.toLowerCase()
-        return lowerCaseAuthor.search(lowerCaseSearch) > -1
-    })
 
-    foundAuthors = foundAuthors.map((author) => {
-        const foundBooks = findBooksFromAuthor(author.id)
-        for (book of foundBooks) {
-            if (author.books) {
-                author.books.push(book)
-            } else {
-                author.books = [book]
-            }
-        }
-        return author
-    })
-    return foundAuthors
+   return Authors.findAll({
+       // TODO: lägg till limit: (nummer)?
+       where: {
+           [Op.or]: [
+               {firstName: {[Op.like]: "%" + query + "%"} },
+               {lastName: {[Op.like]: "%" + query + "%"} }
+           ] 
+       }
+   }).then(foundAuthors => {
+        return foundAuthors
+   })
 }
 
 
