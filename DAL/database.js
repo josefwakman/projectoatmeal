@@ -108,105 +108,6 @@ administrators = [
     }
 ]
 
-authors = [
-    {
-        id: 0,
-        name: "Dandy MacBloom"
-    },
-    {
-        id: 1,
-        name: "Andy Beepmaster"
-    },
-    {
-        id: 2,
-        name: "Anders von Beetow"
-    },
-    {
-        id: 3,
-        name: "M. Bartoscheck"
-    },
-    {
-        id: 4,
-        name: "J. von Anka"
-    },
-    {
-        id: 5,
-        name: "John McLane"
-    },
-    {
-        id: 6,
-        name: "Mr .X"
-    }
-]
-
-books = [
-    {
-        id: 0,
-        title: "Yo",
-        ISBN: 1
-    },
-    {
-        id: 1,
-        title: "Woop Woop",
-        ISBN: 2
-    },
-    {
-        id: 3,
-        title: "Harry Potter and the Somewhat Unengaged Chemistry Professor",
-        ISBN: 3
-    },
-    {
-        id: 4,
-        title: "A Night at the Chicago opera House",
-        ISBN: 4
-    },
-    {
-        id: 5,
-        title: "Harry Potter and Another Test Title",
-        ISBN: 5
-    },
-    {
-        id: 6,
-        title: "Du bist eine Kartoffel, Harry",
-        ISBN: 6
-    }
-]
-
-bookAuthors = [
-    {
-        ISBN: 1,
-        authorID: 1
-    },
-    {
-        ISBN: 2,
-        authorID: 1
-    },
-    {
-        ISBN: 2,
-        authorID: 2
-    },
-    {
-        ISBN: 3,
-        authorID: 4
-    },
-    {
-        ISBN: 4,
-        authorID: 5
-    },
-    {
-        ISBN: 5,
-        authorID: 6
-    },
-    {
-        ISBN: 6,
-        authorID: 1
-    },
-    {
-        ISBN: 6,
-        authorID: 3
-    },
-]
-
 // -----------------
 
 function getAuthor(id) {
@@ -218,6 +119,18 @@ function getAuthor(id) {
 function getBook(ISBN) {
     return Books.findOne({where: {ISBN: ISBN}}).then(book => {
         return book
+    })
+}
+
+function getClassifications() {
+    return Classifications.findAll()
+}
+
+function findBooksWithSignID(signID) {
+    console.log("Got signID: " + signID);
+    
+    return Books.findAll({
+        where: {signID: signID}
     })
 }
 
@@ -316,7 +229,9 @@ function searchAuthors(query) {
 
 exports.getAuthor = getAuthor
 exports.getBook = getBook
+exports.getClassifications = getClassifications
 
+exports.findBooksWithSignID = findBooksWithSignID
 exports.findBooksFromAuthor = findBooksFromAuthor
 exports.findAuthorsOfBook = findAuthorsOfBook
 
