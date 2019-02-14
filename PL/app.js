@@ -1,4 +1,5 @@
 const db = require("../DAL/database.js")
+const validation = require("../BLL/validation.js")
 const express = require("express")
 const expressHandlebars = require("express-handlebars")
 
@@ -54,6 +55,13 @@ app.get('/search-books', function(req, res) {
     } else {
         res.render("search-books.hbs", model)
     }
+})
+
+app.post('/search-books', (req, res) => {
+    model = {searched: false}
+
+    
+
 })
 
 app.get('/search-authors', function(req, res) {

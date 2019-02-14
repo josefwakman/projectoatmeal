@@ -33,8 +33,8 @@
             {{#if searched}}
             {{#each books}}
             <tr>
-                <td>{{this.id}}</td>
-                <td><a href="/book/{{this.id}}">{{this.title}}</a> - {{#each this.authors}}<a href="/author/{{this.id}}">{{this.name}} {{/each}}</a></td>
+                <td>{{this.ISBN}}</td>
+                <td><a href="/book/{{this.ISBN}}">{{this.title}}</a> - {{#each this.authors}}<a href="/author/{{this.id}}">{{this.name}} {{/each}}</a></td>
             </tr>
             {{/each}}
             {{/if}}
