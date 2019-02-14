@@ -115,7 +115,6 @@ app.get('/search-authors', function (req, res) {
                     birthYear: author.get('birthYear')
                 })
             }
-            console.log("foundauthors: " + JSON.stringify(foundAuthors));
 
             model = {
                 searched: true,
