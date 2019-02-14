@@ -46,7 +46,8 @@ app.get('/search-books', function(req, res) {
             }
             model = {
                 searched: true,
-                books: foundBooks
+                books: foundBooks,
+                currentYear: new Date().getFullYear
             }
             res.render("search-books.hbs", model)
         })
@@ -161,8 +162,8 @@ app.get('/login', function(req, res) {
     res.render("login.hbs")
 })
 
-app.get('/book/:id', (req, res) => {
-    const id = req.params.id
+app.get('/book/:ISBN', (req, res) => {
+    const id = req.params.ISBN
     db.getBook(id).then(book => {
         if (book) {
             db.findAuthorsOfBook(id).then(foundAuthors => { // TODO: denna kod är kopierad och klistrad. Kanske göra funktion? 
@@ -179,15 +180,23 @@ app.get('/book/:id', (req, res) => {
             })
 
         } else {
-            console.log("No book!");
+            console.log("No book");
             //TODO: fix 404 page
             res.render("book.hbs") // langa in model med no book exists?
         }
     })
 })
 
-app.get('/edit-book/:id', (req, res) => {
-    res.render("edit-book.hbs", db.getBook(req.params.id))
+app.get('/edit-book/:ISBN', (req, res) => {
+
+    const isbn = req.params.ISBN
+    const book = db.getBook(isbn)
+
+    const model = {
+        book: book
+    }
+
+    res.render("edit-book.hbs", model)
 })
 
 app.get('/author/:id', (req, res) => {
@@ -217,6 +226,11 @@ app.get('/edit-author/:id', (req, res) => {
     res.render("edit-author.hbs", db.getAuthor(req.params.id))
 })
 
+app.post("/books", (req, res) => {
+    const isbn = req.body.ISBN;
+    console.log(isbn);
+    
+})
 
 // ---------------------------------------
 
