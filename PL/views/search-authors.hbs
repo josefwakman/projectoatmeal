@@ -1,5 +1,25 @@
 <h2>Search Authors</h2>
 
+<form id="create-author-form" action="/search-authors" method="post" autocomplete="off" class="create-author-form">
+    <div class="form-group create-author-div">
+        <input type="text" class="form-control" placeholder="ID" name="ID">
+        <input type="text" placeholder="First name" class="form-control" name="firstName">
+        <input type="number" placeholder="Last name" class="form-control" name="lastName">
+        <input type="number" placeholder="Birthyear" class="form-control" name="birthYear">
+    </div>
+    <button type="submit" class="btn btn-primary">Create Book</button>
+</form>
+
+<form id="update-author-form" action="/search-authors" method="patch" autocomplete="off" class="update-author-form">
+    <div class="form-group update-author-div">
+        <input type="text" class="form-control" placeholder="ISBN" name="ISBN">
+        <input type="text" placeholder="Title" class="form-control" name="title">
+        <input type="number" placeholder="SignID" class="form-control" name="signID">
+        <input type="number" placeholder="Number of Pages" class="form-control" name="pages">
+    </div>
+    <button type="submit" class="btn btn-primary">Create Book</button>
+</form>
+
 <form action="/search-authors" method="get" autocomplete="off">
 <div class="form-group form-inline">
     <input class="form-control" type="text" name="search" id="search">
