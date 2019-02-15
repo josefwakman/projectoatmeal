@@ -27,6 +27,7 @@ const Authors = sequelize.define("Author", {
 
     id: {
         type: Sequelize.INTEGER,
+        autoIncrement: true,
         primaryKey: true
     },
     firstName: {
@@ -235,6 +236,16 @@ function addBook(book) {
         pages: book.pages
     }).then(book => {
         return book
+    })
+}
+
+function addAuthor(author) {
+    Authors.create({
+        firstName: author.firstName,
+        lastName: author.lastName,
+        birthYear: author.birthYear
+    }).then(author => {
+        return author
     })
 }
 
