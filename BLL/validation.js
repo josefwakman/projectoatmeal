@@ -29,8 +29,6 @@ function validateBook(book) {
     if (!validYearFormat.test(book.publicationYear)) {
         errors.push("PublicationYear not entered correctly. Only numbers allowed, must be 4 digits.")
     } else {
-        console.log("publicYear: " + book.publicationYear + ", getFullYear: " + new Date().getFullYear());
-        
         if (parseInt(book.publicationYear) > new Date().getFullYear()) {
             errors.push("PublicationYear is after the current year, " + new Date().getFullYear() + ". Are you publishing from the future?")
         }
@@ -44,6 +42,33 @@ function validateBook(book) {
 
 
 
+function validateAuthor(author) {
+    let errors = []
+
+    const validID = RegExp(/^\d{1,4}$/) // 1-4 digits allowed
+    const invalidName = RegExp(/^[\d|,|.]/) // no digits, "," or "."
+    const validYearFormat = RegExp(/^\d{4}$/) // only 4 digits allowed
+
+    if (!validID.test(author.ID)) {
+        errors.push("Id entered incorrectly. Only 1-4 digits allowed")
+    }
+    if (invalidName.text(author.firstName)) {
+        errors.push("First name entered incorrectly. Only letters allowed.")
+    }
+    if (invalidName.text(author.lastName)) {
+        errors.push("Last name entered incorrectly. Only letters allowed.")
+    }
+    if (!validYearFormat.test(author.birthYear)) {
+        errors.push("Year entered incorrectly. Only 4 digits allowed.")
+    } else {
+        errors.push("Birth year is after the current year, " + new Date().getFullYear() + ". Is this a time traveller?")
+    }
+
+    return errors
+}
+
 
 // --- EXPORTS ---------------
+
 exports.validateBook = validateBook
+exports.validateAuthor = validateAuthor
