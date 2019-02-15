@@ -1,3 +1,8 @@
+const privilegies = Object.freeze({
+    "admin" : 1,
+    "superAdmin" : 2
+})
+
 
 // Returns an array of errors. If there are no error, the array is empty
 function validateBook(book) {
@@ -65,6 +70,26 @@ function validateAuthor(author) {
     }
 
     return errors
+}
+
+function TODOvalidateAdministrator(admin) {
+    let errors = []
+
+    const validID = RegExp(/\d+/)
+    const validEmail = RegExp(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/)
+
+    if (!validID.test(admin.ID)) {
+        errors.push("ID entered incorrectly. Only digits allowed.")
+    }
+    if(admin.userName == "") {
+        errors.push("No username entered")
+    }
+    if (!privilegies.contains(admin.privilegies)) {
+        errors.push("No correct privilegies entered. Is it a " + privilegies[0] + " or " + privilegies[1] + "?")
+    }
+    if(!validEmail.test(admin.email)) {
+        errors.push("No valid email entered")
+    }
 }
 
 
