@@ -50,13 +50,9 @@ function validateBook(book) {
 function validateAuthor(author) {
     let errors = []
 
-    const validID = RegExp(/^\d{1,4}$/) // 1-4 digits allowed
     const invalidName = RegExp(/^[\d|,|.]/) // no digits, "," or "."
     const validYearFormat = RegExp(/^\d{4}$/) // only 4 digits allowed
 
-    if (!validID.test(author.ID)) {
-        errors.push("Id entered incorrectly. Only 1-4 digits allowed")
-    }
     if (invalidName.test(author.firstName)) {
 
         errors.push("First name entered incorrectly. Only letters allowed.")
@@ -67,9 +63,13 @@ function validateAuthor(author) {
     if (!validYearFormat.test(author.birthYear)) {
         errors.push("Year entered incorrectly. Only 4 digits allowed.")
     } else {
-        errors.push("Birth year is after the current year, " + new Date().getFullYear() + ". Is this a time traveller?")
+        if (parseInt(author.birthYear) > new Date().getFullYear()) {
+            errors.push("Birth year is after the current year, " + new Date().getFullYear() + ". Is this a time traveller?")
+        }
     }
 
+    console.log("Errors: " + errors);
+    
     return errors
 }
 

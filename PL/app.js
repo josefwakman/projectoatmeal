@@ -68,6 +68,7 @@ app.post('/search-books', (req, res) => {
     if (0 < errors.length) {
         model.errors = errors
         model.postError = true
+        res.render("search-books.hbs", model)
     } else {
         db.addBook({
             ISBN: req.body.ISBN,
@@ -96,8 +97,6 @@ app.post('/search-books', (req, res) => {
             }
         })
     }
-
-    res.render("search-books.hbs", model)
 
 })
 
@@ -137,6 +136,7 @@ app.post('/search-authors', (req, res) => {
     if (0 < errors.length) {
         model.errors = errors
         model.postError = true
+        res.render("search-authors.hbs", model)
     } else {
         db.addAuthor({
             firstName: req.body.firstName,
@@ -154,12 +154,12 @@ app.post('/search-authors', (req, res) => {
                     res.render("author.hbs", model)
                 })
             } else {
+
                 model = {addAuthorFailute: true}
                 res.render("author.hbs", model)
             }
         })
     }
-    res.render("search-authors.hbs", model)
 })
 
 app.get('/search-classifications', (req, res) => {

@@ -227,7 +227,7 @@ function searchAuthors(query) {
 // ------- CREATE ----
 
 function addBook(book) {
-    Books.create({
+    return Books.create({
         ISBN: book.ISBN,
         title: book.title,
         signID: book.signID,
@@ -240,7 +240,7 @@ function addBook(book) {
 }
 
 function addAuthor(author) {
-    Authors.create({
+    return Authors.create({
         firstName: author.firstName,
         lastName: author.lastName,
         birthYear: author.birthYear
