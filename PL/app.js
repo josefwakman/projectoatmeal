@@ -1,6 +1,8 @@
 const db = require("../DAL/database.js")
+const validation = require("../BLL/validation.js")
 const express = require("express")
 const expressHandlebars = require("express-handlebars")
+const bodyParser = require("body-parser")
 
 const app = express()
 
@@ -18,16 +20,17 @@ app.engine('hbs', expressHandlebars({
 }))
 
 app.use(express.static(path.join(__dirname, '/public')))
+app.use(bodyParser.urlencoded({ extended: false }))
 
 // Vi använder routers istället för det här sen va?
 // --- GET Requests ----------
 
-app.get('/', function(req, res) { 
+app.get('/', function (req, res) {
     res.render("search-books.hbs")
 })
 
-app.get('/search-books', function(req, res) { 
-    model = {searched: false}
+app.get('/search-books', function (req, res) {
+    model = { searched: false }
 
     if (0 < Object.keys(req.query).length) {
 
@@ -45,19 +48,60 @@ app.get('/search-books', function(req, res) {
             }
             model = {
                 searched: true,
-                books: foundBooks
+                books: foundBooks,
+                currentYear: new Date().getFullYear
             }
             res.render("search-books.hbs", model)
         })
 
-        
+
     } else {
         res.render("search-books.hbs", model)
     }
 })
 
-app.get('/search-authors', function(req, res) {
-    model = {searched: false}
+app.post('/search-books', (req, res) => {
+    model = { searched: false }
+
+    const errors = validation.validateBook(req.body)
+
+    if (0 < errors.length) {
+        model.errors = errors
+        model.postError = true
+        res.render("search-books.hbs", model)
+    } else {
+        db.addBook({
+            ISBN: req.body.ISBN,
+            title: req.body.title,
+            signID: req.body.signID,
+            publicationYear: req.body.publicationYear,
+            publicationInfo: req.body.publicationCity + " : " + req.body.publicationCompany + ", " + req.body.publicationYear,
+            pages: req.body.pages
+        }).then(book => {
+            if (book) {
+                db.findAuthorsOfBook(book.ISBN).then(foundAuthors => { // TODO: denna kod är kopierad och klistrad. Kanske göra funktion? 
+                    const bookModel = {
+                        ISBN: book.get('ISBN'),
+                        title: book.get('title'),
+                        signID: book.get('signID'),
+                        publicationYear: book.get('publicationYear'),
+                        publicationInfo: book.get('publicationInfo'),
+                        pages: book.get('pages'),
+                        authors: foundAuthors
+                    }
+                    res.render("book.hbs", bookModel)
+                })
+            } else {
+                model = {addBookFailure: true}
+                res.render("books.hbs", model)
+            }
+        })
+    }
+
+})
+
+app.get('/search-authors', function (req, res) {
+    model = { searched: false }
 
     if (0 < Object.keys(req.query).length) {
 
@@ -70,8 +114,7 @@ app.get('/search-authors', function(req, res) {
                     birthYear: author.get('birthYear')
                 })
             }
-            console.log("foundauthors: " + JSON.stringify(foundAuthors));
-            
+
             model = {
                 searched: true,
                 authors: foundAuthors
@@ -83,13 +126,49 @@ app.get('/search-authors', function(req, res) {
     }
 })
 
+app.post('/search-authors', (req, res) => {
+    model = {searched: false}
+
+    console.log(req.body);
+    
+    const errors = validation.validateAuthor(req.body)
+
+    if (0 < errors.length) {
+        model.errors = errors
+        model.postError = true
+        res.render("search-authors.hbs", model)
+    } else {
+        db.addAuthor({
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            birthYear: req.body.birthYear
+        }).then(author => {
+            if (author) {
+                db.findBooksFromAuthor(author.id).then(foundBooks => {
+                    const model = {
+                        id: author.get('id'),
+                        name: author.get('firstName') + " " + author.get('lastName'),
+                        birthYear: author.get('birthYear'),
+                        books: foundBooks
+                    }
+                    res.render("author.hbs", model)
+                })
+            } else {
+
+                model = {addAuthorFailute: true}
+                res.render("author.hbs", model)
+            }
+        })
+    }
+})
+
 app.get('/search-classifications', (req, res) => {
     model = {
         searched: false,
         classifications: [],
         books: []
     }
-    
+
     db.getClassifications().then(classifications => {
         for (classification of classifications) {
             model.classifications.push({
@@ -98,13 +177,13 @@ app.get('/search-classifications', (req, res) => {
                 description: classification.get('description')
             })
         }
-        
+
         if (0 < Object.keys(req.query).length) {
             model.searched = true
             const selectedClassification = model.classifications.find(clas => {
                 return clas.signum == req.query.classification
-            }) 
-            
+            })
+
             db.findBooksWithSignID(selectedClassification.signID).then(books => {
                 for (book of books) {
                     model.books.push({
@@ -118,46 +197,44 @@ app.get('/search-classifications', (req, res) => {
                 }
                 res.render("search-classifications.hbs", model)
             })
-            
+
         } else {
             res.render("search-classifications.hbs", model)
         }
     })
-    
+
 })
 
-app.get('/administrators', function(req, res) {
+app.get('/administrators', function (req, res) {
     model = {
         administrators: administrators
     }
-    console.log(administrators);
-    
     res.render("administrators.hbs", model)
 })
 
 app.get('/administrator/:id', (req, res) => {
     foundAdmin = administrators.filter((admin) => {
-            return admin.id == req.params.id
-        })
+        return admin.id == req.params.id
+    })
     res.render("administrator.hbs", foundAdmin[0])
 })
 
 app.get('/edit-administrator/:id', (req, res) => {
     foundAdmin = administrators.filter((admin) => {
-            return admin.id == req.params.id
-        })
+        return admin.id == req.params.id
+    })
     res.render("edit-administrator.hbs", foundAdmin[0])
 })
 
-app.get('/login', function(req, res) {
+app.get('/login', function (req, res) {
     res.render("login.hbs")
 })
 
-app.get('/book/:id', (req, res) => {
-    const id = req.params.id
-    db.getBook(id).then(book => {
+app.get('/book/:ISBN', (req, res) => {
+    const ISBN = req.params.ISBN
+    db.getBook(ISBN).then(book => {
         if (book) {
-            db.findAuthorsOfBook(id).then(foundAuthors => { // TODO: denna kod är kopierad och klistrad. Kanske göra funktion? 
+            db.findAuthorsOfBook(ISBN).then(foundAuthors => { // TODO: denna kod är kopierad och klistrad. Kanske göra funktion? 
                 const bookModel = {
                     ISBN: book.get('ISBN'),
                     title: book.get('title'),
@@ -171,15 +248,23 @@ app.get('/book/:id', (req, res) => {
             })
 
         } else {
-            console.log("No book!");
+            console.log("No book");
             //TODO: fix 404 page
             res.render("book.hbs") // langa in model med no book exists?
         }
     })
 })
 
-app.get('/edit-book/:id', (req, res) => {
-    res.render("edit-book.hbs", db.getBook(req.params.id))
+app.get('/edit-book/:ISBN', (req, res) => {
+
+    const isbn = req.params.ISBN
+    const book = db.getBook(isbn)
+
+    const model = {
+        book: book
+    }
+
+    res.render("edit-book.hbs", model)
 })
 
 app.get('/author/:id', (req, res) => {
@@ -200,15 +285,14 @@ app.get('/author/:id', (req, res) => {
             console.log("author är null!");
             res.render("author.hbs")
         }
-        
-        
+
+
     })
 })
 
 app.get('/edit-author/:id', (req, res) => {
     res.render("edit-author.hbs", db.getAuthor(req.params.id))
 })
-
 
 // ---------------------------------------
 

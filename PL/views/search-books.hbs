@@ -7,17 +7,32 @@
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>
 
-<form action="/books" method="post" autocomplete="off" class="create-book-form">
-<div class="form-group create-book-div">
-<input type="text" class="form-control" placeholder="ISBN" name="isbn">
-<input type="text" placeholder="Title" class="form-control" name="title">
-<input type="number" placeholder="Signum" class="form-control" name="signum">
-<input type="text" placeholder="Publication Year" class="form-control" name="publYear">
-<input type="text" placeholder="Publication Info" class="form-control" name="publInfo">
-<input type="number" placeholder="Number of Pages" class="form-control" name="pages">
-</div>
-<button type="submit" class="btn btn-primary">Create Book</button>
+<form id="create-book-form" action="/search-books" method="post" autocomplete="off" class="create-book-form">
+    <div class="form-group create-book-div">
+        <input type="text" class="form-control" placeholder="ISBN" name="ISBN">
+        <input type="text" placeholder="Title" class="form-control" name="title">
+        <input type="number" placeholder="SignID" class="form-control" name="signID">
+        <div id="publication-info-div" class="form-group form-inline">
+            <input type="text" placeholder="Publication City" class="form-control" name="publicationCity"
+                style="margin-right: 1.3%">
+            <input type="text" placeholder="Publication Company" class="form-control" name="publicationCompany"
+                style="margin-right: 1.3%">
+            <input type="number" placeholder="Publication Year" class="form-control" name="publicationYear"
+                style="margin-right: 1.3%">
+        </div>
+        <input type="number" placeholder="Number of Pages" class="form-control" name="pages">
+    </div>
+    <button type="submit" class="btn btn-primary">Create Book</button>
 </form>
+
+{{#if postError}}
+<div class="alert alert-warning">
+    <strong>All fields not filled in correctly!</strong>
+    {{#each errors}}
+    <p>{{this}}</p>
+    {{/each}}
+</div>
+{{/if}}
 
 {{#if searched }}
 
@@ -25,7 +40,7 @@
     <table class="table table-striped" id="bookTable">
         <thead>
             <tr>
-                <th>ID</th>
+                <th>ISBN</th>
                 <th>Title</th>
             </tr>
         </thead>
@@ -33,8 +48,8 @@
             {{#if searched}}
             {{#each books}}
             <tr>
-                <td>{{this.id}}</td>
-                <td><a href="/book/{{this.id}}">{{this.title}}</a> - {{#each this.authors}}<a href="/author/{{this.id}}">{{this.name}} {{/each}}</a></td>
+                <td>{{this.ISBN}}</td>
+                <td><a href="/book/{{this.ISBN}}">{{this.title}}</a></td>
             </tr>
             {{/each}}
             {{/if}}

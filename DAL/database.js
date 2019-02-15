@@ -10,13 +10,13 @@ const sequelize = new Sequelize("Library", "ster1666", "gustaferik", {
 })
 
 sequelize
-.authenticate()
-.then(() => {
-    console.log("Connection established");
-})
-.catch(err => {
-    console.error("Connection failed", err)
-})
+    .authenticate()
+    .then(() => {
+        console.log("Connection established");
+    })
+    .catch(err => {
+        console.error("Connection failed", err)
+    })
 
 const Op = Sequelize.Op
 
@@ -27,6 +27,7 @@ const Authors = sequelize.define("Author", {
 
     id: {
         type: Sequelize.INTEGER,
+        autoIncrement: true,
         primaryKey: true
     },
     firstName: {
@@ -111,13 +112,13 @@ administrators = [
 // -----------------
 
 function getAuthor(id) {
-    return Authors.findOne({where: {id: id}}).then(author => {
+    return Authors.findOne({ where: { id: id } }).then(author => {
         return author
     })
 }
 
 function getBook(ISBN) {
-    return Books.findOne({where: {ISBN: ISBN}}).then(book => {
+    return Books.findOne({ where: { ISBN: ISBN } }).then(book => {
         return book
     })
 }
@@ -128,7 +129,7 @@ function getClassifications() {
 
 function findBooksWithSignID(signID) {
     return Books.findAll({
-        where: {signID: signID}
+        where: { signID: signID }
     })
 }
 
@@ -136,7 +137,7 @@ function findBooksWithSignID(signID) {
 function findAuthorsOfBook(ISBN) { // returns array of authors belonging to book, even if just one
 
     return BookAuthors.findAll({
-        where: {bookISBN: ISBN}
+        where: { bookISBN: ISBN }
     }).then(bookAuthors => {
         let foundAuthors = []
         for (bookAuthor of bookAuthors) {
@@ -166,7 +167,7 @@ function findAuthorsOfBook(ISBN) { // returns array of authors belonging to book
 function findBooksFromAuthor(authorID) {
 
     return BookAuthors.findAll({
-        where: { authorID: authorID}
+        where: { authorID: authorID }
     }).then(bookAuthors => {
         let foundBooks = []
         for (bookAuthor of bookAuthors) {
@@ -174,7 +175,7 @@ function findBooksFromAuthor(authorID) {
                 ISBN: bookAuthor.bookISBN
             })
         }
-        
+
         return Books.findAll({
             where: {
                 [Op.or]: foundBooks
@@ -200,25 +201,52 @@ function findBooksFromAuthor(authorID) {
 function searchBooks(query) {
     return Books.findAll({
         // TODO: lägg till limit: (nummer)?
-        where: { title: { [Op.like]: "%" + query + "%"} }
+        where: { title: { [Op.like]: "%" + query + "%" } }
     }).then(foundBooks => {
-         return foundBooks
+        return foundBooks
     })
 }
 
 function searchAuthors(query) {
 
-   return Authors.findAll({
-       // TODO: lägg till limit: (nummer)?
-       where: {
-           [Op.or]: [
-               {firstName: {[Op.like]: "%" + query + "%"} },
-               {lastName: {[Op.like]: "%" + query + "%"} }
-           ] 
-       }
-   }).then(foundAuthors => {
+    return Authors.findAll({
+        // TODO: lägg till limit: (nummer)?
+        where: {
+            [Op.or]: [
+                { firstName: { [Op.like]: "%" + query + "%" } },
+                { lastName: { [Op.like]: "%" + query + "%" } }
+            ]
+        }
+    }).then(foundAuthors => {
         return foundAuthors
-   })
+    })
+}
+
+
+
+// ------- CREATE ----
+
+function addBook(book) {
+    return Books.create({
+        ISBN: book.ISBN,
+        title: book.title,
+        signID: book.signID,
+        publicationYear: book.publicationYear,
+        publicationInfo: book.publicationInfo,
+        pages: book.pages
+    }).then(book => {
+        return book
+    })
+}
+
+function addAuthor(author) {
+    return Authors.create({
+        firstName: author.firstName,
+        lastName: author.lastName,
+        birthYear: author.birthYear
+    }).then(author => {
+        return author
+    })
 }
 
 
@@ -235,3 +263,6 @@ exports.findAuthorsOfBook = findAuthorsOfBook
 
 exports.searchBooks = searchBooks
 exports.searchAuthors = searchAuthors
+
+exports.addBook = addBook
+exports.addAuthor = addAuthor
