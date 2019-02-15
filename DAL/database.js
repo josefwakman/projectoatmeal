@@ -265,3 +265,4 @@ exports.searchBooks = searchBooks
 exports.searchAuthors = searchAuthors
 
 exports.addBook = addBook
+exports.addAuthor = addAuthor

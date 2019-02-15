@@ -57,10 +57,11 @@ function validateAuthor(author) {
     if (!validID.test(author.ID)) {
         errors.push("Id entered incorrectly. Only 1-4 digits allowed")
     }
-    if (invalidName.text(author.firstName)) {
+    if (invalidName.test(author.firstName)) {
+
         errors.push("First name entered incorrectly. Only letters allowed.")
     }
-    if (invalidName.text(author.lastName)) {
+    if (invalidName.test(author.lastName)) {
         errors.push("Last name entered incorrectly. Only letters allowed.")
     }
     if (!validYearFormat.test(author.birthYear)) {

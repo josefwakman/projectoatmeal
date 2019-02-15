@@ -127,6 +127,41 @@ app.get('/search-authors', function (req, res) {
     }
 })
 
+app.post('/search-authors', (req, res) => {
+    model = {searched: false}
+
+    console.log(req.body);
+    
+    const errors = validation.validateAuthor(req.body)
+
+    if (0 < errors.length) {
+        model.errors = errors
+        model.postError = true
+    } else {
+        db.addAuthor({
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+            birthYear: req.body.birthYear
+        }).then(author => {
+            if (author) {
+                db.findBooksFromAuthor(author.id).then(foundBooks => {
+                    const model = {
+                        id: author.get('id'),
+                        name: author.get('firstName') + " " + author.get('lastName'),
+                        birthYear: author.get('birthYear'),
+                        books: foundBooks
+                    }
+                    res.render("author.hbs", model)
+                })
+            } else {
+                model = {addAuthorFailute: true}
+                res.render("author.hbs", model)
+            }
+        })
+    }
+    res.render("search-authors.hbs", model)
+})
+
 app.get('/search-classifications', (req, res) => {
     model = {
         searched: false,
