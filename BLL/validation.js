@@ -1,6 +1,6 @@
 const privilegies = Object.freeze({
-    "admin" : 1,
-    "superAdmin" : 2
+    "admin": 1,
+    "superAdmin": 2
 })
 
 
@@ -14,32 +14,53 @@ function validateBook(book) {
     const invalidCity = RegExp(/\d/)
     const validPages = RegExp(/^\d+$/)
 
-    if (book.title == "") {
-        errors.push("Nothing entered as title")
-    }
-    if (!validISBN.test(book.ISBN)) {
-        errors.push("ISBN not entered correctly. Only numbers allowed, at most 10")
-    }
-    if (!validSignID.test(book.signID)) {
-        errors.push("SignID not entered correctly. Only numbers allowed.")
-    }
-    if (book.publicationCity == "") {
-        errors.push("Nothing entered as publication city")
-    } else if (invalidCity.test(book.publicationCity)) { // TODO: felsöka denna. verkar inte fungera som den ska
-        errors.push("No digits allowed in city names")
-    }
-    if (book.publicationCompany == "") {
-        errors.push("Nothing entered as publication company")
-    }
-    if (!validYearFormat.test(book.publicationYear)) {
-        errors.push("PublicationYear not entered correctly. Only numbers allowed, must be 4 digits.")
-    } else {
-        if (parseInt(book.publicationYear) > new Date().getFullYear()) {
-            errors.push("PublicationYear is after the current year, " + new Date().getFullYear() + ". Are you publishing from the future?")
+    for (key of Object.keys(book)) 
+    {
+        switch (key) {
+            case "title":
+                if (book.title == "") {
+                    errors.push("Nothing entered as title")
+                }
+                break
+            case "ISBN":
+                if (!validISBN.test(book.ISBN)) {
+                    errors.push("ISBN not entered correctly. Only numbers allowed, at most 10")
+                }
+                break
+            case "signID":
+                if (!validSignID.test(book.signID)) {
+                    errors.push("SignID not entered correctly. Only numbers allowed.")
+                }
+                break
+            case "publicationCity":
+                if (book.publicationCity == "") {
+                    errors.push("Nothing entered as publication city")
+                } else if (invalidCity.test(book.publicationCity)) { // TODO: felsöka denna. verkar inte fungera som den ska
+                    errors.push("No digits allowed in city names")
+                }
+                break
+            case "publicationCompany":
+                if (book.publicationCompany == "") {
+                    errors.push("Nothing entered as publication company")
+                }
+                break
+            case "publicationYear":
+                if (!validYearFormat.test(book.publicationYear)) {
+                    errors.push("PublicationYear not entered correctly. Only numbers allowed, must be 4 digits.")
+                } else {
+                    if (parseInt(book.publicationYear) > new Date().getFullYear()) {
+                        errors.push("PublicationYear is after the current year, " + new Date().getFullYear() + ". Are you publishing from the future?")
+                    }
+                }
+                break
+            case "pages":
+                if (!validPages.test(book.pages)) {
+                    errors.push("Number of pages entered incorrectly. Only numbers allowed")
+                }
+                break
+            default:
+                errors.push("Wait this isn't a valid key!")
         }
-    }
-    if (!validPages.test(book.pages)) {
-        errors.push("Number of pages entered incorrectly. Only numbers allowed")
     }
 
     return errors
@@ -69,7 +90,7 @@ function validateAuthor(author) {
     }
 
     console.log("Errors: " + errors);
-    
+
     return errors
 }
 
@@ -82,13 +103,13 @@ function TODOvalidateAdministrator(admin) {
     if (!validID.test(admin.ID)) {
         errors.push("ID entered incorrectly. Only digits allowed.")
     }
-    if(admin.userName == "") {
+    if (admin.userName == "") {
         errors.push("No username entered")
     }
     if (!privilegies.contains(admin.privilegies)) {
         errors.push("No correct privilegies entered. Is it a " + privilegies[0] + " or " + privilegies[1] + "?")
     }
-    if(!validEmail.test(admin.email)) {
+    if (!validEmail.test(admin.email)) {
         errors.push("No valid email entered")
     }
 }
