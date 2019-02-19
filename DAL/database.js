@@ -86,6 +86,26 @@ const Books = sequelize.define("Books", {
     }
 })
 
+const Administrators = sequelize.define("Administrators", {
+    id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    firstName: {
+        type: Sequelize.STRING
+    },
+    lastName: {
+        type: Sequelize.STRING
+    },
+    email: {
+        type: Sequelize.STRING
+    },
+    privilegies: {
+        type: Sequelize.INTEGER
+    }
+})
+
 // ---- PLACEHOLDERS - TO BE DELETED ----------------
 
 administrators = [
