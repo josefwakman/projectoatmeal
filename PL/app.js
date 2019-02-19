@@ -140,9 +140,7 @@ app.get('/search-authors', function (req, res) {
 })
 
 app.post('/search-authors', (req, res) => {
-    model = {searched: false}
-
-    console.log(req.body);
+    let model = {searched: false}
     
     const errors = validation.validateAuthor(req.body)
 
@@ -283,7 +281,8 @@ app.get('/edit-book/:ISBN', (req, res) => {
 
 app.post('/edit-book', (req, res) => {
     // const errors = validation.validateBook(req.body)
-    errors = []
+    const body = removeEmptyValues(req.body)
+    const errors = validation.validateBook(body)
 
     if (0 < Object.keys(errors)) {
         model = { 
@@ -292,7 +291,7 @@ app.post('/edit-book', (req, res) => {
         }
         res.render('edit-book.hbs', model)
     } else {
-        db.editBook(req.body)
+        db.editBook(body)
         res.render("edit-book.hbs")
     }
 })
@@ -330,5 +329,17 @@ app.get('/edit-author/:id', (req, res) => {
 })
 
 // ---------------------------------------
+
+function removeEmptyValues(arr) {
+    let newObject = {}
+    for (key of Object.keys(arr)) {
+        if (!arr[key] == "") {
+            newObject[key] = arr[key]
+        }
+    }
+    return newObject
+}
+
+// -----------------
 
 app.listen(8080)
