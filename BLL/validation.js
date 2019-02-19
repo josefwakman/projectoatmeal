@@ -83,7 +83,7 @@ function validateBook(book) {
     return errors
 }
 
-function getMissingBookKeys(book) {
+function getMissingBookKeys(book) { // Denna behövs så att man inte kan skicka en post request som saknar fält vid create book
     const keysInBook = Object.keys(book)
     let missingKeys = []
     for (keyToCheck of validBookKeys) {

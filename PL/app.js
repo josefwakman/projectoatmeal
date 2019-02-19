@@ -23,7 +23,7 @@ app.use(express.static(path.join(__dirname, '/public')))
 app.use(bodyParser.urlencoded({ extended: false }))
 
 // Vi använder routers istället för det här sen va?
-// --- GET Requests ----------
+// --- SEARCH-BOOKS ----------
 
 app.get('/', function (req, res) {
     res.render("search-books.hbs")
@@ -103,6 +103,15 @@ app.post('/search-books', (req, res) => {
     }
 
 })
+
+
+
+
+
+
+
+
+// ----- SEARCH-AUTHORS
 
 app.get('/search-authors', function (req, res) {
     model = { searched: false }
@@ -259,8 +268,9 @@ app.get('/book/:ISBN', (req, res) => {
     })
 })
 
-app.get('/edit-book/:ISBN', (req, res) => {
 
+
+app.get('/edit-book/:ISBN', (req, res) => {
     const isbn = req.params.ISBN
     const book = db.getBook(isbn)
 
@@ -270,6 +280,27 @@ app.get('/edit-book/:ISBN', (req, res) => {
 
     res.render("edit-book.hbs", model)
 })
+
+app.post('/edit-book', (req, res) => {
+    // const errors = validation.validateBook(req.body)
+    errors = []
+
+    if (0 < Object.keys(errors)) {
+        model = { 
+            failedValidation: true,
+            errors: errors
+        }
+        res.render('edit-book.hbs', model)
+    } else {
+        db.editBook(req.body)
+        res.render("edit-book.hbs")
+    }
+})
+
+
+
+
+
 
 app.get('/author/:id', (req, res) => {
     const id = req.params.id
