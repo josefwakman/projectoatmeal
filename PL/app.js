@@ -280,7 +280,6 @@ app.get('/edit-book/:ISBN', (req, res) => {
 })
 
 app.post('/edit-book', (req, res) => {
-    // const errors = validation.validateBook(req.body)
     const body = removeEmptyValues(req.body)
     const errors = validation.validateBook(body)
 
@@ -324,9 +323,35 @@ app.get('/author/:id', (req, res) => {
     })
 })
 
+
+
+
+
+
 app.get('/edit-author/:id', (req, res) => {
     res.render("edit-author.hbs", db.getAuthor(req.params.id))
 })
+
+app.post('/edit-author', (req, res) => {
+    const body = removeEmptyValues(req.body)
+    const errors = validation.validateBook(body)
+
+    if (0 < Object.keys(errors)) {
+        model = {
+            failedValidation: true,
+            errors: errors
+        }
+        res.render('edit-author.hbs', model)
+    } else {
+        db.editAuthor(body)
+        res.render("edit-author.hbs")
+    }
+})
+
+
+
+
+
 
 // ---------------------------------------
 
