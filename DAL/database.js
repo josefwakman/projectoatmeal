@@ -269,7 +269,16 @@ function addAuthor(author) {
     })
 }
 
-
+function addAdministrator(administrator) {
+    return Administrators.create({
+        firstName: administrator.firstName,
+        lastName: administrator.lastName,
+        email: administrator.email,
+        privilegies: administrator.privilegies
+    }).then(administrator => {
+        return administrator
+    })
+}
 
 
 
@@ -334,6 +343,7 @@ function editAuthor(newValues) {
 
 
 
+
 // ---- EXPORTS ---------
 
 exports.getAuthor = getAuthor
@@ -352,3 +362,5 @@ exports.addAuthor = addAuthor
 
 exports.editBook = editBook
 exports.editAuthor = editAuthor
+
+exports.addAdministrator = addAdministrator

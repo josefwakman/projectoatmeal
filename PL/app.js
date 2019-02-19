@@ -223,11 +223,32 @@ app.get('/administrators', function (req, res) {
     res.render("administrators.hbs", model)
 })
 
+
+
 app.get('/administrator/:id', (req, res) => {
     foundAdmin = administrators.filter((admin) => {
         return admin.id == req.params.id
     })
     res.render("administrator.hbs", foundAdmin[0])
+})
+
+app.post('/administrator', (req, res) => {
+    let model = {}
+
+    const body = req.body
+    const errors = validation.validateAdministrator(body)
+
+    if (0 < Object.keys(errors).length) {
+        console.log("Errors: " + JSON.stringify(errors));
+        
+        model.errors = errors
+        model.postError = true
+        res.render("administrator.hbs", model)
+    } else {
+        console.log("Adding administrator");
+        db.addAdministrator(body)
+        res.render("administrator.hbs")
+    }
 })
 
 app.get('/edit-administrator/:id', (req, res) => {
