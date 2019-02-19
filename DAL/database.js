@@ -251,6 +251,56 @@ function addAuthor(author) {
 
 
 
+
+
+
+
+// ---- EDIT ---- 
+
+function editBook(newValues) {
+    console.log("newValues ser ut så här: " + JSON.stringify(newValues));
+
+    /*
+TODOD: fungerar Books.update ({
+    grej
+},
+where: {
+
+}) istället?
+    */
+
+    Books.findOne({
+        where: { ISBN: newValues.ISBN }
+    }).then(foundBook => {
+        for (key of Object.keys(newValues)) { // TODO: detta är lite fult. Kanske kan vi skicka in en array rensad från tomma fällt?
+            if (newValues[key] != "") {
+                switch (key) {
+                    case "title":
+                        foundBook.title = newValues.title
+                        break
+                    case "signID":
+                        foundBook.signID = newValues.signID
+                        break
+                    case "publicationInfo":
+                        foundBook.publicationInfo = newValues.publicationInfo
+                        break
+                    case "publicationYear":
+                        foundBook.publicationYear = newValues.publicationYear
+                        break
+                    case "pages":
+                        foundBook.pages = newValues.pages
+                        break
+                }
+            }
+        }
+        foundBook.save().then(() => {
+            // Kanske skicka användaren till uppdaterade boken? Då ska vi returna boken
+        })
+    })
+}
+
+
+
 // ---- EXPORTS ---------
 
 exports.getAuthor = getAuthor
@@ -266,3 +316,5 @@ exports.searchAuthors = searchAuthors
 
 exports.addBook = addBook
 exports.addAuthor = addAuthor
+
+exports.editBook = editBook

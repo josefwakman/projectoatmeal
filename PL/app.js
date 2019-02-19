@@ -23,7 +23,7 @@ app.use(express.static(path.join(__dirname, '/public')))
 app.use(bodyParser.urlencoded({ extended: false }))
 
 // Vi använder routers istället för det här sen va?
-// --- GET Requests ----------
+// --- SEARCH-BOOKS ----------
 
 app.get('/', function (req, res) {
     res.render("search-books.hbs")
@@ -64,6 +64,10 @@ app.post('/search-books', (req, res) => {
     model = { searched: false }
 
     const errors = validation.validateBook(req.body)
+    const missingKeys = validation.getMissingBookKeys(req.body)
+    for (key of missingKeys) {
+        errors.push("Nothing entered as " + key)
+    }
 
     if (0 < errors.length) {
         model.errors = errors
@@ -100,6 +104,15 @@ app.post('/search-books', (req, res) => {
 
 })
 
+
+
+
+
+
+
+
+// ----- SEARCH-AUTHORS
+
 app.get('/search-authors', function (req, res) {
     model = { searched: false }
 
@@ -127,9 +140,7 @@ app.get('/search-authors', function (req, res) {
 })
 
 app.post('/search-authors', (req, res) => {
-    model = {searched: false}
-
-    console.log(req.body);
+    let model = {searched: false}
     
     const errors = validation.validateAuthor(req.body)
 
@@ -255,8 +266,9 @@ app.get('/book/:ISBN', (req, res) => {
     })
 })
 
-app.get('/edit-book/:ISBN', (req, res) => {
 
+
+app.get('/edit-book/:ISBN', (req, res) => {
     const isbn = req.params.ISBN
     const book = db.getBook(isbn)
 
@@ -266,6 +278,28 @@ app.get('/edit-book/:ISBN', (req, res) => {
 
     res.render("edit-book.hbs", model)
 })
+
+app.post('/edit-book', (req, res) => {
+    // const errors = validation.validateBook(req.body)
+    const body = removeEmptyValues(req.body)
+    const errors = validation.validateBook(body)
+
+    if (0 < Object.keys(errors)) {
+        model = { 
+            failedValidation: true,
+            errors: errors
+        }
+        res.render('edit-book.hbs', model)
+    } else {
+        db.editBook(body)
+        res.render("edit-book.hbs")
+    }
+})
+
+
+
+
+
 
 app.get('/author/:id', (req, res) => {
     const id = req.params.id
@@ -295,5 +329,17 @@ app.get('/edit-author/:id', (req, res) => {
 })
 
 // ---------------------------------------
+
+function removeEmptyValues(arr) {
+    let newObject = {}
+    for (key of Object.keys(arr)) {
+        if (!arr[key] == "") {
+            newObject[key] = arr[key]
+        }
+    }
+    return newObject
+}
+
+// -----------------
 
 app.listen(8080)
