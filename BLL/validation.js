@@ -3,6 +3,23 @@ const privilegies = Object.freeze({
     "superAdmin": 2
 })
 
+const validBookKeys = [
+    "ISBN",
+    "title",
+    "signID",
+    "publicationYear",
+    "publicationCity",
+    "publicationCompany",
+    "pages"
+]
+
+const validAuthorKeys = [
+    "ID",
+    "firstName",
+    "lastName",
+    "birthYear"
+]
+
 
 // Returns an array of errors. If there are no error, the array is empty
 function validateBook(book) {
@@ -66,6 +83,17 @@ function validateBook(book) {
     return errors
 }
 
+function getMissingBookKeys(book) {
+    const keysInBook = Object.keys(book)
+    let missingKeys = []
+    for (keyToCheck of validBookKeys) {
+        if (!keysInBook.includes(keyToCheck)) {
+            missingKeys.push(keyToCheck)
+        }
+    }
+    return missingKeys
+}
+
 
 
 function validateAuthor(author) {
@@ -118,4 +146,6 @@ function TODOvalidateAdministrator(admin) {
 // --- EXPORTS ---------------
 
 exports.validateBook = validateBook
+exports.getMissingBookKeys = getMissingBookKeys
+
 exports.validateAuthor = validateAuthor

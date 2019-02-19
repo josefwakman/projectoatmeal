@@ -64,6 +64,10 @@ app.post('/search-books', (req, res) => {
     model = { searched: false }
 
     const errors = validation.validateBook(req.body)
+    const missingKeys = validation.getMissingBookKeys(req.body)
+    for (key of missingKeys) {
+        errors.push("Nothing entered as " + key)
+    }
 
     if (0 < errors.length) {
         model.errors = errors
