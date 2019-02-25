@@ -37,7 +37,8 @@ const Authors = sequelize.define("Author", {
         type: Sequelize.STRING
     },
     birthYear: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        validate: { min: 0, max: new Date().getFullYear }
     }
 })
 
@@ -76,13 +77,15 @@ const Books = sequelize.define("Books", {
         type: Sequelize.INTEGER
     },
     publicationYear: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        validate: { min: 0, max: new Date().getFullYear }
     },
     publicationInfo: {
         type: Sequelize.STRING
     },
     pages: {
-        type: Sequelize.SMALLINT
+        type: Sequelize.SMALLINT,
+        validate: { min: 1 }
     }
 })
 
