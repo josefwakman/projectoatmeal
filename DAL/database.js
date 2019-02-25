@@ -21,7 +21,7 @@ sequelize
 const Op = Sequelize.Op
 
 //Sequelize database models
-const Authors = sequelize.define("Author", {
+const Authors = sequelize.define("Authors", {
 
     // !!! fungerar det att skriva firstname: Sequelize.STRING istället? 
 
@@ -44,11 +44,19 @@ const Authors = sequelize.define("Author", {
 
 const BookAuthors = sequelize.define("BookAuthors", {
     bookISBN: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        references: {
+            model: "Books",
+            key: "ISBN"
+        }
     },
     authorID: {
         type: Sequelize.INTEGER,
-        primaryKey: true
+        primaryKey: true,
+        references: {
+            model: "Authors",
+            key: "id"
+        }
     }
 })
 
@@ -280,6 +288,8 @@ function addAdministrator(administrator) {
         privilegies: administrator.privilegies
     }).then(administrator => {
         return administrator
+    }).catch(err => {
+        console.error(err);
     })
 }
 

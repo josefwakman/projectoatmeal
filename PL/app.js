@@ -218,7 +218,8 @@ app.get('/search-classifications', (req, res) => {
 
 app.get('/administrators', function (req, res) {
     model = {
-        administrators: administrators
+        administrators: administrators,
+        privilegies: { 1:"admin", 2:"super admin"}
     }
     res.render("administrators.hbs", model)
 })
@@ -232,11 +233,13 @@ app.get('/administrator/:id', (req, res) => {
     res.render("administrator.hbs", foundAdmin[0])
 })
 
-app.post('/administrator', (req, res) => {
+app.post('/administrators', (req, res) => {
     let model = {}
 
     const body = req.body
     const errors = validation.validateAdministrator(body)
+    console.log("Body: " + JSON.stringify(body));
+    
 
     if (0 < Object.keys(errors).length) {
         console.log("Errors: " + JSON.stringify(errors));
@@ -246,8 +249,16 @@ app.post('/administrator', (req, res) => {
         res.render("administrator.hbs", model)
     } else {
         console.log("Adding administrator");
-        db.addAdministrator(body)
-        res.render("administrator.hbs")
+        db.addAdministrator(body).then(administrator => {
+            model = {
+                firstName: administrator.firstName,
+                lastName: administrator.lastName,
+                email: administrator.email,
+                privilegies: administrator.privilegies
+            }
+            res.render("administrator.hbs", model)
+        })
+        
     }
 })
 
