@@ -1,6 +1,6 @@
 <h2>Search Authors</h2>
 
-<form id="create-author-form" action="/search-authors" method="post" autocomplete="off" class="create-author-form">
+<form id="create-author-form" action="/authors" method="post" autocomplete="off" class="create-author-form">
     <div class="form-group create-author-div">
         <input type="text" placeholder="First name" class="form-control" name="firstName">
         <input type="text" placeholder="Last name" class="form-control" name="lastName">
@@ -29,7 +29,7 @@
                 {{#each authors}}
                 <tr>
                     <td>{{this.id}}</td>
-                    <td><a href="/author/{{this.id}}">{{this.name}}</a></td>
+                    <td><a href="/authors/{{this.id}}">{{this.name}}</a></td>
                 </tr>
                 {{/each}}
             {{/if}}
