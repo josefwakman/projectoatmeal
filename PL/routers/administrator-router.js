@@ -1,5 +1,5 @@
 const express = require("express")
-const dbAdministrators = require("../../DAL/administrator-repository")
+const administratorManager = require("../../BLL/administrator-manager")
 const validation = require("../../BLL/validation.js")
 
 const router = express.Router()
@@ -49,26 +49,21 @@ router.get('/:id', (req, res) => {
 
 router.post('/', (req, res) => {
     let model = {}
-
     const body = req.body
-    const errors = validation.validateAdministrator(body)
 
-    if (0 < Object.keys(errors).length) {
-        model.errors = errors
-        model.postError = true
+    administratorManager.addAdministrator(body).then(administrator => {
+        model = {
+            firstName: administrator.firstName,
+            lastName: administrator.lastName,
+            email: administrator.email,
+            privilegies: administrator.privilegies
+        }
         res.render("administrator.hbs", model)
-    } else {
-        dbAdministrators.addAdministrator(body).then(administrator => {
-            model = {
-                firstName: administrator.firstName,
-                lastName: administrator.lastName,
-                email: administrator.email,
-                privilegies: administrator.privilegies
-            }
-            res.render("administrator.hbs", model)
-        })
-        
-    }
+    }).catch(error => {
+        model = {}// TODO: add stuff here
+        res.render("administrators.hbs", model)
+    })
+
 })
 
 router.get('/edit/:id', (req, res) => {

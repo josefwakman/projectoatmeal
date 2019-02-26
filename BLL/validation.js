@@ -3,6 +3,26 @@ const privilegies = Object.freeze({
     "superAdmin": 2
 })
 
+const validAdministratorKeys = [
+    "id",
+    "firstName",
+    "lastName",
+    "email",
+    "privilegies",
+    "password"
+]
+
+function getMissingAdministratorKeys(administrator) {
+    const keysInAdministrator = Object.keys(administrator)
+    let missingKeys = []
+    for (keyToCheck of validAdministratorKeys) {
+        if (!keysInAdministrator.includes(keyToCheck)) {
+            missingKeys.push(keyToCheck)
+        }
+    }
+    return missingKeys
+}
+
 const validBookKeys = [
     "ISBN",
     "title",
@@ -122,6 +142,10 @@ function validateAuthor(author) {
     return errors
 }
 
+function validateFullAdministrator(administrator) {
+
+}
+
 function validateAdministrator(admin) {
     let errors = []
 
@@ -167,3 +191,4 @@ exports.getMissingBookKeys = getMissingBookKeys
 exports.validateAuthor = validateAuthor
 
 exports.validateAdministrator = validateAdministrator
+exports.getMissingAdministratorKeys = getMissingAdministratorKeys

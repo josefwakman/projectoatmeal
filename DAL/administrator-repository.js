@@ -10,7 +10,7 @@ function addAdministrator(administrator) {
     }).then(administrator => {
         return administrator
     }).catch(err => {
-        console.error(err);
+        return err
     })
 }
 

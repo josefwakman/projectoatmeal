@@ -6,6 +6,14 @@ const sequelize = new Sequelize("Library", "ster1666", "gustaferik", {
         timestamps: false
     }
 })
+sequelize
+    .authenticate()
+    .then(() => {
+        console.log("Connection established");
+    })
+    .catch(err => {
+        console.error("Connection failed", err)
+    })
 const Op = Sequelize.Op
 
 const Authors = sequelize.define("Authors", {
