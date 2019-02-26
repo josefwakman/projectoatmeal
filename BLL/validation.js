@@ -122,24 +122,40 @@ function validateAuthor(author) {
     return errors
 }
 
-function TODOvalidateAdministrator(admin) {
+function validateAdministrator(admin) {
     let errors = []
 
-    const validID = RegExp(/\d+/)
+    const invalidName = RegExp(/^[\d|,|.]/) // no digits, "," or "."
     const validEmail = RegExp(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/)
 
-    if (!validID.test(admin.ID)) {
-        errors.push("ID entered incorrectly. Only digits allowed.")
+    for (key of Object.keys(admin)) {
+        switch (key) {
+            case "firstName":
+                if (invalidName.test(admin.firstName)) {
+                    errors.push("First name entered incorrectly. Only letters allowed.")
+                }
+                break
+            case "lastName":
+                if (invalidName.test(admin.lastName)) {
+                    error.push("Last name entered incorrectly. Only letters allowed.")
+                }
+                break
+            case "email":
+                if (!validEmail.test(admin.email)) {
+                    errors.push("Email given is not valid")
+                }
+                break
+            case "privilegies":
+                if (Object.keys(privilegies).map(privKey => {
+                    return privilegies[privKey]
+                }).includes(admin[key])
+                ) {
+                    // woho
+                }
+                break
+        }
     }
-    if (admin.userName == "") {
-        errors.push("No username entered")
-    }
-    if (!privilegies.contains(admin.privilegies)) {
-        errors.push("No correct privilegies entered. Is it a " + privilegies[0] + " or " + privilegies[1] + "?")
-    }
-    if (!validEmail.test(admin.email)) {
-        errors.push("No valid email entered")
-    }
+    return errors
 }
 
 
@@ -149,3 +165,5 @@ exports.validateBook = validateBook
 exports.getMissingBookKeys = getMissingBookKeys
 
 exports.validateAuthor = validateAuthor
+
+exports.validateAdministrator = validateAdministrator

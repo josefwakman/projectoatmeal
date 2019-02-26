@@ -1,8 +1,23 @@
 <h2>Admin Page</h2>
 
-{{#each administrators}}
-    <a href="administrator/{{id}}">{{name}}</a><br>
-{{/each}}
+<form id="create-administrator-form" action="/administrators" method="post" autocomplete="off"
+    class="createadministrator-form">
+    <div class="form-group create-administrator-div">
+        <input type="text" placeholder="First name" class="form-control" name="firstName">
+        <input type="text" placeholder="Last Name" class="form-control" name="lastName">
+        <input type="text" placeholder="Email" class="form-control" name="email">
+        <input type="text" placeholder="Password" class="form-control" name="password">
+        <div>
+            <p>Privilegies:</p>
+            <select name="privilegies" id="privilegies-select">
+                {{#each privilegies}}
+                <option value={{@key}}>{{this}}</option>
+                {{/each}}
+            </select>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Create administrator</button>
+</form>
 
 <div class="search-books-table-div">
     <table class="table table-striped">
@@ -16,7 +31,7 @@
             {{#each administrators}}
             <tr>
                 <td>{{this.id}}</td>
-                <td>{{this.name}}</td>
+                <td><a href="administrator/{{this.id}}">{{this.name}}</a></td>
             </tr>
             {{/each}}
         </tbody>

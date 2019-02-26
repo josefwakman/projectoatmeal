@@ -21,7 +21,7 @@ sequelize
 const Op = Sequelize.Op
 
 //Sequelize database models
-const Authors = sequelize.define("Author", {
+const Authors = sequelize.define("Authors", {
 
     // !!! fungerar det att skriva firstname: Sequelize.STRING istället? 
 
@@ -37,17 +37,26 @@ const Authors = sequelize.define("Author", {
         type: Sequelize.STRING
     },
     birthYear: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        validate: { min: 0, max: new Date().getFullYear }
     }
 })
 
 const BookAuthors = sequelize.define("BookAuthors", {
     bookISBN: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        references: {
+            model: "Books",
+            key: "ISBN"
+        }
     },
     authorID: {
         type: Sequelize.INTEGER,
-        primaryKey: true
+        primaryKey: true,
+        references: {
+            model: "Authors",
+            key: "id"
+        }
     }
 })
 
@@ -76,13 +85,38 @@ const Books = sequelize.define("Books", {
         type: Sequelize.INTEGER
     },
     publicationYear: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        validate: { min: 0, max: new Date().getFullYear }
     },
     publicationInfo: {
         type: Sequelize.STRING
     },
     pages: {
-        type: Sequelize.SMALLINT
+        type: Sequelize.SMALLINT,
+        validate: { min: 1 }
+    }
+})
+
+const Administrators = sequelize.define("Administrators", {
+    id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true,
+        autoIncrement: true
+    },
+    firstName: {
+        type: Sequelize.STRING
+    },
+    lastName: {
+        type: Sequelize.STRING
+    },
+    email: {
+        type: Sequelize.STRING
+    },
+    privilegies: {
+        type: Sequelize.INTEGER
+    },
+    password: {
+        type: Sequelize.STRING
     }
 })
 
@@ -249,7 +283,19 @@ function addAuthor(author) {
     })
 }
 
-
+function addAdministrator(administrator) {
+    return Administrators.create({
+        firstName: administrator.firstName,
+        lastName: administrator.lastName,
+        email: administrator.email,
+        privilegies: administrator.privilegies,
+        password: administrator.password
+    }).then(administrator => {
+        return administrator
+    }).catch(err => {
+        console.error(err);
+    })
+}
 
 
 
@@ -314,6 +360,7 @@ function editAuthor(newValues) {
 
 
 
+
 // ---- EXPORTS ---------
 
 exports.getAuthor = getAuthor
@@ -332,3 +379,5 @@ exports.addAuthor = addAuthor
 
 exports.editBook = editBook
 exports.editAuthor = editAuthor
+
+exports.addAdministrator = addAdministrator
