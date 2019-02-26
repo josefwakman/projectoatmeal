@@ -1,5 +1,4 @@
-const {Book} = require("./models")
-
+const {Books, BookAuthors, Op} = require("./models")
 
 function findBookWithISBN(ISBN) {
     return Books.findOne({ where: { ISBN: ISBN } }).then(book => {

@@ -1,8 +1,7 @@
 const express = require("express")
-const db = require("../../DAL/database.js")
+const dbBook = require("../../DAL/book-repository")
+const dbAuthor = require("../../DAL/author-repository")
 const validation = require("../../BLL/validation")
-const expressHandlebars = require("express-handlebars")
-const bodyParser = require("body-parser")
 
 const router = express.Router()
 
@@ -11,7 +10,7 @@ router.get('/search', function (req, res) {
 
     if (0 < Object.keys(req.query).length) {
 
-        db.searchBooks(req.query.search).then(books => {
+        dbBook.findBooksWithTitle(req.query.search).then(books => {
             let foundBooks = []
             for (book of books) {
                 foundBooks.push({
@@ -51,7 +50,7 @@ router.post('/', (req, res) => {
         model.postError = true
         res.render("search-books.hbs", model)
     } else {
-        db.addBook({
+        dbBook.addBook({
             ISBN: req.body.ISBN,
             title: req.body.title,
             signID: req.body.signID,
@@ -60,7 +59,7 @@ router.post('/', (req, res) => {
             pages: req.body.pages
         }).then(book => {
             if (book) {
-                db.findAuthorsOfBook(book.ISBN).then(foundAuthors => { // TODO: denna kod är kopierad och klistrad. Kanske göra funktion? 
+                dbBook.findAuthorsOfBook(book.ISBN).then(foundAuthors => { // TODO: denna kod är kopierad och klistrad. Kanske göra funktion? 
                     const bookModel = {
                         ISBN: book.get('ISBN'),
                         title: book.get('title'),
@@ -83,9 +82,9 @@ router.post('/', (req, res) => {
 
 router.get('/:ISBN', (req, res) => {
     const ISBN = req.params.ISBN
-    db.getBook(ISBN).then(book => {
+    dbBook.findBookWithISBN(ISBN).then(book => {
         if (book) {
-            db.findAuthorsOfBook(ISBN).then(foundAuthors => { // TODO: denna kod är kopierad och klistrad. Kanske göra funktion? 
+            dbAuthor.findAuthorsWithBookISBN(ISBN).then(foundAuthors => { // TODO: denna kod är kopierad och klistrad. Kanske göra funktion? 
                 const bookModel = {
                     ISBN: book.get('ISBN'),
                     title: book.get('title'),
@@ -111,7 +110,7 @@ router.get('/:ISBN', (req, res) => {
 
 router.get('/edit/:ISBN', (req, res) => {
     const isbn = req.params.ISBN
-    const book = db.getBook(isbn)
+    const book = dbBook.findBookWithISBN(isbn)
 
     const model = {
         book: book
@@ -131,7 +130,7 @@ router.post('/edit', (req, res) => {
         }
         res.render('edit-book.hbs', model)
     } else {
-        db.editBook(body)
+        dbBook.editBook(body)
         res.render("edit-book.hbs")
     }
 })

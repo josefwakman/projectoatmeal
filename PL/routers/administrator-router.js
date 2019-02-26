@@ -1,10 +1,34 @@
 const express = require("express")
-const db = require("../../DAL/database.js")
+const dbAdministrators = require("../../DAL/administrator-repository")
 const validation = require("../../BLL/validation.js")
-const expressHandlebars = require("express-handlebars")
-const bodyParser = require("body-parser")
 
 const router = express.Router()
+
+// ---- PLACEHOLDERS - TO BE DELETED ----------------
+
+administrators = [
+    {
+        id: 1776,
+        name: "Thomas Jefferson",
+        privilegies: "admin",
+        email: "tea_party_lover@us.gov",
+    },
+    {
+        id: 1789,
+        name: "Marquis de Lafayette",
+        privilegies: "admin",
+        email: "fuckyourobespierre@merde.fr",
+    },
+    {
+        id: 1812,
+        name: "Simon Bolivar",
+        privilegies: "superadmin",
+        email: "1r0n4$$@sandomingoisnicethistimeofyear.vz",
+    }
+]
+
+// ---------------------------------------------------------------------
+
 
 router.get('/', function (req, res) {
     model = {
@@ -28,18 +52,13 @@ router.post('/', (req, res) => {
 
     const body = req.body
     const errors = validation.validateAdministrator(body)
-    console.log("Body: " + JSON.stringify(body));
-    
 
     if (0 < Object.keys(errors).length) {
-        console.log("Errors: " + JSON.stringify(errors));
-        
         model.errors = errors
         model.postError = true
         res.render("administrator.hbs", model)
     } else {
-        console.log("Adding administrator");
-        db.addAdministrator(body).then(administrator => {
+        dbAdministrators.addAdministrator(body).then(administrator => {
             model = {
                 firstName: administrator.firstName,
                 lastName: administrator.lastName,

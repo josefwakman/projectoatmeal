@@ -1,4 +1,4 @@
-const {Author, BookAuthor} = require("./models")
+const {Authors, BookAuthors, Op} = require("./models")
 
 function getAuthorWithId(id) {
     return Authors.findOne({ where: { id: id } }).then(author => {

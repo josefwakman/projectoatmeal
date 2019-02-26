@@ -1,4 +1,4 @@
-const {Administrator} = require("./models")
+const {Administrators} = require("./models")
 
 function addAdministrator(administrator) {
     return Administrators.create({

@@ -1,8 +1,7 @@
 const express = require("express")
-const db = require("../../DAL/database.js")
+const dbAuthors = require("../../DAL/author-repository")
+const dbBooks = require("../../DAL/book-repository")
 const validation = require("../../BLL/validation.js")
-const expressHandlebars = require("express-handlebars")
-const bodyParser = require("body-parser")
 
 const router = express.Router()
 
@@ -15,7 +14,7 @@ router.get('/search', function (req, res) {
     if (0 < Object.keys(req.query).length) {
 
         let foundAuthors = []
-        db.searchAuthors(req.query.search).then(authors => {
+        dbAuthors.searchAuthors(req.query.search).then(authors => {
             for (author of authors) {
                 foundAuthors.push({
                     id: author.get('id'),
@@ -45,13 +44,13 @@ router.post('/', (req, res) => {
         model.postError = true
         res.render("search-authors.hbs", model)
     } else {
-        db.addAuthor({
+        dbAuthors.addAuthor({
             firstName: req.body.firstName,
             lastName: req.body.lastName,
             birthYear: req.body.birthYear
         }).then(author => {
             if (author) {
-                db.findBooksFromAuthor(author.id).then(foundBooks => {
+                dbAuthors.findBooksFromAuthor(author.id).then(foundBooks => {
                     const model = {
                         id: author.get('id'),
                         name: author.get('firstName') + " " + author.get('lastName'),
@@ -71,16 +70,15 @@ router.post('/', (req, res) => {
 
 router.get('/:id', (req, res) => {
     const id = req.params.id
-    db.getAuthor(id).then(author => {
+    dbAuthors.getAuthor(id).then(author => {
         if (author) {
-            db.findBooksFromAuthor(id).then(foundBooks => {
+            dbAuthors.findBooksFromAuthor(id).then(foundBooks => {
                 const authorModel = {
                     id: id,
                     name: author.get('firstName') + " " + author.get('lastName'),
                     birthYear: author.get('birthYear'),
                     books: foundBooks
                 }
-                console.log("authorModel: " + JSON.stringify(authorModel));
                 res.render("author.hbs", authorModel)
             })
         } else {
@@ -98,7 +96,7 @@ router.get('/:id', (req, res) => {
 
 
 router.get('/edit/:id', (req, res) => {
-    res.render("edit-author.hbs", db.getAuthor(req.params.id))
+    res.render("edit-author.hbs", dbAuthors.getAuthor(req.params.id))
 })
 
 router.post('/edit', (req, res) => {
@@ -112,7 +110,7 @@ router.post('/edit', (req, res) => {
         }
         res.render('edit-author.hbs', model)
     } else {
-        db.editAuthor(body)
+        dbAuthors.editAuthor(body)
         res.render("edit-author.hbs")
     }
 })

@@ -6,6 +6,7 @@ const sequelize = new Sequelize("Library", "ster1666", "gustaferik", {
         timestamps: false
     }
 })
+const Op = Sequelize.Op
 
 const Authors = sequelize.define("Authors", {
 
@@ -108,6 +109,8 @@ const Administrators = sequelize.define("Administrators", {
 
 
 // ----------- Exports -----------------
+exports.Op = Op
+
 exports.Administrators = Administrators
 exports.Authors = Authors
 exports.Books = Books

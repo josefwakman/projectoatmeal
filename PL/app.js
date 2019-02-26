@@ -1,5 +1,3 @@
-const db = require("../DAL/database.js")
-const validation = require("../BLL/validation.js")
 const express = require("express")
 const expressHandlebars = require("express-handlebars")
 const bodyParser = require("body-parser")
@@ -7,6 +5,9 @@ const bodyParser = require("body-parser")
 const administratorRouter = require("./routers/administrator-router")
 const authorRouter = require("./routers/author-router")
 const bookRouter = require("./routers/book-router")
+
+const db = require("../DAL/classification-repository")
+const dbBooks = require("../DAL/book-repository")
 
 const app = express()
 
@@ -58,7 +59,7 @@ app.get('/search-classifications', (req, res) => {
                 return clas.signum == req.query.classification
             })
 
-            db.findBooksWithSignID(selectedClassification.signID).then(books => {
+            dbBooks.findBooksWithSignID(selectedClassification.signID).then(books => {
                 for (book of books) {
                     model.books.push({
                         ISBN: book.get('ISBN'),
