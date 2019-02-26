@@ -4,6 +4,10 @@ const express = require("express")
 const expressHandlebars = require("express-handlebars")
 const bodyParser = require("body-parser")
 
+const administratorRouter = require("./routers/administrator-router")
+const authorRouter = require("./routers/author-router")
+const bookRouter = require("./routers/book-router")
+
 const app = express()
 
 const path = require('path')
@@ -398,5 +402,9 @@ function removeEmptyValues(arr) {
 }
 
 // -----------------
+
+app.use("/administrators", administratorRouter)
+app.use("/authors", authorRouter)
+app.use("/books", bookRouter)
 
 app.listen(8080)
