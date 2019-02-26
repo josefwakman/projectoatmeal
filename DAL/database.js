@@ -114,6 +114,9 @@ const Administrators = sequelize.define("Administrators", {
     },
     privilegies: {
         type: Sequelize.INTEGER
+    },
+    password: {
+        type: Sequelize.STRING
     }
 })
 
@@ -285,7 +288,8 @@ function addAdministrator(administrator) {
         firstName: administrator.firstName,
         lastName: administrator.lastName,
         email: administrator.email,
-        privilegies: administrator.privilegies
+        privilegies: administrator.privilegies,
+        password: administrator.password
     }).then(administrator => {
         return administrator
     }).catch(err => {
