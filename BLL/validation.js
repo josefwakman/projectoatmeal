@@ -4,7 +4,6 @@ const privilegies = Object.freeze({
 })
 
 const validAdministratorKeys = [
-    "id",
     "firstName",
     "lastName",
     "email",
@@ -16,10 +15,14 @@ function getMissingAdministratorKeys(administrator) {
     const keysInAdministrator = Object.keys(administrator)
     let missingKeys = []
     for (keyToCheck of validAdministratorKeys) {
-        if (!keysInAdministrator.includes(keyToCheck)) {
+        console.log("Key to check: " + keyToCheck);
+        
+        if (!keysInAdministrator.includes(keyToCheck) || administrator[keyToCheck] == "") {
             missingKeys.push(keyToCheck)
         }
     }
+    console.log("MissingKeys: " + missingKeys);
+    
     return missingKeys
 }
 
@@ -175,10 +178,13 @@ function validateAdministrator(admin) {
                 }).includes(admin[key])
                 ) {
                     // woho
+                } else {
+                    errors.push("No valid privilegium given")
                 }
                 break
         }
     }
+    console.log("Errors")
     return errors
 }
 

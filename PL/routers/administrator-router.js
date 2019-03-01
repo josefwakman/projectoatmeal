@@ -33,7 +33,7 @@ administrators = [
 router.get('/', function (req, res) {
     model = {
         administrators: administrators,
-        privilegies: { 1:"admin", 2:"super admin"}
+        privilegies: { 1: "admin", 2: "super admin" }
     }
     res.render("administrators.hbs", model)
 })
@@ -50,19 +50,38 @@ router.get('/:id', (req, res) => {
 router.post('/', (req, res) => {
     let model = {}
     const body = req.body
+    
 
-    administratorManager.addAdministrator(body).then(administrator => {
-        model = {
-            firstName: administrator.firstName,
-            lastName: administrator.lastName,
-            email: administrator.email,
-            privilegies: administrator.privilegies
+    administratorManager.addAdministrator(body, (errors, administrator) => {
+
+        if (0 < errors.length) {
+            model.errors = errors
+            model.postFailed = true
+            res.render("administrators.hbs", model)
+
+        } else {
+            model = {
+                firstName: administrator.firstName,
+                lastName: administrator.lastName,
+                email: administrator.email,
+                privilegies: administrator.privilegies
+            }
+            res.render("administrator.hbs", model)
         }
-        res.render("administrator.hbs", model)
-    }).catch(error => {
-        model = {}// TODO: add stuff here
-        res.render("administrators.hbs", model)
     })
+
+    // administratorManager.addAdministrator(body).then(administrator => {
+    //     model = {
+    //         firstName: administrator.firstName,
+    //         lastName: administrator.lastName,
+    //         email: administrator.email,
+    //         privilegies: administrator.privilegies
+    //     }
+    //     res.render("administrator.hbs", model)
+    // }).catch(error => {
+    //     model = {}// TODO: add stuff here
+    //     res.render("administrators.hbs", model)
+    // })
 
 })
 
