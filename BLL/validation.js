@@ -16,13 +16,13 @@ function getMissingAdministratorKeys(administrator) {
     let missingKeys = []
     for (keyToCheck of validAdministratorKeys) {
         console.log("Key to check: " + keyToCheck);
-        
+
         if (!keysInAdministrator.includes(keyToCheck) || administrator[keyToCheck] == "") {
             missingKeys.push(keyToCheck)
         }
     }
     console.log("MissingKeys: " + missingKeys);
-    
+
     return missingKeys
 }
 
@@ -54,8 +54,7 @@ function validateBook(book) {
     const invalidCity = RegExp(/\d/)
     const validPages = RegExp(/^\d+$/)
 
-    for (key of Object.keys(book)) 
-    {
+    for (key of Object.keys(book)) {
         switch (key) {
             case "title":
                 if (book.title == "") {
@@ -145,12 +144,9 @@ function validateAuthor(author) {
     return errors
 }
 
-function validateFullAdministrator(administrator) {
-
-}
-
 function validateAdministrator(admin) {
     let errors = []
+    admin = removeEmptyValues(admin)
 
     const invalidName = RegExp(/^[\d|,|.]/) // no digits, "," or "."
     const validEmail = RegExp(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/)
@@ -173,12 +169,10 @@ function validateAdministrator(admin) {
                 }
                 break
             case "privilegies":
-                if (Object.keys(privilegies).map(privKey => {
+                if (!Object.keys(privilegies).map(privKey => {
                     return privilegies[privKey]
                 }).includes(admin[key])
-                ) {
-                    // woho
-                } else {
+                ) { 
                     errors.push("No valid privilegium given")
                 }
                 break
@@ -198,3 +192,15 @@ exports.validateAuthor = validateAuthor
 
 exports.validateAdministrator = validateAdministrator
 exports.getMissingAdministratorKeys = getMissingAdministratorKeys
+
+// --------------------------------------------
+
+function removeEmptyValues(arr) {
+    let newObject = {}
+    for (key of Object.keys(arr)) {
+        if (!arr[key] == "") {
+            newObject[key] = arr[key]
+        }
+    }
+    return newObject
+}
