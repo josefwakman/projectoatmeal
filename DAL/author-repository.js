@@ -36,6 +36,32 @@ function addAuthor(author) {
     })
 }
 
+function editAuthor(newValues) {
+    Authors.findOne({
+        where: { id: newValues.id }
+    }).then(foundAuthor => {
+        for (key of Object.keys(newValues)) {
+            switch (key) {
+                case "firstName":
+                    foundAuthor.firstName = newValues.firstName
+                    break
+                case "lastName":
+                    foundAuthor.lastName = newValues.lastName
+                    break
+                case "birthYear":
+                    foundAuthor.birthYear = newValues.birthYear
+            }
+        }
+        foundAuthor.save().then(() => {
+            // TODO: kanske skicka användaren till uppdaterade författaren?
+        }).catch(error => {
+            throw error
+        })
+    }).catch(error => {
+        throw error
+    })
+}
+
 function findAuthorsWithBookISBN(ISBN) { // returns array of authors belonging to book, even if just one
 
     return BookAuthors.findAll({
@@ -62,31 +88,6 @@ function findAuthorsWithBookISBN(ISBN) { // returns array of authors belonging t
                 })
             }
             return authorModel
-        })
-    })
-}
-
-function editAuthor(newValues) {
-    Authors.findOne({
-        where: { id: newValues.id }
-    }).then(foundAuthor => {
-        for (key of Object.keys(newValues)) {
-            switch (key) {
-                case "id":
-                    foundAuthor.id = newValues.id
-                    break
-                case "firstName":
-                    foundAuthor.firstName = newValues.firstName
-                    break
-                case "lastName":
-                    foundAuthor.lastName = newValues.lastName
-                    break
-                case "birthYear":
-                    foundAuthor.birthYear = newValues.birthYear
-            }
-        }
-        foundAuthor.save().then(() => {
-            // TODO: kanske skicka användaren till uppdaterade författaren?
         })
     })
 }

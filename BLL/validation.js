@@ -13,13 +13,6 @@ const validBookKeys = [
     "pages"
 ]
 
-const validAuthorKeys = [
-    "ID",
-    "firstName",
-    "lastName",
-    "birthYear"
-]
-
 
 // Returns an array of errors. If there are no error, the array is empty
 function validateBook(book) {
@@ -82,17 +75,6 @@ function validateBook(book) {
     return errors
 }
 
-function getMissingBookKeys(book) { // Denna behövs så att man inte kan skicka en post request som saknar fält vid create book
-    const keysInBook = Object.keys(book)
-    let missingKeys = []
-    for (keyToCheck of validBookKeys) {
-        if (!keysInBook.includes(keyToCheck)) {
-            missingKeys.push(keyToCheck)
-        }
-    }
-    return missingKeys
-}
-
 
 
 function validateAuthor(author) {
@@ -115,8 +97,6 @@ function validateAuthor(author) {
             errors.push("Birth year is after the current year, " + new Date().getFullYear() + ". Is this a time traveller?")
         }
     }
-
-    console.log("Errors: " + errors);
 
     return errors
 }
@@ -163,7 +143,6 @@ function validateAdministrator(admin) {
 // --- EXPORTS ---------------
 
 exports.validateBook = validateBook
-exports.getMissingBookKeys = getMissingBookKeys
 
 exports.validateAuthor = validateAuthor
 

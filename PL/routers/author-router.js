@@ -75,7 +75,15 @@ router.post('/', (req, res) => {
     let model = {searched: false}
 
     authorManager.addAuthor(req.body, (author, errors) => {
-        
+        if (errors) {
+            model = {
+                postFailed: true,
+                errors: errors
+            }
+            res.render("search-authors.hbs", model)
+        } else {
+            res.render("author.hbs", author)
+        }
     })
     
     // const errors = validation.validateAuthor(req.body)
@@ -109,26 +117,39 @@ router.post('/', (req, res) => {
     // }
 })
 
+router.post('/edit/id', (req, res) => {
 
+    let newValues = req.body
+    newValues.id = req.params.id
 
-router.get('/edit/:id', (req, res) => {
-    res.render("edit-author.hbs", dbAuthors.getAuthor(req.params.id))
+    authorManager.editAuthor(newValues, (author, error) => {
+        if (error) {
+            // TODO: error handling
+        } else {
+            // TODO: hämta böcker
+            res.render('author.hbs', author)
+        }
+    })
+
+    // const body = removeEmptyValues(req.body)
+    // const errors = validation.validateBook(body)
+
+    // if (0 < Object.keys(errors)) {
+    //     model = {
+    //         failedValidation: true,
+    //         errors: errors
+    //     }
+    //     res.render('edit-author.hbs', model)
+    // } else {
+    //     dbAuthors.editAuthor(body)
+    //     res.render("edit-author.hbs")
+    // }
 })
 
-router.post('/edit', (req, res) => {
-    const body = removeEmptyValues(req.body)
-    const errors = validation.validateBook(body)
-
-    if (0 < Object.keys(errors)) {
-        model = {
-            failedValidation: true,
-            errors: errors
-        }
-        res.render('edit-author.hbs', model)
-    } else {
-        dbAuthors.editAuthor(body)
-        res.render("edit-author.hbs")
-    }
+router.get('/edit/:id', (req, res) => {
+    
+    const id = req.params.id
+    res.render("edit-author.hbs", id)
 })
 
 module.exports = router
