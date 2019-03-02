@@ -14,4 +14,15 @@ function addAdministrator(administrator) {
     })
 }
 
+function getAdministratorWithID(id) {
+    return Administrators.findOne({
+        where: { id: id }
+    }).then(administrator => {
+        return administrator
+    }).catch(error => {
+        throw error
+    })
+}
+
 exports.addAdministrator = addAdministrator
+exports.getAdministratorWithID = getAdministratorWithID

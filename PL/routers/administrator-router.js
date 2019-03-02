@@ -41,11 +41,21 @@ router.get('/', function (req, res) {
 
 
 router.get('/:id', (req, res) => {
-    foundAdmin = administrators.filter((admin) => {
-        return admin.id == req.params.id
+    administrator = administratorManager.getAdministratorWithId(id, (administrator, error) => {
+        if (error) {
+            // show error message
+        } else {
+            res.render("administrator.hbs", administrator)
+        }
     })
-    res.render("administrator.hbs", foundAdmin[0])
 })
+
+// router.get('/:id', (req, res) => {
+//     foundAdmin = administrators.filter((admin) => {
+//         return admin.id == req.params.id
+//     })
+//     res.render("administrator.hbs", foundAdmin[0])
+// })
 
 router.post('/', (req, res) => {
     let model = {}
