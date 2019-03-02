@@ -1,6 +1,5 @@
 const express = require("express")
-const dbAuthors = require("../../DAL/author-repository")
-const dbBooks = require("../../DAL/book-repository")
+const authorRepository = require("../../DAL/author-repository")
 const validation = require("../../BLL/validation.js")
 
 const router = express.Router()
@@ -13,22 +12,43 @@ router.get('/search', function (req, res) {
 
     if (0 < Object.keys(req.query).length) {
 
-        let foundAuthors = []
-        dbAuthors.searchAuthors(req.query.search).then(authors => {
-            for (author of authors) {
-                foundAuthors.push({
-                    id: author.get('id'),
-                    name: author.get('firstName') + " " + author.get('lastName'),
-                    birthYear: author.get('birthYear')
-                })
+        authorRepository.findAuthorsWithName(req.params.search, (foundAuthors, error) => {
+            if (error) {
+                // TODO: error handling
+            } else {
+                let authors = []
+                for (author of foundAuthors) {
+                    authors.push({
+                        id: author.get('id'),
+                        firstName: author.get('firstName'),
+                        lastName: author.get('lastName'),
+                        birthYear: author.get('birthYear')
+                    })
+                }
+                model = {
+                    searched: true,
+                    authors: authors
+                }
+                res.render("search-authors.hbs", model)
             }
-
-            model = {
-                searched: true,
-                authors: foundAuthors
-            }
-            res.render("search-authors.hbs", model)
         })
+
+        // let foundAuthors = []
+        // dbAuthors.searchAuthors(req.query.search).then(authors => {
+        //     for (author of authors) {
+        //         foundAuthors.push({
+        //             id: author.get('id'),
+        //             name: author.get('firstName') + " " + author.get('lastName'),
+        //             birthYear: author.get('birthYear')
+        //         })
+        //     }
+
+        //     model = {
+        //         searched: true,
+        //         authors: foundAuthors
+        //     }
+        //     res.render("search-authors.hbs", model)
+        // })
     } else {
         res.render("search-authors.hbs", model)
     }

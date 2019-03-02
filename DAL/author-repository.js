@@ -1,5 +1,21 @@
 const {Authors, BookAuthors, Op} = require("./models")
 
+function findAuthorsWithName(string) {
+    return Authors.findAll({
+        // TODO: lägg till limit: (nummer)?
+        where: {
+            [Op.or]: [
+                { firstName: { [Op.like]: "%" + string + "%" } },
+                { lastName: { [Op.like]: "%" + string + "%" } }
+            ]
+        }
+    }).then(foundAuthors => {
+        return foundAuthors
+    }).catch(error => {
+        throw error
+    })
+}
+
 function getAuthorWithId(id) {
     return Authors.findOne({ where: { id: id } }).then(author => {
         return author
@@ -33,21 +49,6 @@ function findAuthorsWithBookISBN(ISBN) { // returns array of authors belonging t
             }
             return authorModel
         })
-    })
-}
-
-function findAuthorsWithName(query) {
-
-    return Authors.findAll({
-        // TODO: lägg till limit: (nummer)?
-        where: {
-            [Op.or]: [
-                { firstName: { [Op.like]: "%" + query + "%" } },
-                { lastName: { [Op.like]: "%" + query + "%" } }
-            ]
-        }
-    }).then(foundAuthors => {
-        return foundAuthors
     })
 }
 
@@ -88,10 +89,9 @@ function editAuthor(newValues) {
 
 // ----- Exports --------------
 
-exports.getAuthorWithId = getAuthorWithId
-
-exports.findAuthorsWithBookISBN = findAuthorsWithBookISBN
 exports.findAuthorsWithName = findAuthorsWithName
+exports.getAuthorWithId = getAuthorWithId
+exports.findAuthorsWithBookISBN = findAuthorsWithBookISBN
 
 exports.addAuthor = addAuthor
 exports.editAuthor = editAuthor
