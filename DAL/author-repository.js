@@ -19,6 +19,20 @@ function findAuthorsWithName(string) {
 function getAuthorWithId(id) {
     return Authors.findOne({ where: { id: id } }).then(author => {
         return author
+    }).catch(error => {
+        throw error
+    })
+}
+
+function addAuthor(author) {
+    return Authors.create({
+        firstName: author.firstName,
+        lastName: author.lastName,
+        birthYear: author.birthYear
+    }).then(author => {
+        return author
+    }).catch(error => {
+        throw error
     })
 }
 
@@ -49,16 +63,6 @@ function findAuthorsWithBookISBN(ISBN) { // returns array of authors belonging t
             }
             return authorModel
         })
-    })
-}
-
-function addAuthor(author) {
-    return Authors.create({
-        firstName: author.firstName,
-        lastName: author.lastName,
-        birthYear: author.birthYear
-    }).then(author => {
-        return author
     })
 }
 

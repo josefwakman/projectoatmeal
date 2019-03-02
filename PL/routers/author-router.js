@@ -1,6 +1,5 @@
 const express = require("express")
-const authorRepository = require("../../DAL/author-repository")
-const validation = require("../../BLL/validation.js")
+const authorManager = require("../../BLL/author-manager")
 
 const router = express.Router()
 
@@ -12,7 +11,7 @@ router.get('/search', function (req, res) {
 
     if (0 < Object.keys(req.query).length) {
 
-        authorRepository.findAuthorsWithName(req.params.search, (foundAuthors, error) => {
+        authorManager.findAuthorsWithName(req.params.search, (foundAuthors, error) => {
             if (error) {
                 // TODO: error handling
             } else {
@@ -32,86 +31,83 @@ router.get('/search', function (req, res) {
                 res.render("search-authors.hbs", model)
             }
         })
-
-        // let foundAuthors = []
-        // dbAuthors.searchAuthors(req.query.search).then(authors => {
-        //     for (author of authors) {
-        //         foundAuthors.push({
-        //             id: author.get('id'),
-        //             name: author.get('firstName') + " " + author.get('lastName'),
-        //             birthYear: author.get('birthYear')
-        //         })
-        //     }
-
-        //     model = {
-        //         searched: true,
-        //         authors: foundAuthors
-        //     }
-        //     res.render("search-authors.hbs", model)
-        // })
     } else {
         res.render("search-authors.hbs", model)
-    }
-})
-
-router.post('/', (req, res) => {
-    let model = {searched: false}
-    
-    const errors = validation.validateAuthor(req.body)
-
-    if (0 < errors.length) {
-        model.errors = errors
-        model.postError = true
-        res.render("search-authors.hbs", model)
-    } else {
-        dbAuthors.addAuthor({
-            firstName: req.body.firstName,
-            lastName: req.body.lastName,
-            birthYear: req.body.birthYear
-        }).then(author => {
-            if (author) {
-                dbAuthors.findBooksFromAuthor(author.id).then(foundBooks => {
-                    const model = {
-                        id: author.get('id'),
-                        name: author.get('firstName') + " " + author.get('lastName'),
-                        birthYear: author.get('birthYear'),
-                        books: foundBooks
-                    }
-                    res.render("author.hbs", model)
-                })
-            } else {
-
-                model = {addAuthorFailute: true}
-                res.render("author.hbs", model)
-            }
-        })
     }
 })
 
 router.get('/:id', (req, res) => {
+    
     const id = req.params.id
-    dbAuthors.getAuthor(id).then(author => {
-        if (author) {
-            dbAuthors.findBooksFromAuthor(id).then(foundBooks => {
-                const authorModel = {
-                    id: id,
-                    name: author.get('firstName') + " " + author.get('lastName'),
-                    birthYear: author.get('birthYear'),
-                    books: foundBooks
-                }
-                res.render("author.hbs", authorModel)
-            })
+    authorManager.getAuthorWithId(id, (author, error) => {
+        if (error) {
+            model = {
+                getFailed: true,
+                error: error
+            }
+            res.render("author.hbs", model)
         } else {
-            console.log("author är null!");
-            res.render("author.hbs")
+            // TODO: hämta böcker 
+            res.render("author.hbs", author)
         }
-
-
     })
+    
+    // const id = req.params.id
+    // dbAuthors.getAuthor(id).then(author => {
+    //     if (author) {
+    //         dbAuthors.findBooksFromAuthor(id).then(foundBooks => {
+    //             const authorModel = {
+    //                 id: id,
+    //                 name: author.get('firstName') + " " + author.get('lastName'),
+    //                 birthYear: author.get('birthYear'),
+    //                 books: foundBooks
+    //             }
+    //             res.render("author.hbs", authorModel)
+    //         })
+    //     } else {
+    //         console.log("author är null!");
+    //         res.render("author.hbs")
+    //     }
+    // })
 })
 
+router.post('/', (req, res) => {
+    let model = {searched: false}
 
+    authorManager.addAuthor(req.body, (author, errors) => {
+        
+    })
+    
+    // const errors = validation.validateAuthor(req.body)
 
+    // if (0 < errors.length) {
+    //     model.errors = errors
+    //     model.postError = true
+    //     res.render("search-authors.hbs", model)
+    // } else {
+    //     dbAuthors.addAuthor({
+    //         firstName: req.body.firstName,
+    //         lastName: req.body.lastName,
+    //         birthYear: req.body.birthYear
+    //     }).then(author => {
+    //         if (author) {
+    //             dbAuthors.findBooksFromAuthor(author.id).then(foundBooks => {
+    //                 const model = {
+    //                     id: author.get('id'),
+    //                     name: author.get('firstName') + " " + author.get('lastName'),
+    //                     birthYear: author.get('birthYear'),
+    //                     books: foundBooks
+    //                 }
+    //                 res.render("author.hbs", model)
+    //             })
+    //         } else {
+
+    //             model = {addAuthorFailute: true}
+    //             res.render("author.hbs", model)
+    //         }
+    //     })
+    // }
+})
 
 
 

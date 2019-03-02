@@ -1,11 +1,7 @@
 <h2>Author page</h2>
 
-<h3>{{name}}</h3>
-
-<div class="author_bio">
-    <h4>Bio</h4>
-    <p>{{bio}}</p>
-</div>
+<h3>{{firstName}} {{lastName}}</h3>
+<p>Born {{birthYear}}</p>
 
 <h4>Books:</h4>
 {{#each books}}
@@ -14,3 +10,10 @@
 
 
 <a href="/authors/edit/{{id}}">Edit</a>
+
+{{#if getFailed}}
+<div class="alert alert-warning">
+    <strong>There was an error!</strong>
+    <p>{{error}}</p>
+</div>
+{{/if}}
