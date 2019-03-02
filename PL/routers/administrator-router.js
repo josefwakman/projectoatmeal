@@ -95,11 +95,28 @@ router.post('/', (req, res) => {
 
 })
 
-router.get('/edit/:id', (req, res) => {
-    foundAdmin = administrators.filter((admin) => {
-        return admin.id == req.params.id
+router.post('/:id', (req, res) => {
+    let newValues = req.body
+    newValues.id = req.params.id
+
+    administratorManager.updateAdministrator(newValues, (administrator, errors) => {
+        if (errors) {
+            model = {
+                postFailed: true,
+                errors: errors
+            }
+            res.render("administrator.hbs", model)
+        } else {
+            res.render("administrator.hbs", administrator)
+        }
     })
-    res.render("edit-administrator.hbs", foundAdmin[0])
 })
+
+// router.get('/edit/:id', (req, res) => {
+//     foundAdmin = administrators.filter((admin) => {
+//         return admin.id == req.params.id
+//     })
+//     res.render("edit-administrator.hbs", foundAdmin[0])
+// })
 
 module.exports = router

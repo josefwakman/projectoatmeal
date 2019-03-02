@@ -31,6 +31,16 @@ function addAdministrator(administrator, callback) {
     }
 }
 
+function updateAdministrator(administrator, callback) {
+    const errors = validator.validateAdministrator(administrator)
+
+    administratorRepository.updateAdministrator(administrator).then(administrator => {
+        callback(administrator)
+    }).catch(error => {
+        callback(null, error)
+    })
+}
+
 
 function getAdministratorWithID(id, callback) {
     administratorRepository.getAdministratorWithID(id).then(administrator => {
@@ -41,4 +51,5 @@ function getAdministratorWithID(id, callback) {
 }
 
 exports.addAdministrator = addAdministrator
+exports.updateAdministrator = updateAdministrator
 exports.getAdministratorWithID = getAdministratorWithID
