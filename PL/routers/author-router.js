@@ -10,7 +10,7 @@ router.get('/search', function (req, res) {
 
     if (0 < Object.keys(req.query).length) {
 
-        authorManager.findAuthorsWithName(req.params.search, (foundAuthors, error) => {
+        authorManager.findAuthorsWithName(req.query.search, (foundAuthors, error) => {
             if (error) {
                 // TODO: error handling
             } else {
