@@ -57,7 +57,16 @@ function editAuthor(newValues, callback) {
     }
 }
 
+function findAuthorsWithBookISBN(ISBN) {
+    return authorRepository.findAuthorsWithBookISBN(ISBN).then(authors => {
+        return authors
+    }).catch(error => {
+        throw error
+    })
+}
+
 exports.findAuthorsWithName = findAuthorsWithName
 exports.getAuthorWithId = getAuthorWithId
 exports.addAuthor = addAuthor
 exports.editAuthor = editAuthor
+exports.findAuthorsWithBookISBN = findAuthorsWithBookISBN

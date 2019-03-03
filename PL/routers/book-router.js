@@ -1,6 +1,6 @@
 const express = require("express")
-const bookRepository = require("../../DAL/book-repository")
-const authorRepository = require("../../DAL/author-repository")
+const bookManager = require("../../BLL/book-manager")
+const authorManager = require("../../BLL/author-manager")
 const validation = require("../../BLL/validation")
 
 const router = express.Router()
@@ -10,7 +10,7 @@ router.get('/search', function (req, res) {
 
     if (0 < Object.keys(req.query).length) {
 
-        bookRepository.findBooksWithTitle(req.query.search).then(books => {
+        bookManager.findBooksWithTitle(req.query.search).then(books => {
             let foundBooks = []
             for (book of books) {
                 foundBooks.push({
@@ -33,6 +33,32 @@ router.get('/search', function (req, res) {
         res.render("search-books.hbs", model)
     }
 })
+
+router.get('/:ISBN', (req, res) => {
+    const ISBN = req.params.ISBN
+    bookManager.findBookWithISBN(ISBN).then(book => {
+        if (book) {
+            authorManager.findAuthorsWithBookISBN(ISBN).then(foundAuthors => { // TODO: denna kod är kopierad och klistrad. Kanske göra funktion? 
+                const model = {
+                    ISBN: book.get('ISBN'),
+                    title: book.get('title'),
+                    signID: book.get('signID'),
+                    publicationYear: book.get('publicationYear'),
+                    publicationInfo: book.get('publicationInfo'),
+                    pages: book.get('pages'),
+                    authors: foundAuthors
+                }
+                res.render("book.hbs", model)
+            })
+
+        } else {
+            console.log("No book");
+            //TODO: fix 404 page
+            res.render("book.hbs") // langa in model med no book exists?
+        }
+    })
+})
+
 
 router.post('/', (req, res) => {
     model = { searched: false }
@@ -77,33 +103,6 @@ router.post('/', (req, res) => {
     }
 
 })
-
-router.get('/:ISBN', (req, res) => {
-    const ISBN = req.params.ISBN
-    dbBook.findBookWithISBN(ISBN).then(book => {
-        if (book) {
-            dbAuthor.findAuthorsWithBookISBN(ISBN).then(foundAuthors => { // TODO: denna kod är kopierad och klistrad. Kanske göra funktion? 
-                const bookModel = {
-                    ISBN: book.get('ISBN'),
-                    title: book.get('title'),
-                    signID: book.get('signID'),
-                    publicationYear: book.get('publicationYear'),
-                    publicationInfo: book.get('publicationInfo'),
-                    pages: book.get('pages'),
-                    authors: foundAuthors
-                }
-                res.render("book.hbs", bookModel)
-            })
-
-        } else {
-            console.log("No book");
-            //TODO: fix 404 page
-            res.render("book.hbs") // langa in model med no book exists?
-        }
-    })
-})
-
-
 
 
 router.get('/edit/:ISBN', (req, res) => {
