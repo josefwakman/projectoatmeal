@@ -79,16 +79,7 @@ function findAuthorsWithBookISBN(ISBN) { // returns array of authors belonging t
                 [Op.or]: foundAuthors
             }
         }).then(authors => {
-            let authorsModel = []
-            for (author of authors) {
-                authorsModel.push({
-                    id: author.get('id'),
-                    firstName: author.get('firstName'),
-                    lastName: author.get('lastName'),
-                    birthYear: author.get('birthYear')
-                })
-            }
-            return authorsModel
+            return authors
         }).catch(error => {throw error})
     }).catch(error => {throw error})
 }

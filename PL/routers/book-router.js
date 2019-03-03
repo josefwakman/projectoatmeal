@@ -38,7 +38,17 @@ router.get('/:ISBN', (req, res) => {
     const ISBN = req.params.ISBN
     bookManager.findBookWithISBN(ISBN).then(book => {
         if (book) {
-            authorManager.findAuthorsWithBookISBN(ISBN).then(foundAuthors => { // TODO: denna kod är kopierad och klistrad. Kanske göra funktion? 
+            authorManager.findAuthorsWithBookISBN(ISBN).then(foundAuthors => { 
+                let authors = []
+                for (author of foundAuthors) {
+                    authors.push({
+                        id: author.get('id'),
+                        firstName: author.get('firstName'),
+                        lastName: author.get('lastName')
+                    })
+                }
+                console.log(authors);
+                
                 const model = {
                     ISBN: book.get('ISBN'),
                     title: book.get('title'),
@@ -46,7 +56,7 @@ router.get('/:ISBN', (req, res) => {
                     publicationYear: book.get('publicationYear'),
                     publicationInfo: book.get('publicationInfo'),
                     pages: book.get('pages'),
-                    authors: foundAuthors
+                    authors: authors
                 }
                 res.render("book.hbs", model)
             })
@@ -124,7 +134,7 @@ router.post('/', (req, res) => {
 
 router.get('/edit/:ISBN', (req, res) => {
     const ISBN = req.params.ISBN
-    bookManager.findBookWithISBN(ISBN).then(book =>{
+    bookManager.findBookWithISBN(ISBN).then(book => {
         res.render("edit-book.hbs", book)
     }).catch(() => {
         // TODO: error handling
@@ -132,20 +142,44 @@ router.get('/edit/:ISBN', (req, res) => {
 
 })
 
-router.post('/edit', (req, res) => {
-    const body = removeEmptyValues(req.body)
-    const errors = validation.validateBook(body)
+router.post('/edit/:ISBN', (req, res) => {
+    const newValues = req.body
+    newValues.ISBN = req.params.ISBN
 
-    if (0 < Object.keys(errors)) {
-        model = {
-            failedValidation: true,
-            errors: errors
+    bookManager.editBook(newValues, (errors, book) => {
+        if (errors) {
+            model = {
+                postFailed: true,
+                errors: errors
+            }
+            res.render("search-books.hbs", model)
+        } else {
+            const model = {
+                ISBN: book.get('ISBN'),
+                title: book.get('title'),
+                signID: book.get('signID'),
+                publicationYear: book.get('publicationYear'),
+                publicationInfo: book.get('publicationInfo'),
+                pages: book.get('pages'),
+            }
+            authorManager.findAuthorsWithBookISBN(book.ISBN).then(foundAuthors => {
+                let authors = []
+                for (author of foundAuthors) {
+                    authors.push({
+                        id: author.get('id'),
+                        firstName: author.get('firstName'),
+                        lastName: author.get('lastName')
+                    })
+                }
+                model.authors = authors
+                res.render("book.hbs", model)
+            }).catch(() => {
+                // TODO: error handling
+            })
         }
-        res.render('edit-book.hbs', model)
-    } else {
-        dbBook.editBook(body)
-        res.render("edit-book.hbs")
-    }
+    }).catch(() => {
+        // TODO: error handling
+    })
 })
 
 module.exports = router

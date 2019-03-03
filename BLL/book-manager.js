@@ -11,6 +11,8 @@ const validBookKeys = [
     "pages"
 ]
 
+// ------------ Functions ----------------
+
 function findBooksWithTitle(string) {
     return bookRepository.findBooksWithTitle(string).then(book => {
         return book
@@ -26,6 +28,10 @@ function findBookWithISBN(ISBN) {
         console.log("Error: " + error);
         throw "500 server error"
     })
+}
+
+function findBooksWithAuthorId(id) {
+    
 }
 
 function addBook(book, callback) {
@@ -47,6 +53,22 @@ function addBook(book, callback) {
     }
 }
 
+function editBook(book, callback) {
+    const errors = validator.validateBook(book)
+    if (errors.length > 0) {
+        callback(errors)
+    } else {
+
+        bookRepository.editBook(book).then(book => {
+            callback([], book)
+        }).catch(error => {
+            // TODO: callback("Passande felmeddelande")
+        })
+    }
+}
+
 exports.findBooksWithTitle = findBooksWithTitle
 exports.findBookWithISBN = findBookWithISBN
+exports.findBooksWithAuthorId = findBooksWithAuthorId
 exports.addBook = addBook
+exports.editBook = editBook

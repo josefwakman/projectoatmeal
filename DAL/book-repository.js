@@ -69,7 +69,7 @@ function addBook(book) {
 
 function editBook(newValues) {
 
-    Books.findOne({
+    return Books.findOne({
         where: { ISBN: newValues.ISBN }
     }).then(foundBook => {
         for (key of Object.keys(newValues)) { // TODO: detta är lite fult. Kanske kan vi skicka in en array rensad från tomma fällt?
@@ -91,9 +91,13 @@ function editBook(newValues) {
                     break
             }
         }
-        foundBook.save().then(() => {
-            // Kanske skicka användaren till uppdaterade boken? Då ska vi returna boken
+        foundBook.save().then(book => {
+            return book
+        }).catch(error => {
+            throw error
         })
+    }).catch(error => {
+        throw error
     })
 }
 

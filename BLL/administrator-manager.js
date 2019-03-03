@@ -33,12 +33,16 @@ function addAdministrator(administrator, callback) {
 
 function updateAdministrator(administrator, callback) {
     const errors = validator.validateAdministrator(administrator)
+    if (errors) {
+        callback(null, errors)
+    } else {
 
-    administratorRepository.updateAdministrator(administrator).then(administrator => {
-        callback(administrator)
-    }).catch(error => {
-        callback(null, error)
-    })
+        administratorRepository.updateAdministrator(administrator).then(administrator => {
+            callback(administrator)
+        }).catch(error => {
+            callback(null, error) // TODO: proper error handling
+        })
+    }
 }
 
 
