@@ -63,44 +63,61 @@ router.get('/:ISBN', (req, res) => {
 router.post('/', (req, res) => {
     model = { searched: false }
 
-    const errors = validation.validateBook(req.body)
-    const missingKeys = validation.getMissingBookKeys(req.body)
-    for (key of missingKeys) {
-        errors.push("Nothing entered as " + key)
-    }
+    bookManager.addBook(req.body, (book, errors) => {
+        if (errors) {
+            model.errors = errors
+            model.postError = true
+            res.render("search-books.hbs", model)
+        } else {
+            authorManager.findAuthorsWithBookISBN(book.ISBN).then(foundAuthors => {
+                const model = {
+                    ISBN: book.get('ISBN'),
+                    title: book.get('title'),
+                    signID: book.get('signID'),
+                    publicationYear: book.get('publicationYear'),
+                    publicationInfo: book.get('publicationInfo'),
+                    pages: book.get('pages'),
+                    authors: foundAuthors
+                }
+                res.render("book.hbs", model)
+            }).catch(() => {
+                // TODO: error handling. Kanske render book.hbs, men med ruta att authors could not be found (500)?
+            })
+        }
+    })
 
-    if (0 < errors.length) {
-        model.errors = errors
-        model.postError = true
-        res.render("search-books.hbs", model)
-    } else {
-        dbBook.addBook({
-            ISBN: req.body.ISBN,
-            title: req.body.title,
-            signID: req.body.signID,
-            publicationYear: req.body.publicationYear,
-            publicationInfo: req.body.publicationCity + " : " + req.body.publicationCompany + ", " + req.body.publicationYear,
-            pages: req.body.pages
-        }).then(book => {
-            if (book) {
-                dbBook.findAuthorsOfBook(book.ISBN).then(foundAuthors => { // TODO: denna kod är kopierad och klistrad. Kanske göra funktion? 
-                    const bookModel = {
-                        ISBN: book.get('ISBN'),
-                        title: book.get('title'),
-                        signID: book.get('signID'),
-                        publicationYear: book.get('publicationYear'),
-                        publicationInfo: book.get('publicationInfo'),
-                        pages: book.get('pages'),
-                        authors: foundAuthors
-                    }
-                    res.render("book.hbs", bookModel)
-                })
-            } else {
-                model = {addBookFailure: true}
-                res.render("books.hbs", model)
-            }
-        })
-    }
+    // if (0 < errors.length) {
+    //     model.errors = errors
+    //     model.postError = true
+    //     res.render("search-books.hbs", model)
+    // } else {
+    //     dbBook.addBook({
+    //         ISBN: req.body.ISBN,
+    //         title: req.body.title,
+    //         signID: req.body.signID,
+    //         publicationYear: req.body.publicationYear,
+    //         publicationInfo: req.body.publicationCity + " : " + req.body.publicationCompany + ", " + req.body.publicationYear,
+    //         pages: req.body.pages
+    //     }).then(book => {
+    //         if (book) {
+    //             dbBook.findAuthorsOfBook(book.ISBN).then(foundAuthors => { // TODO: denna kod är kopierad och klistrad. Kanske göra funktion? 
+    //                 const bookModel = {
+    //                     ISBN: book.get('ISBN'),
+    //                     title: book.get('title'),
+    //                     signID: book.get('signID'),
+    //                     publicationYear: book.get('publicationYear'),
+    //                     publicationInfo: book.get('publicationInfo'),
+    //                     pages: book.get('pages'),
+    //                     authors: foundAuthors
+    //                 }
+    //                 res.render("book.hbs", bookModel)
+    //             })
+    //         } else {
+    //             model = {addBookFailure: true}
+    //             res.render("books.hbs", model)
+    //         }
+    //     })
+    // }
 
 })
 
@@ -121,7 +138,7 @@ router.post('/edit', (req, res) => {
     const errors = validation.validateBook(body)
 
     if (0 < Object.keys(errors)) {
-        model = { 
+        model = {
             failedValidation: true,
             errors: errors
         }

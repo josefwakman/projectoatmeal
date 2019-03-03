@@ -3,26 +3,18 @@ const privilegies = Object.freeze({
     "superAdmin": 2
 })
 
-const validBookKeys = [
-    "ISBN",
-    "title",
-    "signID",
-    "publicationYear",
-    "publicationCity",
-    "publicationCompany",
-    "pages"
-]
-
 
 // Returns an array of errors. If there are no error, the array is empty
 function validateBook(book) {
-    let errors = []
+    book = removeEmptyValues(book)
 
-    const validISBN = RegExp(/^\d{1,10}$/)
+    const validISBN = RegExp(/^\d{1,10}$/) // TODO: lägg in så att man kan ha X på slutet och 13 tecken
     const validSignID = RegExp(/^\d+$/)
     const validYearFormat = RegExp(/^\d{4}$/)
     const invalidCity = RegExp(/\d/)
     const validPages = RegExp(/^\d+$/)
+
+    let errors = []
 
     for (key of Object.keys(book)) {
         switch (key) {
@@ -64,7 +56,7 @@ function validateBook(book) {
                 break
             case "pages":
                 if (!validPages.test(book.pages)) {
-                    errors.push("Number of pages entered incorrectly. Only numbers allowed")
+                    errors.push("Number of pages entered incorrectly. Only positive numbers allowed")
                 }
                 break
             default:
@@ -162,7 +154,8 @@ function removeEmptyValues(arr) {
     return newObject
 }
 
-function getMissingKeys(givenKeys, requiredKeys) {
+function getMissingKeys(object, requiredKeys) {
+    const givenKeys = Object.keys(object)
     let missingKeys = []
 
     for (requiredKey of requiredKeys) {

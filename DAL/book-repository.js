@@ -18,13 +18,6 @@ function findBookWithISBN(ISBN) {
     })
 }
 
-
-function findBooksWithSignID(signID) {
-    return Books.findAll({
-        where: { signID: signID }
-    })
-}
-
 function findBooksWithAuthorID(authorID) {
 
     return BookAuthors.findAll({
@@ -69,6 +62,8 @@ function addBook(book) {
         pages: book.pages
     }).then(book => {
         return book
+    }).catch(error => {
+        throw error
     })
 }
 
@@ -99,6 +94,12 @@ function editBook(newValues) {
         foundBook.save().then(() => {
             // Kanske skicka användaren till uppdaterade boken? Då ska vi returna boken
         })
+    })
+}
+
+function findBooksWithSignID(signID) {
+    return Books.findAll({
+        where: { signID: signID }
     })
 }
 
