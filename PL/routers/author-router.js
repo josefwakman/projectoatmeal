@@ -4,8 +4,6 @@ const authorManager = require("../../BLL/author-manager")
 const router = express.Router()
 
 
-// ----- SEARCH-AUTHORS
-
 router.get('/search', function (req, res) {
     model = { searched: false }
 

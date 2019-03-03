@@ -1,8 +1,20 @@
 const {Books, BookAuthors, Op} = require("./models")
 
+
+function findBooksWithTitle(query) {
+    return Books.findAll({
+        // TODO: lägg till limit: (nummer)? Så vi inte får för många böcker tillbaka
+        where: { title: { [Op.like]: "%" + query + "%" } }
+    }).then(foundBooks => {
+        return foundBooks
+    })
+}
+
 function findBookWithISBN(ISBN) {
     return Books.findOne({ where: { ISBN: ISBN } }).then(book => {
         return book
+    }).catch(error => {
+        throw error
     })
 }
 
@@ -43,16 +55,6 @@ function findBooksWithAuthorID(authorID) {
             }
             return booksModel
         })
-    })
-}
-
-
-function findBooksWithTitle(query) {
-    return Books.findAll({
-        // TODO: lägg till limit: (nummer)?
-        where: { title: { [Op.like]: "%" + query + "%" } }
-    }).then(foundBooks => {
-        return foundBooks
     })
 }
 

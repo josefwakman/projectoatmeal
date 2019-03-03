@@ -1,6 +1,6 @@
 const express = require("express")
-const dbBook = require("../../DAL/book-repository")
-const dbAuthor = require("../../DAL/author-repository")
+const bookRepository = require("../../DAL/book-repository")
+const authorRepository = require("../../DAL/author-repository")
 const validation = require("../../BLL/validation")
 
 const router = express.Router()
@@ -10,7 +10,7 @@ router.get('/search', function (req, res) {
 
     if (0 < Object.keys(req.query).length) {
 
-        dbBook.findBooksWithTitle(req.query.search).then(books => {
+        bookRepository.findBooksWithTitle(req.query.search).then(books => {
             let foundBooks = []
             for (book of books) {
                 foundBooks.push({
@@ -24,12 +24,10 @@ router.get('/search', function (req, res) {
             }
             model = {
                 searched: true,
-                books: foundBooks,
-                currentYear: new Date().getFullYear
+                books: foundBooks
             }
             res.render("search-books.hbs", model)
         })
-
 
     } else {
         res.render("search-books.hbs", model)
