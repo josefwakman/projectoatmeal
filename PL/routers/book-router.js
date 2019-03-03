@@ -123,14 +123,13 @@ router.post('/', (req, res) => {
 
 
 router.get('/edit/:ISBN', (req, res) => {
-    const isbn = req.params.ISBN
-    const book = dbBook.findBookWithISBN(isbn)
+    const ISBN = req.params.ISBN
+    bookManager.findBookWithISBN(ISBN).then(book =>{
+        res.render("edit-book.hbs", book)
+    }).catch(() => {
+        // TODO: error handling
+    })
 
-    const model = {
-        book: book
-    }
-
-    res.render("edit-book.hbs", model)
 })
 
 router.post('/edit', (req, res) => {
