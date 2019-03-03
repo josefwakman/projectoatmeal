@@ -35,7 +35,7 @@ router.get('/search', function (req, res) {
 })
 
 router.get('/:id', (req, res) => {
-    
+
     const id = req.params.id
     authorManager.getAuthorWithId(id, (author, error) => {
         if (error) {
@@ -46,10 +46,17 @@ router.get('/:id', (req, res) => {
             res.render("author.hbs", model)
         } else {
             // TODO: hämta böcker 
+            author = {
+                id: author.get('id'),
+                firstName: author.get('firstName'),
+                lastName: author.get('lastName'),
+                birthYear: author.get('birthYear')
+                // books: books
+            }
             res.render("author.hbs", author)
         }
     })
-    
+
     // const id = req.params.id
     // dbAuthors.getAuthor(id).then(author => {
     //     if (author) {
@@ -70,7 +77,7 @@ router.get('/:id', (req, res) => {
 })
 
 router.post('/', (req, res) => {
-    let model = {searched: false}
+    let model = { searched: false }
 
     authorManager.addAuthor(req.body, (author, errors) => {
         if (errors) {
@@ -83,7 +90,7 @@ router.post('/', (req, res) => {
             res.render("author.hbs", author)
         }
     })
-    
+
     // const errors = validation.validateAuthor(req.body)
 
     // if (0 < errors.length) {
@@ -145,7 +152,7 @@ router.post('/edit/id', (req, res) => {
 })
 
 router.get('/edit/:id', (req, res) => {
-    
+
     const id = req.params.id
     res.render("edit-author.hbs", id)
 })
