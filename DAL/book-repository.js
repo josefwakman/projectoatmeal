@@ -18,10 +18,10 @@ function findBookWithISBN(ISBN) {
     })
 }
 
-function findBooksWithAuthorID(authorID) {
+function findBooksWithAuthorId(id) {
 
     return BookAuthors.findAll({
-        where: { authorID: authorID }
+        where: { authorID: id }
     }).then(bookAuthors => {
         let foundBooks = []
         for (bookAuthor of bookAuthors) {
@@ -35,19 +35,12 @@ function findBooksWithAuthorID(authorID) {
                 [Op.or]: foundBooks
             }
         }).then(books => {
-            let booksModel = []
-            for (book of books) {
-                booksModel.push({
-                    ISBN: book.get('ISBN'),
-                    title: book.get('title'),
-                    signID: book.get('signID'),
-                    publicationYear: book.get('publicationYear'),
-                    publicationInfo: book.get('publicationInfo'),
-                    pages: book.get('pages')
-                })
-            }
-            return booksModel
+            return books
+        }).catch(error => {
+            throw error
         })
+    }).catch(error => {
+        throw error 
     })
 }
 
@@ -101,17 +94,17 @@ function editBook(newValues) {
     })
 }
 
-function findBooksWithSignID(signID) {
+function findBooksWithSignId(signId) {
     return Books.findAll({
-        where: { signID: signID }
+        where: { signID: signId }
     })
 }
 
 // ------------ Exports -----------------
 
 exports.findBookWithISBN = findBookWithISBN
-exports.findBooksWithSignID = findBooksWithSignID
-exports.findBooksWithAuthorID = findBooksWithAuthorID
+exports.findBooksWithSignId = findBooksWithSignId
+exports.findBooksWithAuthorId = findBooksWithAuthorId
 exports.findBooksWithTitle = findBooksWithTitle
 exports.addBook = addBook
 exports.editBook = editBook

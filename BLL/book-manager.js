@@ -31,7 +31,12 @@ function findBookWithISBN(ISBN) {
 }
 
 function findBooksWithAuthorId(id) {
-    
+
+    return bookRepository.findBooksWithAuthorId(id).then(books => {
+        return books
+    }).catch(error => {
+        throw error
+    })
 }
 
 function addBook(book, callback) {

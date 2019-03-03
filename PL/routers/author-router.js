@@ -1,5 +1,6 @@
 const express = require("express")
 const authorManager = require("../../BLL/author-manager")
+const bookManager = require("../../BLL/book-manager")
 
 const router = express.Router()
 
@@ -45,15 +46,31 @@ router.get('/:id', (req, res) => {
             }
             res.render("author.hbs", model)
         } else {
-            // TODO: hämta böcker 
-            author = {
-                id: author.get('id'),
-                firstName: author.get('firstName'),
-                lastName: author.get('lastName'),
-                birthYear: author.get('birthYear')
-                // books: books
-            }
-            res.render("author.hbs", author)
+
+            bookManager.findBooksWithAuthorId(id).then(foundBooks => {
+                let books = []
+                for (book of foundBooks) {
+                    books.push({
+                        ISBN: book.get('ISBN'),
+                        title: book.get('title'),
+                        signID: book.get('signID'),
+                        publicationYear: book.get('publicationYear'),
+                        publicationInfo: book.get('publicationInfo'),
+                        pages: book.get('pages')
+                    })
+                }
+                author = {
+                    id: author.get('id'),
+                    firstName: author.get('firstName'),
+                    lastName: author.get('lastName'),
+                    birthYear: author.get('birthYear'),
+                    books: books
+                }
+                res.render("author.hbs", author)
+
+            }).catch(() => {
+                // TODO error handling. Kanske visa author, men felmeddelande vid bara böckerna?
+            })
         }
     })
 
