@@ -11,6 +11,16 @@ const requiredAdministratorKeys = [
 
 // ----- Functions ----------------
 
+function getAdministrators() {
+    // Någon typ av validation, är man inloggad?
+
+    return administratorRepository.getAdministrators().then(administrators => {
+        return administrators
+    }).catch(error => {
+        throw error
+    })
+}
+
 function addAdministrator(administrator, callback) {
 
     const errors = validator.validateAdministrator(administrator)
@@ -46,14 +56,15 @@ function updateAdministrator(administrator, callback) {
 }
 
 
-function getAdministratorWithID(id, callback) {
-    administratorRepository.getAdministratorWithID(id).then(administrator => {
-        callback(administrator)
+function getAdministratorWithId(id) {
+    return administratorRepository.getAdministratorWithId(id).then(administrator => {
+        return administrator
     }).catch(error => {
-        callback(null, error)
+        throw error
     })
 }
 
+exports.getAdministrators = getAdministrators
 exports.addAdministrator = addAdministrator
 exports.updateAdministrator = updateAdministrator
-exports.getAdministratorWithID = getAdministratorWithID
+exports.getAdministratorWithId = getAdministratorWithId

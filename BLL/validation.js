@@ -127,7 +127,6 @@ function validateAdministrator(admin) {
                 break
         }
     }
-    console.log("Errors")
     return errors
 }
 
@@ -159,7 +158,7 @@ function getMissingKeys(object, requiredKeys) {
     let missingKeys = []
 
     for (requiredKey of requiredKeys) {
-        if (!givenKeys.includes(requiredKey) || givenKeys[requiredKey] == "") {
+        if (!givenKeys.includes(requiredKey) || object[requiredKey] == "") {
             missingKeys.push(requiredKey)
         }
     }

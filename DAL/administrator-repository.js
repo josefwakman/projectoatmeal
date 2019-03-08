@@ -1,5 +1,13 @@
 const {Administrators} = require("./models")
 
+function getAdministrators() {
+    return Administrators.findAll().then(administrators => {
+        return administrators
+    }).catch(error => {
+        throw error
+    })
+}
+
 function addAdministrator(administrator) {
     return Administrators.create({
         firstName: administrator.firstName,
@@ -43,7 +51,7 @@ function updateAdministrator(newValues) {
     })
 }
 
-function getAdministratorWithID(id) {
+function getAdministratorWithId(id) {
     return Administrators.findOne({
         where: { id: id }
     }).then(administrator => {
@@ -53,6 +61,7 @@ function getAdministratorWithID(id) {
     })
 }
 
+exports.getAdministrators = getAdministrators
 exports.addAdministrator = addAdministrator
 exports.updateAdministrator = updateAdministrator
-exports.getAdministratorWithID = getAdministratorWithID
+exports.getAdministratorWithId = getAdministratorWithId
