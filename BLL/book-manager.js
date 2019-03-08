@@ -1,7 +1,7 @@
 const bookRepository = require('../DAL/book-repository')
 const validator = require('./validation')
 
-const validBookKeys = [
+const requiredBookKeys = [
     "ISBN",
     "title",
     "signID",
@@ -41,7 +41,7 @@ function findBooksWithAuthorId(id) {
 
 function addBook(book, callback) {
     let errors = validator.validateBook(book)
-    const missingKeys = validator.getMissingKeys(book, validBookKeys)
+    const missingKeys = validator.getMissingKeys(book, requiredBookKeys)
     for (key of missingKeys) {
         errors.push("Nothing entered in " + key)
     }

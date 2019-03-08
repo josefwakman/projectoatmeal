@@ -1,7 +1,7 @@
 const authorRepository = require('../DAL/author-repository')
 const validator = require('./validation')
 
-const validAuthorKeys = [
+const requiredAuthorKeys = [
     "ID",
     "firstName",
     "lastName",
@@ -27,7 +27,8 @@ function getAuthorWithId(id, callback) {
 function addAuthor(author, callback) {
 
     const errors = validator.validateAuthor(author)
-    const missingkeys = validator.getMissingKeys(author, validAuthorKeys)
+    const missingkeys = validator.getMissingKeys(author, requiredAuthorKeys
+    )
     for (key of missingkeys) {
         errors.push("Nothing entered in " + key)
     }

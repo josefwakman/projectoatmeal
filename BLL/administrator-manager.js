@@ -1,7 +1,7 @@
 const administratorRepository = require("../DAL/administrator-repository")
 const validator = require("./validation")
 
-const validAdministratorKeys = [
+const requiredAdministratorKeys = [
     "firstName",
     "lastName",
     "email",
@@ -14,7 +14,7 @@ const validAdministratorKeys = [
 function addAdministrator(administrator, callback) {
 
     const errors = validator.validateAdministrator(administrator)
-    const missingKeys = validator.getMissingKeys(administrator, validAdministratorKeys)
+    const missingKeys = validator.getMissingKeys(administrator, requiredAdministratorKeys)
     for (missingKey of missingKeys) {
         errors.push("Nothing entered in " + missingKey)
     }
