@@ -120,8 +120,8 @@ function validateAdministrator(admin) {
             case "privilegies":
                 if (!Object.keys(privilegies).map(privKey => {
                     return privilegies[privKey]
-                }).includes(admin[key])
-                ) { 
+                }).includes(parseInt(admin[key]))
+                ) {
                     errors.push("No valid privilegium given")
                 }
                 break

@@ -45,12 +45,6 @@ router.get('/', function (req, res) {
         }
         res.render("administrators.hbs", model)
     })
-
-    // model = {
-    //     administrators: administrators,
-    //     privilegies: { 1: "admin", 2: "super admin" }
-    // }
-    // res.render("administrators.hbs", model)
 })
 
 
@@ -87,6 +81,7 @@ router.post('/', (req, res) => {
                 model = {
                     errors: errors,
                     postFailed: true,
+                    privilegies: { 1: "admin", 2: "super admin" },
                     administrators: []
                 }
                 for (administrator of administrators) {

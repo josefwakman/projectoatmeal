@@ -33,8 +33,9 @@ function addAdministrator(administrator, callback) {
         callback(errors)
 
     } else {
-        administratorRepository.addAdministrator(administrator).then(administrator => {
-            callback([], administrator)
+        administratorRepository.addAdministrator(administrator).then(addedAdministrator => {
+            console.log("Success!");
+            callback([], addedAdministrator)
         }).catch(error => {
             callback([error])
         })
