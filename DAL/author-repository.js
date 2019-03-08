@@ -25,6 +25,9 @@ function getAuthorWithId(id) {
 }
 
 function addAuthor(author) {
+    if (author.birthYear == "") {
+        author.birthYear = null
+    }
     return Authors.create({
         firstName: author.firstName,
         lastName: author.lastName,

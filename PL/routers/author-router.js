@@ -96,15 +96,25 @@ router.get('/:id', (req, res) => {
 router.post('/', (req, res) => {
     let model = { searched: false }
 
-    authorManager.addAuthor(req.body, (author, errors) => {
-        if (errors) {
+    authorManager.addAuthor(req.body, (errors, author) => {
+        if (errors.length > 0) {
             model = {
-                postFailed: true,
+                postError: true,
                 errors: errors
             }
             res.render("search-authors.hbs", model)
         } else {
-            res.render("author.hbs", author)
+            bookManager.findBooksWithAuthorId(author.id).then(foundBooks => {
+                const model = {
+                    id: author.get('id'),
+                    firstName: author.get('firstName'),
+                    lastName: author.get('lastName'),
+                    birthYear: author.get('birthYear'),
+                    books: foundBooks
+                }
+
+                res.render("author.hbs", model)
+            })
         }
     })
 

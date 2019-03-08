@@ -16,6 +16,15 @@
 <button type="submit" class="btn btn-primary">Submit</button>
 </form>
 
+{{#if postError}}
+<div class="alert alert-warning">
+    <strong>All fields not filled in correctly!</strong>
+    {{#each errors}}
+    <p>{{this}}</p>
+    {{/each}}
+</div>
+{{/if}}
+
 <div class="search-books-table-div">
     <table class="table table-striped">
         <thead>

@@ -82,7 +82,7 @@ function validateAuthor(author) {
     if (invalidName.test(author.lastName)) {
         errors.push("Last name entered incorrectly. Only letters allowed.")
     }
-    if (!validYearFormat.test(author.birthYear)) {
+    if (!validYearFormat.test(author.birthYear) && author.birthYear != "") {
         errors.push("Year entered incorrectly. Only 4 digits allowed.")
     } else {
         if (parseInt(author.birthYear) > new Date().getFullYear()) {
