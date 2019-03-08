@@ -74,9 +74,9 @@ router.post('/', (req, res) => {
     const body = req.body
 
 
-    administratorManager.addAdministrator(body, (errors, administrator) => {
+    administratorManager.addAdministrator(body, (validationErrors, serverError, administrator) => {
 
-        if (0 < errors.length) {
+        if (0 < validationErrors.length) {
             administratorManager.getAdministrators().then(administrators => {
                 model = {
                     errors: errors,
@@ -95,6 +95,13 @@ router.post('/', (req, res) => {
                 }
                 res.render("administrators.hbs", model)
             })
+        } else if (serverError) {
+            error = {
+                code: 500,
+                message: "Internal server error"
+                // TODO: error page
+            }
+            
         } else {
             model = {
                 firstName: administrator.firstName,
@@ -121,19 +128,58 @@ router.post('/', (req, res) => {
 
 })
 
-router.post('/:id', (req, res) => {
+router.get('/edit/:id', (req, res) => {
+    // TODO: authorization
+
+    administratorManager.getAdministratorWithId(req.params.id).then(administrator => {
+        model = {
+            id: administrator.id,
+            firstName: administrator.firstName,
+            lastName: administrator.lastName,
+            email: administrator.email,
+            privilegies: administrator.privilegies
+        }
+        res.render("edit-administrator.hbs", model)
+    }).catch(() => {
+        error = {
+            code: 500,
+            message: "Internal server error"
+            // TODO: error page
+        }
+    })
+})
+
+router.post('/edit/:id', (req, res) => {
     let newValues = req.body
     newValues.id = req.params.id
 
-    administratorManager.updateAdministrator(newValues, (administrator, errors) => {
-        if (errors) {
+    administratorManager.updateAdministrator(newValues, (validationErrors, serverError, administrator) => {
+        if (validationErrors.length) {
             model = {
                 postFailed: true,
                 errors: errors
             }
+            res.render("edit-administrator.hbs", model)
+        } else if (serverError) { 
+
+            error = {
+                code: 500,
+                message: "Internal server error"
+            }
+            // TODO: error page
+            console.log("We need an error page!");
+            
+        }
+        else {
+            model = {
+                id: administrator.get('id'),
+                firstName: administrator.get('firstName'),
+                lastName: administrator.get('lastName'),
+                email: administrator.get('email'),
+                privilegies: administrator.get('privilegies')
+            }
+            
             res.render("administrator.hbs", model)
-        } else {
-            res.render("administrator.hbs", administrator)
         }
     })
 })

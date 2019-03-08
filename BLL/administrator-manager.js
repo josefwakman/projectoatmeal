@@ -28,30 +28,31 @@ function addAdministrator(administrator, callback) {
     for (missingKey of missingKeys) {
         errors.push("Nothing entered in " + missingKey)
     }
-
     if (0 < errors.length) {
         callback(errors)
 
     } else {
         administratorRepository.addAdministrator(administrator).then(addedAdministrator => {
-            console.log("Success!");
-            callback([], addedAdministrator)
+            callback([], null, addedAdministrator)
+
         }).catch(error => {
-            callback([error])
+            callback([], error)
         })
     }
 }
 
 function updateAdministrator(administrator, callback) {
     const errors = validator.validateAdministrator(administrator)
-    if (errors) {
-        callback(null, errors)
+    
+    if (errors.length) {
+        callback(errors)
+        
     } else {
+        administratorRepository.updateAdministrator(administrator).then(updatedAdministrator => {
+            callback([], null, updatedAdministrator)
 
-        administratorRepository.updateAdministrator(administrator).then(administrator => {
-            callback(administrator)
         }).catch(error => {
-            callback(null, error) // TODO: proper error handling
+            callback([], error)
         })
     }
 }
