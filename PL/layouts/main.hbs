@@ -17,7 +17,7 @@
 
 <body>
     <!--Navigation bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top" role="navigation">
         <div class="container">
             <a class="navbar-brand" href="/">Jönköping Library</a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
@@ -26,9 +26,12 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav ml-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/books/search">Books</a>
-                    </li>
+                            <li>
+                                <a class="nav-link" href="/books/search">Search Books</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/books/new">Add Books</a>
+                            </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/authors/search">Authors</a>
                     </li>
@@ -50,7 +53,7 @@
     <div class="jumbotron">
         {{{body}}}
     </div>
-    
+
 </body>
 
 </html>

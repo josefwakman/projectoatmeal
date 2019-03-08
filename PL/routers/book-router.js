@@ -5,6 +5,25 @@ const validation = require("../../BLL/validation")
 
 const router = express.Router()
 
+router.get("/new", (req, res) => {
+    model = { searched: false }
+
+    res.render("newBook.hbs", model);
+})
+
+router.post("/new", (req, res) => {
+
+    model = { searched: false }
+
+    bookManager.addBook(req.body, (book, errors) => {
+        if (errors.length) {
+            model.errors = errors
+            model.postError = true
+            res.render("newBook.hbs", model)
+        } 
+    })
+})
+
 router.get('/search', function (req, res) {
     model = { searched: false }
 
@@ -130,7 +149,6 @@ router.post('/', (req, res) => {
     // }
 
 })
-
 
 router.get('/edit/:ISBN', (req, res) => {
     const ISBN = req.params.ISBN
