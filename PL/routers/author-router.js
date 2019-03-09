@@ -40,39 +40,40 @@ router.get('/search', function (req, res) {
 router.get('/:id', (req, res) => {
 
     const id = req.params.id
-    authorManager.getAuthorWithId(id, (author, error) => {
-        if (error) {
-            model = {
-                getFailed: true,
-                error: error
+    authorManager.getAuthorWithId(id).then(author => {
+
+        bookManager.findBooksWithAuthorId(id).then(foundBooks => {
+            let books = []
+            for (book of foundBooks) {
+                books.push({
+                    ISBN: book.get('ISBN'),
+                    title: book.get('title'),
+                    signID: book.get('signID'),
+                    publicationYear: book.get('publicationYear'),
+                    publicationInfo: book.get('publicationInfo'),
+                    pages: book.get('pages')
+                })
             }
-            res.render("author.hbs", model)
-        } else {
+            author = {
+                id: author.get('id'),
+                firstName: author.get('firstName'),
+                lastName: author.get('lastName'),
+                birthYear: author.get('birthYear'),
+                books: books
+            }
+            res.render("author.hbs", author)
 
-            bookManager.findBooksWithAuthorId(id).then(foundBooks => {
-                let books = []
-                for (book of foundBooks) {
-                    books.push({
-                        ISBN: book.get('ISBN'),
-                        title: book.get('title'),
-                        signID: book.get('signID'),
-                        publicationYear: book.get('publicationYear'),
-                        publicationInfo: book.get('publicationInfo'),
-                        pages: book.get('pages')
-                    })
-                }
-                author = {
-                    id: author.get('id'),
-                    firstName: author.get('firstName'),
-                    lastName: author.get('lastName'),
-                    birthYear: author.get('birthYear'),
-                    books: books
-                }
-                res.render("author.hbs", author)
+        }).catch(() => {
+            error = {
+                code: 500,
+                message: "Internal server error"
+            }
+        })
 
-            }).catch(() => {
-                // TODO error handling. Kanske visa author, men felmeddelande vid bara böckerna?
-            })
+    }).catch(() => {
+        error = {
+            code: 500,
+            message: "Internal server error"
         }
     })
 

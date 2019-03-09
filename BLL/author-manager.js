@@ -14,11 +14,11 @@ function findAuthorsWithName(string) {
     })
 }
 
-function getAuthorWithId(id, callback) {
-    authorRepository.getAuthorWithId(id).then(author => {
-        callback(author)
+function getAuthorWithId(id) {
+    return authorRepository.getAuthorWithId(id).then(author => {
+        return author
     }).catch(error => {
-        callback(null, error)
+        throw error
     })
 }
 
