@@ -75,21 +75,30 @@ function validateAuthor(author) {
     const invalidName = RegExp(/^[\d|,|.]/) // no digits, "," or "."
     const validYearFormat = RegExp(/^\d{4}$/) // only 4 digits allowed
 
-    if (invalidName.test(author.firstName)) {
+    for (key of Object.keys(author)) {
+        switch (key) {
+            case "firstName":
+                if (invalidName.test(author.firstName)) {
 
-        errors.push("First name entered incorrectly. Only letters allowed.")
-    }
-    if (invalidName.test(author.lastName)) {
-        errors.push("Last name entered incorrectly. Only letters allowed.")
-    }
-    if (!validYearFormat.test(author.birthYear) && author.birthYear != "") {
-        errors.push("Year entered incorrectly. Only 4 digits allowed.")
-    } else {
-        if (parseInt(author.birthYear) > new Date().getFullYear()) {
-            errors.push("Birth year is after the current year, " + new Date().getFullYear() + ". Is this a time traveller?")
+                    errors.push("First name entered incorrectly. Only letters allowed.")
+                }
+                break
+            case "lastName":
+                if (invalidName.test(author.lastName)) {
+                    errors.push("Last name entered incorrectly. Only letters allowed.")
+                }
+                break
+            case "birthYear":
+                if (!validYearFormat.test(author.birthYear) && author.birthYear != "") {
+                    errors.push("Year entered incorrectly. Only 4 digits allowed.")
+                } else {
+                    if (parseInt(author.birthYear) > new Date().getFullYear()) {
+                        errors.push("Birth year is after the current year, " + new Date().getFullYear() + ". Is this a time traveller?")
+                    }
+                }
+                break
         }
     }
-
     return errors
 }
 
@@ -138,6 +147,8 @@ exports.validateBook = validateBook
 exports.validateAuthor = validateAuthor
 
 exports.validateAdministrator = validateAdministrator
+
+exports.removeEmptyValues = removeEmptyValues
 
 exports.getMissingKeys = getMissingKeys
 

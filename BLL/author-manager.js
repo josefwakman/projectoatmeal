@@ -32,23 +32,26 @@ function addAuthor(author, callback) {
         callback(errors)
     } else {
         authorRepository.addAuthor(author).then(author => {
-            callback([], author)
+            callback([], null, author)
         }).catch(error => {
-            callback(error)
+            callback([], error)
         })
     }
     
 }
 
 function editAuthor(newValues, callback) {
+    newValues = validator.removeEmptyValues(newValues)
+    console.log(newValues);
+    
     const errors = validator.validateAuthor(newValues)
     if (errors.length > 0) {
-        callback(null, errors)
+        callback(errors)
     } else {
         authorRepository.editAuthor(newValues).then(author => {
-            callback(author)
+            callback([], null, author)
         }).catch(error => {
-            callback(null, error)
+            callback([], error)
         })
     }
 }

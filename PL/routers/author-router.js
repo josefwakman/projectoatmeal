@@ -99,13 +99,18 @@ router.get('/:id', (req, res) => {
 router.post('/', (req, res) => {
     let model = { searched: false }
 
-    authorManager.addAuthor(req.body, (errors, author) => {
-        if (errors.length > 0) {
+    authorManager.addAuthor(req.body, (validationErrors, serverError, author) => {
+        if (validationErrors.length > 0) {
             model = {
                 postError: true,
-                errors: errors
+                errors: validationErrors
             }
             res.render("search-authors.hbs", model)
+        } else if (serverError) {
+            error = {
+                code: 500,
+                message: "Internal server error"
+            }
         } else {
             bookManager.findBooksWithAuthorId(author.id).then(foundBooks => {
                 const model = {
@@ -117,6 +122,8 @@ router.post('/', (req, res) => {
                 }
 
                 res.render("author.hbs", model)
+            }).catch(() => {
+                // TODO: render author but error message on books?
             })
         }
     })
@@ -152,17 +159,38 @@ router.post('/', (req, res) => {
     // }
 })
 
-router.post('/edit/id', (req, res) => {
+router.post('/edit/:id', (req, res) => {
 
     let newValues = req.body
     newValues.id = req.params.id
 
-    authorManager.editAuthor(newValues, (author, error) => {
-        if (error) {
-            // TODO: error handling
+    authorManager.editAuthor(newValues, (validationErrors, serverError, author) => {
+        if (validationErrors.length) {
+            model = {
+                id: req.params.id,
+                postError: true,
+                errors: validationErrors
+            }
+            res.render("edit-author.hbs", model)
+        } else if (serverError) {
+            error = {
+                code: 500,
+                message: "Internal server error"
+            }
         } else {
-            // TODO: hämta böcker
-            res.render('author.hbs', author)
+            bookManager.findBooksWithAuthorId(author.id).then(foundBooks => {
+                const model = {
+                    id: author.get('id'),
+                    firstName: author.get('firstName'),
+                    lastName: author.get('lastName'),
+                    birthYear: author.get('birthYear'),
+                    books: foundBooks
+                }
+
+                res.render("author.hbs", model)
+            }).catch(() => {
+                // TODO: render author but error message on books?
+            })
         }
     })
 
@@ -182,9 +210,8 @@ router.post('/edit/id', (req, res) => {
 })
 
 router.get('/edit/:id', (req, res) => {
-
-    const id = req.params.id
-    res.render("edit-author.hbs", id)
+    model = { id: req.params.id }
+    res.render("edit-author.hbs", model)
 })
 
 module.exports = router
