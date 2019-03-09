@@ -6,11 +6,11 @@ const requiredAuthorKeys = [
     "lastName"
 ]
 
-function findAuthorsWithName(string, callback) {
-    authorRepository.findAuthorsWithName(string).then(authors => {
-        callback(authors)
+function findAuthorsWithName(string) {
+    return authorRepository.findAuthorsWithName(string).then(authors => {
+        return authors
     }).catch(error => {
-        callback(null, error)
+        throw error
     })
 }
 

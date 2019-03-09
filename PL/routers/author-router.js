@@ -10,24 +10,26 @@ router.get('/search', function (req, res) {
 
     if (0 < Object.keys(req.query).length) {
 
-        authorManager.findAuthorsWithName(req.query.search, (foundAuthors, error) => {
-            if (error) {
-                // TODO: error handling
-            } else {
-                let authors = []
-                for (author of foundAuthors) {
-                    authors.push({
-                        id: author.get('id'),
-                        firstName: author.get('firstName'),
-                        lastName: author.get('lastName'),
-                        birthYear: author.get('birthYear')
-                    })
-                }
-                model = {
-                    searched: true,
-                    authors: authors
-                }
-                res.render("search-authors.hbs", model)
+        authorManager.findAuthorsWithName(req.query.search).then(foundAuthors => {
+            let authors = []
+            for (author of foundAuthors) {
+                authors.push({
+                    id: author.get('id'),
+                    firstName: author.get('firstName'),
+                    lastName: author.get('lastName'),
+                    birthYear: author.get('birthYear')
+                })
+            }
+            model = {
+                searched: true,
+                authors: authors
+            }
+            res.render("search-authors.hbs", model)
+
+        }).catch(() => {
+            error = {
+                code: 500,
+                message: "Internal server error"
             }
         })
     } else {
