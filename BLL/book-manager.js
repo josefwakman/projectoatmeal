@@ -25,8 +25,7 @@ function findBookWithISBN(ISBN) {
     return bookRepository.findBookWithISBN(ISBN).then(book => {
         return book
     }).catch(error => {
-        console.log("Error: " + error);
-        throw "500 server error"
+        throw error
     })
 }
 
@@ -46,14 +45,17 @@ function addBook(book, callback) {
         errors.push("Nothing entered in " + key)
     }
 
-    if (errors) {
-        callback(null, errors)
+    if (errors.length) {
+        callback(errors)
     } else {
 
-        bookRepository.addBook(book).then(book => {
-            callback(book)
+        bookRepository.addBook(book).then(addedBook => {
+            console.log("AddedBook", addedBook);
+            
+            callback([], null, addedBook)
+
         }).catch(error => {
-            callback(null, error) // TODO: kanske skicka ett error objekt? Typ {code: 500, message: internal server error}
+            callback([], error)
         })
     }
 }
