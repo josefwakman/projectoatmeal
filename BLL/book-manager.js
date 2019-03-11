@@ -50,8 +50,6 @@ function addBook(book, callback) {
     } else {
 
         bookRepository.addBook(book).then(addedBook => {
-            console.log("AddedBook", addedBook);
-            
             callback([], null, addedBook)
 
         }).catch(error => {
