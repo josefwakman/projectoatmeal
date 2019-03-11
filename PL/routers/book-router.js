@@ -81,11 +81,11 @@ router.post('/', (req, res) => {
     bookManager.addBook(req.body, (validationErrors, serverError, book) => {
         if (validationErrors.length) {
             model.errors = validationErrors
-            model.postError = true
+            model.validationError = true
             res.render("search-books.hbs", model)
         } else if (serverError) {
             console.log("Servererror", serverError);
-            
+
             error = {
                 code: 500,
                 message: "Internal server error"
@@ -154,7 +154,11 @@ router.get('/edit/:ISBN', (req, res) => {
     bookManager.findBookWithISBN(ISBN).then(book => {
         res.render("edit-book.hbs", book)
     }).catch(() => {
-        // TODO: error handling
+        const error = {
+            code: 404,
+            message: "No book with ISBN " + ISBN + " found"
+        }
+        // TODO: error page
     })
 
 })
@@ -166,10 +170,11 @@ router.post('/edit/:ISBN', (req, res) => {
     bookManager.editBook(newValues, (errors, book) => {
         if (errors) {
             model = {
-                postFailed: true,
+                ISBN: ISBN,
+                validationError: true,
                 errors: errors
             }
-            res.render("search-books.hbs", model)
+            res.render("edit-book.hbs", model)
         } else {
             const model = {
                 ISBN: book.get('ISBN'),

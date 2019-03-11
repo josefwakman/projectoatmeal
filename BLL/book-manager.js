@@ -65,9 +65,10 @@ function editBook(book, callback) {
     } else {
 
         bookRepository.editBook(book).then(book => {
-            callback([], book)
+            callback([], null, book)
+            
         }).catch(error => {
-            // TODO: callback("Passande felmeddelande")
+            callback([], error)
         })
     }
 }

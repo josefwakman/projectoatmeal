@@ -9,7 +9,7 @@
     <button type="submit" class="btn btn-primary">Update Author</button>
 </form>
 
-{{#if postError}}
+{{#if validationError}}
 <div class="alert alert-warning">
     <strong>All fields not filled in correctly!</strong>
     {{#each errors}}

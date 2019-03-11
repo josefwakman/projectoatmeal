@@ -102,7 +102,7 @@ router.post('/', (req, res) => {
     authorManager.addAuthor(req.body, (validationErrors, serverError, author) => {
         if (validationErrors.length > 0) {
             model = {
-                postError: true,
+                validationError: true,
                 errors: validationErrors
             }
             res.render("search-authors.hbs", model)
@@ -123,6 +123,7 @@ router.post('/', (req, res) => {
 
                 res.render("author.hbs", model)
             }).catch(() => {
+                console.log("Fel i find books");
                 // TODO: render author but error message on books?
             })
         }
@@ -168,7 +169,7 @@ router.post('/edit/:id', (req, res) => {
         if (validationErrors.length) {
             model = {
                 id: req.params.id,
-                postError: true,
+                validationError: true,
                 errors: validationErrors
             }
             res.render("edit-author.hbs", model)
