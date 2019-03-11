@@ -58,15 +58,16 @@ function addBook(book, callback) {
     }
 }
 
-function editBook(book, callback) {
-    const errors = validator.validateBook(book)
+function editBook(newValues, callback) {
+    newValues = validator.removeEmptyValues(newValues)
+    const errors = validator.validateBook(newValues)
     if (errors.length > 0) {
         callback(errors)
     } else {
 
-        bookRepository.editBook(book).then(book => {
+        bookRepository.editBook(newValues).then(book => {
             callback([], null, book)
-            
+
         }).catch(error => {
             callback([], error)
         })

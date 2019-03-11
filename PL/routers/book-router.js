@@ -152,7 +152,15 @@ router.post('/', (req, res) => {
 router.get('/edit/:ISBN', (req, res) => {
     const ISBN = req.params.ISBN
     bookManager.findBookWithISBN(ISBN).then(book => {
-        res.render("edit-book.hbs", book)
+        const model = {
+            ISBN: book.get('ISBN'),
+            title: book.get('title'),
+            signID: book.get('signID'),
+            publicationYear: book.get('publicationYear'),
+            publicationInfo: book.get('publicationInfo'),
+            pages: book.get('pages'),
+        }
+        res.render("edit-book.hbs", model)
     }).catch(() => {
         const error = {
             code: 404,
@@ -167,14 +175,20 @@ router.post('/edit/:ISBN', (req, res) => {
     const newValues = req.body
     newValues.ISBN = req.params.ISBN
 
-    bookManager.editBook(newValues, (errors, book) => {
-        if (errors) {
+    bookManager.editBook(newValues, (validationErrors, serverError, book) => {
+        if (validationErrors.length) {
             model = {
                 ISBN: ISBN,
                 validationError: true,
-                errors: errors
+                errors: validationErrors
             }
             res.render("edit-book.hbs", model)
+        } else if (serverError) {
+            const error = {
+                code: 500,
+                message: "Internal server error"
+            }
+            // TODO: error page
         } else {
             const model = {
                 ISBN: book.get('ISBN'),
@@ -196,11 +210,10 @@ router.post('/edit/:ISBN', (req, res) => {
                 model.authors = authors
                 res.render("book.hbs", model)
             }).catch(() => {
-                // TODO: error handling
+                console.log("Error i find authors with ISBN");
+                // TODO: render book page but error message on author?
             })
         }
-    }).catch(() => {
-        // TODO: error handling
     })
 })
 
