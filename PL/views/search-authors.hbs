@@ -1,6 +1,6 @@
 <h2>Search Authors</h2>
 
-<form id="create-author-form" action="/search-authors" method="post" autocomplete="off" class="create-author-form">
+<form id="create-author-form" action="/authors" method="post" autocomplete="off" class="create-author-form">
     <div class="form-group create-author-div">
         <input type="text" placeholder="First name" class="form-control" name="firstName">
         <input type="text" placeholder="Last name" class="form-control" name="lastName">
@@ -9,12 +9,21 @@
     <button type="submit" class="btn btn-primary">Create Author</button>
 </form>
 
-<form action="/search-authors" method="get" autocomplete="off">
+<form action="/authors/search" method="get" autocomplete="off">
 <div class="form-group form-inline">
     <input class="form-control" type="text" name="search" id="search">
 </div>
 <button type="submit" class="btn btn-primary">Submit</button>
 </form>
+
+{{#if validationError}}
+<div class="alert alert-warning">
+    <strong>All fields not filled in correctly!</strong>
+    {{#each errors}}
+    <p>{{this}}</p>
+    {{/each}}
+</div>
+{{/if}}
 
 <div class="search-books-table-div">
     <table class="table table-striped">
@@ -28,8 +37,8 @@
             {{#if searched}}
                 {{#each authors}}
                 <tr>
-                    <td>{{this.id}}</td>
-                    <td><a href="/author/{{this.id}}">{{this.name}}</a></td>
+                    <td>{{id}}</td>
+                    <td><a href="/authors/{{id}}">{{firstName}} {{lastName}}</a></td>
                 </tr>
                 {{/each}}
             {{/if}}

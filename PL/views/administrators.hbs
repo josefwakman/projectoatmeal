@@ -19,6 +19,15 @@
     <button type="submit" class="btn btn-primary">Create administrator</button>
 </form>
 
+{{#if postFailed}}
+<div class="alert alert-warning">
+    <strong>All fields not filled in correctly!</strong>
+    {{#each errors}}
+    <p>{{this}}</p>
+    {{/each}}
+</div>
+{{/if}}
+
 <div class="search-books-table-div">
     <table class="table table-striped">
         <thead>
@@ -31,7 +40,7 @@
             {{#each administrators}}
             <tr>
                 <td>{{this.id}}</td>
-                <td><a href="administrator/{{this.id}}">{{this.name}}</a></td>
+                <td><a href="administrators/{{this.id}}">{{this.firstName}} {{this.lastName}}</a></td>
             </tr>
             {{/each}}
         </tbody>

@@ -1,15 +1,15 @@
 <h2>Search Books</h2>
 
-<form action="/search-books" method="get" autocomplete="off">
+<form action="/books/search" method="get" autocomplete="off">
     <div class="form-group form-inline">
         <input class="form-control" type="text" name="search" id="search">
     </div>
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>
 
-<form id="create-book-form" action="/search-books" method="post" autocomplete="off" class="create-book-form">
+<form id="create-book-form" action="/books" method="post" autocomplete="off" class="create-book-form">
     <div class="form-group create-book-div">
-        <input type="text" class="form-control" placeholder="ISBN" name="ISBN">
+        <input type="text", placeholder="ISBN", class="form-control" name="ISBN">
         <input type="text" placeholder="Title" class="form-control" name="title">
         <input type="number" placeholder="SignID" class="form-control" name="signID">
         <div id="publication-info-div" class="form-group form-inline">
@@ -25,7 +25,7 @@
     <button type="submit" class="btn btn-primary">Create Book</button>
 </form>
 
-{{#if postError}}
+{{#if validationError}}
 <div class="alert alert-warning">
     <strong>All fields not filled in correctly!</strong>
     {{#each errors}}
@@ -49,7 +49,7 @@
             {{#each books}}
             <tr>
                 <td>{{this.ISBN}}</td>
-                <td><a href="/book/{{this.ISBN}}">{{this.title}}</a></td>
+                <td><a href="/books/{{this.ISBN}}">{{this.title}}</a></td>
             </tr>
             {{/each}}
             {{/if}}

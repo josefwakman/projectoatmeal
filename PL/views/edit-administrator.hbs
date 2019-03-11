@@ -1,8 +1,18 @@
 <h2>Edit admin</h2>
 
-<form action="/edit-administrator" method="post">
-    Name: {{name}} - <input type="text"><br>
+<form action="/administrators/edit/{{id}}" method="post">
+    First name: {{firstName}} - <input type="text"><br>
+    Last name: {{lastName}} - <input type="text"><br>
     Privilegies: {{privilegies}} - <input type="text"><br>
     Email: {{email}} - <input type="text"><br>
     <input type="submit">
 </form>
+
+{{#if postFailed}}
+<div class="alert alert-warning">
+    <strong>Fields not filled in correctly!</strong>
+    {{#each errors}}
+    <p>{{this}}</p>
+    {{/each}}
+</div>
+{{/if}}

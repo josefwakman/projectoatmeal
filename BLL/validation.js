@@ -3,36 +3,20 @@ const privilegies = Object.freeze({
     "superAdmin": 2
 })
 
-const validBookKeys = [
-    "ISBN",
-    "title",
-    "signID",
-    "publicationYear",
-    "publicationCity",
-    "publicationCompany",
-    "pages"
-]
-
-const validAuthorKeys = [
-    "ID",
-    "firstName",
-    "lastName",
-    "birthYear"
-]
-
 
 // Returns an array of errors. If there are no error, the array is empty
 function validateBook(book) {
-    let errors = []
+    book = removeEmptyValues(book)
 
-    const validISBN = RegExp(/^\d{1,10}$/)
+    const validISBN = RegExp(/^\d{1,10}$/) // TODO: lägg in så att man kan ha X på slutet och 13 tecken
     const validSignID = RegExp(/^\d+$/)
     const validYearFormat = RegExp(/^\d{4}$/)
     const invalidCity = RegExp(/\d/)
     const validPages = RegExp(/^\d+$/)
 
-    for (key of Object.keys(book)) 
-    {
+    let errors = []
+
+    for (key of Object.keys(book)) {
         switch (key) {
             case "title":
                 if (book.title == "") {
@@ -72,7 +56,7 @@ function validateBook(book) {
                 break
             case "pages":
                 if (!validPages.test(book.pages)) {
-                    errors.push("Number of pages entered incorrectly. Only numbers allowed")
+                    errors.push("Number of pages entered incorrectly. Only positive numbers allowed")
                 }
                 break
             default:
@@ -83,17 +67,6 @@ function validateBook(book) {
     return errors
 }
 
-function getMissingBookKeys(book) { // Denna behövs så att man inte kan skicka en post request som saknar fält vid create book
-    const keysInBook = Object.keys(book)
-    let missingKeys = []
-    for (keyToCheck of validBookKeys) {
-        if (!keysInBook.includes(keyToCheck)) {
-            missingKeys.push(keyToCheck)
-        }
-    }
-    return missingKeys
-}
-
 
 
 function validateAuthor(author) {
@@ -102,28 +75,36 @@ function validateAuthor(author) {
     const invalidName = RegExp(/^[\d|,|.]/) // no digits, "," or "."
     const validYearFormat = RegExp(/^\d{4}$/) // only 4 digits allowed
 
-    if (invalidName.test(author.firstName)) {
+    for (key of Object.keys(author)) {
+        switch (key) {
+            case "firstName":
+                if (invalidName.test(author.firstName)) {
 
-        errors.push("First name entered incorrectly. Only letters allowed.")
-    }
-    if (invalidName.test(author.lastName)) {
-        errors.push("Last name entered incorrectly. Only letters allowed.")
-    }
-    if (!validYearFormat.test(author.birthYear)) {
-        errors.push("Year entered incorrectly. Only 4 digits allowed.")
-    } else {
-        if (parseInt(author.birthYear) > new Date().getFullYear()) {
-            errors.push("Birth year is after the current year, " + new Date().getFullYear() + ". Is this a time traveller?")
+                    errors.push("First name entered incorrectly. Only letters allowed.")
+                }
+                break
+            case "lastName":
+                if (invalidName.test(author.lastName)) {
+                    errors.push("Last name entered incorrectly. Only letters allowed.")
+                }
+                break
+            case "birthYear":
+                if (!validYearFormat.test(author.birthYear) && author.birthYear != "") {
+                    errors.push("Year entered incorrectly. Only 4 digits allowed.")
+                } else {
+                    if (parseInt(author.birthYear) > new Date().getFullYear()) {
+                        errors.push("Birth year is after the current year, " + new Date().getFullYear() + ". Is this a time traveller?")
+                    }
+                }
+                break
         }
     }
-
-    console.log("Errors: " + errors);
-
     return errors
 }
 
 function validateAdministrator(admin) {
     let errors = []
+    admin = removeEmptyValues(admin)
 
     const invalidName = RegExp(/^[\d|,|.]/) // no digits, "," or "."
     const validEmail = RegExp(/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/)
@@ -146,11 +127,11 @@ function validateAdministrator(admin) {
                 }
                 break
             case "privilegies":
-                if (Object.keys(privilegies).map(privKey => {
+                if (!Object.keys(privilegies).map(privKey => {
                     return privilegies[privKey]
-                }).includes(admin[key])
+                }).includes(parseInt(admin[key]))
                 ) {
-                    // woho
+                    errors.push("No valid privilegium given")
                 }
                 break
         }
@@ -162,8 +143,35 @@ function validateAdministrator(admin) {
 // --- EXPORTS ---------------
 
 exports.validateBook = validateBook
-exports.getMissingBookKeys = getMissingBookKeys
 
 exports.validateAuthor = validateAuthor
 
 exports.validateAdministrator = validateAdministrator
+
+exports.removeEmptyValues = removeEmptyValues
+
+exports.getMissingKeys = getMissingKeys
+
+// --------------------------------------------
+
+function removeEmptyValues(arr) {
+    let newObject = {}
+    for (key of Object.keys(arr)) {
+        if (!arr[key] == "") {
+            newObject[key] = arr[key]
+        }
+    }
+    return newObject
+}
+
+function getMissingKeys(object, requiredKeys) {
+    const givenKeys = Object.keys(object)
+    let missingKeys = []
+
+    for (requiredKey of requiredKeys) {
+        if (!givenKeys.includes(requiredKey) || object[requiredKey] == "") {
+            missingKeys.push(requiredKey)
+        }
+    }
+    return missingKeys
+}

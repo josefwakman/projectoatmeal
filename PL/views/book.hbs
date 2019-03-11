@@ -2,9 +2,11 @@
 
 <p>{{title}}</p>
 <p>{{ISBN}}</p>
+<p>Pages: {{pages}}</p>
+<p>Publication info: {{publicationInfo}}</p>
 {{#each authors}}
     <span>Author: </span><br>
-    <a href="/author/{{id}}">{{this.name}}</a><br><br>
+    <a href="/authors/{{id}}">{{firstName}} {{lastName}}</a><br><br>
 {{/each}}
 
-<a href="/edit-book/{{ISBN}}">Edit Book</a>
+<a href="/books/edit/{{ISBN}}">Edit Book</a>
