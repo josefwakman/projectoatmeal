@@ -8,7 +8,7 @@ const privilegies = Object.freeze({
 function validateBook(book) {
     book = removeEmptyValues(book)
 
-    const validISBN = RegExp(/^\d{1,10}$/) // TODO: lägg in så att man kan ha X på slutet och 13 tecken
+    const validISBN = RegExp(/^(97(8|9))?\d{9}(\d|X)$/)
     const validSignID = RegExp(/^\d+$/)
     const validYearFormat = RegExp(/^\d{4}$/)
     const invalidCity = RegExp(/\d/)
