@@ -2,58 +2,56 @@ const authorRepository = require('../DAL/author-repository')
 const validator = require('./validation')
 
 const requiredAuthorKeys = [
-    "ID",
     "firstName",
-    "lastName",
-    "birthYear"
+    "lastName"
 ]
 
-function findAuthorsWithName(string, callback) {
-    authorRepository.findAuthorsWithName(string).then(authors => {
-        callback(authors)
+function findAuthorsWithName(string) {
+    return authorRepository.findAuthorsWithName(string).then(authors => {
+        return authors
     }).catch(error => {
-        callback(null, error)
+        throw error
     })
 }
 
-function getAuthorWithId(id, callback) {
-    authorRepository.getAuthorWithId(id).then(author => {
-        callback(author)
+function getAuthorWithId(id) {
+    return authorRepository.getAuthorWithId(id).then(author => {
+        return author
     }).catch(error => {
-        callback(null, error)
+        throw error
     })
 }
 
 function addAuthor(author, callback) {
-
     const errors = validator.validateAuthor(author)
-    const missingkeys = validator.getMissingKeys(author, requiredAuthorKeys
-    )
+    const missingkeys = validator.getMissingKeys(author, requiredAuthorKeys)
     for (key of missingkeys) {
         errors.push("Nothing entered in " + key)
     }
-    if (errors) {
-        callback(null, errors)
+    if (errors.length) {
+        callback(errors)
     } else {
-
         authorRepository.addAuthor(author).then(author => {
-            callback(author)
+            callback([], null, author)
         }).catch(error => {
-            callback(null, error)
+            callback([], error)
         })
     }
     
 }
 
 function editAuthor(newValues, callback) {
+    newValues = validator.removeEmptyValues(newValues)
+    console.log(newValues);
+    
     const errors = validator.validateAuthor(newValues)
     if (errors.length > 0) {
-        callback(null, errors)
+        callback(errors)
     } else {
         authorRepository.editAuthor(newValues).then(author => {
-            callback(author)
+            callback([], null, author)
         }).catch(error => {
-            callback(null, error)
+            callback([], error)
         })
     }
 }

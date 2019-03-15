@@ -19,24 +19,26 @@ router.get('/search', function (req, res) {
 
     if (0 < Object.keys(req.query).length) {
 
-        authorManager.findAuthorsWithName(req.query.search, (foundAuthors, error) => {
-            if (error) {
-                // TODO: error handling
-            } else {
-                let authors = []
-                for (author of foundAuthors) {
-                    authors.push({
-                        id: author.get('id'),
-                        firstName: author.get('firstName'),
-                        lastName: author.get('lastName'),
-                        birthYear: author.get('birthYear')
-                    })
-                }
-                model = {
-                    searched: true,
-                    authors: authors
-                }
-                res.render("search-authors.hbs", model)
+        authorManager.findAuthorsWithName(req.query.search).then(foundAuthors => {
+            let authors = []
+            for (author of foundAuthors) {
+                authors.push({
+                    id: author.get('id'),
+                    firstName: author.get('firstName'),
+                    lastName: author.get('lastName'),
+                    birthYear: author.get('birthYear')
+                })
+            }
+            model = {
+                searched: true,
+                authors: authors
+            }
+            res.render("search-authors.hbs", model)
+
+        }).catch(() => {
+            error = {
+                code: 500,
+                message: "Internal server error"
             }
         })
     } else {
@@ -47,39 +49,40 @@ router.get('/search', function (req, res) {
 router.get('/:id', (req, res) => {
 
     const id = req.params.id
-    authorManager.getAuthorWithId(id, (author, error) => {
-        if (error) {
-            model = {
-                getFailed: true,
-                error: error
+    authorManager.getAuthorWithId(id).then(author => {
+
+        bookManager.findBooksWithAuthorId(id).then(foundBooks => {
+            let books = []
+            for (book of foundBooks) {
+                books.push({
+                    ISBN: book.get('ISBN'),
+                    title: book.get('title'),
+                    signID: book.get('signID'),
+                    publicationYear: book.get('publicationYear'),
+                    publicationInfo: book.get('publicationInfo'),
+                    pages: book.get('pages')
+                })
             }
-            res.render("author.hbs", model)
-        } else {
+            author = {
+                id: author.get('id'),
+                firstName: author.get('firstName'),
+                lastName: author.get('lastName'),
+                birthYear: author.get('birthYear'),
+                books: books
+            }
+            res.render("author.hbs", author)
 
-            bookManager.findBooksWithAuthorId(id).then(foundBooks => {
-                let books = []
-                for (book of foundBooks) {
-                    books.push({
-                        ISBN: book.get('ISBN'),
-                        title: book.get('title'),
-                        signID: book.get('signID'),
-                        publicationYear: book.get('publicationYear'),
-                        publicationInfo: book.get('publicationInfo'),
-                        pages: book.get('pages')
-                    })
-                }
-                author = {
-                    id: author.get('id'),
-                    firstName: author.get('firstName'),
-                    lastName: author.get('lastName'),
-                    birthYear: author.get('birthYear'),
-                    books: books
-                }
-                res.render("author.hbs", author)
+        }).catch(() => {
+            error = {
+                code: 500,
+                message: "Internal server error"
+            }
+        })
 
-            }).catch(() => {
-                // TODO error handling. Kanske visa author, men felmeddelande vid bara böckerna?
-            })
+    }).catch(() => {
+        error = {
+            code: 500,
+            message: "Internal server error"
         }
     })
 
@@ -105,15 +108,33 @@ router.get('/:id', (req, res) => {
 router.post('/', (req, res) => {
     let model = { searched: false }
 
-    authorManager.addAuthor(req.body, (author, errors) => {
-        if (errors) {
+    authorManager.addAuthor(req.body, (validationErrors, serverError, author) => {
+        if (validationErrors.length > 0) {
             model = {
-                postFailed: true,
-                errors: errors
+                validationError: true,
+                errors: validationErrors
             }
             res.render("search-authors.hbs", model)
+        } else if (serverError) {
+            error = {
+                code: 500,
+                message: "Internal server error"
+            }
         } else {
-            res.render("author.hbs", author)
+            bookManager.findBooksWithAuthorId(author.id).then(foundBooks => {
+                const model = {
+                    id: author.get('id'),
+                    firstName: author.get('firstName'),
+                    lastName: author.get('lastName'),
+                    birthYear: author.get('birthYear'),
+                    books: foundBooks
+                }
+
+                res.render("author.hbs", model)
+            }).catch(() => {
+                console.log("Fel i find books");
+                // TODO: render author but error message on books?
+            })
         }
     })
 
@@ -148,17 +169,38 @@ router.post('/', (req, res) => {
     // }
 })
 
-router.post('/edit/id', (req, res) => {
+router.post('/edit/:id', (req, res) => {
 
     let newValues = req.body
     newValues.id = req.params.id
 
-    authorManager.editAuthor(newValues, (author, error) => {
-        if (error) {
-            // TODO: error handling
+    authorManager.editAuthor(newValues, (validationErrors, serverError, author) => {
+        if (validationErrors.length) {
+            model = {
+                id: req.params.id,
+                validationError: true,
+                errors: validationErrors
+            }
+            res.render("edit-author.hbs", model)
+        } else if (serverError) {
+            error = {
+                code: 500,
+                message: "Internal server error"
+            }
         } else {
-            // TODO: hämta böcker
-            res.render('author.hbs', author)
+            bookManager.findBooksWithAuthorId(author.id).then(foundBooks => {
+                const model = {
+                    id: author.get('id'),
+                    firstName: author.get('firstName'),
+                    lastName: author.get('lastName'),
+                    birthYear: author.get('birthYear'),
+                    books: foundBooks
+                }
+
+                res.render("author.hbs", model)
+            }).catch(() => {
+                // TODO: render author but error message on books?
+            })
         }
     })
 
@@ -178,9 +220,8 @@ router.post('/edit/id', (req, res) => {
 })
 
 router.get('/edit/:id', (req, res) => {
-
-    const id = req.params.id
-    res.render("edit-author.hbs", id)
+    model = { id: req.params.id }
+    res.render("edit-author.hbs", model)
 })
 
 module.exports = router

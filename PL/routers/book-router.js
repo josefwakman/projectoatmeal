@@ -1,7 +1,6 @@
 const express = require("express")
 const bookManager = require("../../BLL/book-manager")
 const authorManager = require("../../BLL/author-manager")
-const validation = require("../../BLL/validation")
 
 const router = express.Router()
 
@@ -46,6 +45,12 @@ router.get('/search', function (req, res) {
                 books: foundBooks
             }
             res.render("search-books.hbs", model)
+        }).catch(() => {
+            error = {
+                code: 500,
+                message: "Internal server error"
+            }
+            // TODO: error page
         })
 
     } else {
@@ -56,35 +61,35 @@ router.get('/search', function (req, res) {
 router.get('/:ISBN', (req, res) => {
     const ISBN = req.params.ISBN
     bookManager.findBookWithISBN(ISBN).then(book => {
-        if (book) {
-            authorManager.findAuthorsWithBookISBN(ISBN).then(foundAuthors => { 
-                let authors = []
-                for (author of foundAuthors) {
-                    authors.push({
-                        id: author.get('id'),
-                        firstName: author.get('firstName'),
-                        lastName: author.get('lastName')
-                    })
-                }
-                console.log(authors);
-                
-                const model = {
-                    ISBN: book.get('ISBN'),
-                    title: book.get('title'),
-                    signID: book.get('signID'),
-                    publicationYear: book.get('publicationYear'),
-                    publicationInfo: book.get('publicationInfo'),
-                    pages: book.get('pages'),
-                    authors: authors
-                }
-                res.render("book.hbs", model)
-            })
+        authorManager.findAuthorsWithBookISBN(ISBN).then(foundAuthors => {
+            let authors = []
+            for (author of foundAuthors) {
+                authors.push({
+                    id: author.get('id'),
+                    firstName: author.get('firstName'),
+                    lastName: author.get('lastName')
+                })
+            }
+            const model = {
+                ISBN: book.get('ISBN'),
+                title: book.get('title'),
+                signID: book.get('signID'),
+                publicationYear: book.get('publicationYear'),
+                publicationInfo: book.get('publicationInfo'),
+                pages: book.get('pages'),
+                authors: authors
+            }
+            res.render("book.hbs", model)
+        }).catch(() => {
+            // Rendera book men felmeddelande på authors?
+        })
 
-        } else {
-            console.log("No book");
-            //TODO: fix 404 page
-            res.render("book.hbs") // langa in model med no book exists?
+    }).catch(() => {
+        error = {
+            code: 500,
+            message: "Internal server error"
         }
+        // TODO: error page
     })
 })
 
@@ -92,11 +97,19 @@ router.get('/:ISBN', (req, res) => {
 router.post('/', (req, res) => {
     model = { searched: false }
 
-    bookManager.addBook(req.body, (book, errors) => {
-        if (errors) {
-            model.errors = errors
-            model.postError = true
+    bookManager.addBook(req.body, (validationErrors, serverError, book) => {
+        if (validationErrors.length) {
+            model.errors = validationErrors
+            model.validationError = true
             res.render("search-books.hbs", model)
+        } else if (serverError) {
+            console.log("Servererror", serverError);
+
+            error = {
+                code: 500,
+                message: "Internal server error"
+            }
+            // TODO: error page
         } else {
             authorManager.findAuthorsWithBookISBN(book.ISBN).then(foundAuthors => {
                 const model = {
@@ -110,7 +123,11 @@ router.post('/', (req, res) => {
                 }
                 res.render("book.hbs", model)
             }).catch(() => {
-                // TODO: error handling. Kanske render book.hbs, men med ruta att authors could not be found (500)?
+                error = {
+                    code: 500,
+                    message: "Internal server error"
+                }
+                // TODO: error page
             })
         }
     })
@@ -153,9 +170,21 @@ router.post('/', (req, res) => {
 router.get('/edit/:ISBN', (req, res) => {
     const ISBN = req.params.ISBN
     bookManager.findBookWithISBN(ISBN).then(book => {
-        res.render("edit-book.hbs", book)
+        const model = {
+            ISBN: book.get('ISBN'),
+            title: book.get('title'),
+            signID: book.get('signID'),
+            publicationYear: book.get('publicationYear'),
+            publicationInfo: book.get('publicationInfo'),
+            pages: book.get('pages'),
+        }
+        res.render("edit-book.hbs", model)
     }).catch(() => {
-        // TODO: error handling
+        const error = {
+            code: 404,
+            message: "No book with ISBN " + ISBN + " found"
+        }
+        // TODO: error page
     })
 
 })
@@ -164,13 +193,20 @@ router.post('/edit/:ISBN', (req, res) => {
     const newValues = req.body
     newValues.ISBN = req.params.ISBN
 
-    bookManager.editBook(newValues, (errors, book) => {
-        if (errors) {
+    bookManager.editBook(newValues, (validationErrors, serverError, book) => {
+        if (validationErrors.length) {
             model = {
-                postFailed: true,
-                errors: errors
+                ISBN: ISBN,
+                validationError: true,
+                errors: validationErrors
             }
-            res.render("search-books.hbs", model)
+            res.render("edit-book.hbs", model)
+        } else if (serverError) {
+            const error = {
+                code: 500,
+                message: "Internal server error"
+            }
+            // TODO: error page
         } else {
             const model = {
                 ISBN: book.get('ISBN'),
@@ -192,11 +228,10 @@ router.post('/edit/:ISBN', (req, res) => {
                 model.authors = authors
                 res.render("book.hbs", model)
             }).catch(() => {
-                // TODO: error handling
+                console.log("Error i find authors with ISBN");
+                // TODO: render book page but error message on author?
             })
         }
-    }).catch(() => {
-        // TODO: error handling
     })
 })
 

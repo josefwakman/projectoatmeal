@@ -86,20 +86,7 @@ app.get('/login', function (req, res) {
     res.render("login.hbs")
 })
 
-
-// ---------------------------------------
-
-function removeEmptyValues(arr) {
-    let newObject = {}
-    for (key of Object.keys(arr)) {
-        if (!arr[key] == "") {
-            newObject[key] = arr[key]
-        }
-    }
-    return newObject
-}
-
-// -----------------
+// --------------------------------------
 
 app.use("/administrators", administratorRouter)
 app.use("/authors", authorRouter)

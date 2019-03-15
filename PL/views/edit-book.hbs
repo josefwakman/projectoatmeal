@@ -1,6 +1,6 @@
 <h2>Edit book</h2>
 
-<form id="update-book-form" action="/book/edit/{{ISBN}}" method="post" autocomplete="off" class="update-book-form">
+<form id="update-book-form" action="/books/edit/{{ISBN}}" method="post" autocomplete="off" class="update-book-form">
     <div class="form-group update-book-div">
         <input type="text" placeholder="Title" class="form-control" name="title">
         <input type="number" placeholder="SignID" class="form-control" name="signID">
@@ -16,3 +16,12 @@
     </div>
     <button type="submit" class="btn btn-primary">Update Book</button>
 </form>
+
+{{#if validationError}}
+<div class="alert alert-warning">
+    <strong>All fields not filled in correctly!</strong>
+    {{#each errors}}
+    <p>{{this}}</p>
+    {{/each}}
+</div>
+{{/if}}
