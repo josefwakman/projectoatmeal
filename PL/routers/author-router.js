@@ -4,14 +4,72 @@ const bookManager = require("../../BLL/book-manager")
 
 const router = express.Router()
 
-router.get("/new", (req, res) => {
-    model = {searched: false}
+router.get("/add", (req, res) => {
+    model = { searched: false }
 
     res.render("newAuthor.hbs", model)
 })
 
-router.post("/new", (req, res) => {
-    
+router.post('/add', (req, res) => {
+    console.log("nu är vi här");
+
+    let model = { searched: false }
+
+    authorManager.addAuthor(req.body, (validationErrors, serverError, author) => {
+        if (validationErrors.length > 0) {
+            model = {
+                validationError: true,
+                errors: validationErrors
+            }
+            res.render("search-authors.hbs", model)
+        } else if (serverError) {
+            console.log("Servererror:", serverError);
+
+            error = {
+                code: 500,
+                message: "Internal server error"
+            }
+        } else {
+            const model = {
+                id: author.get('id'),
+                firstName: author.get('firstName'),
+                lastName: author.get('lastName'),
+                birthYear: author.get('birthYear')
+            }
+
+            res.render("author.hbs", model)
+        }
+    })
+
+    // const errors = validation.validateAuthor(req.body)
+
+    // if (0 < errors.length) {
+    //     model.errors = errors
+    //     model.postError = true
+    //     res.render("search-authors.hbs", model)
+    // } else {
+    //     dbAuthors.addAuthor({
+    //         firstName: req.body.firstName,
+    //         lastName: req.body.lastName,
+    //         birthYear: req.body.birthYear
+    //     }).then(author => {
+    //         if (author) {
+    //             dbAuthors.findBooksFromAuthor(author.id).then(foundBooks => {
+    //                 const model = {
+    //                     id: author.get('id'),
+    //                     name: author.get('firstName') + " " + author.get('lastName'),
+    //                     birthYear: author.get('birthYear'),
+    //                     books: foundBooks
+    //                 }
+    //                 res.render("author.hbs", model)
+    //             })
+    //         } else {
+
+    //             model = {addAuthorFailute: true}
+    //             res.render("author.hbs", model)
+    //         }
+    //     })
+    // }
 })
 
 router.get('/search', function (req, res) {
@@ -105,69 +163,7 @@ router.get('/:id', (req, res) => {
     // })
 })
 
-router.post('/', (req, res) => {
-    let model = { searched: false }
 
-    authorManager.addAuthor(req.body, (validationErrors, serverError, author) => {
-        if (validationErrors.length > 0) {
-            model = {
-                validationError: true,
-                errors: validationErrors
-            }
-            res.render("search-authors.hbs", model)
-        } else if (serverError) {
-            error = {
-                code: 500,
-                message: "Internal server error"
-            }
-        } else {
-            bookManager.findBooksWithAuthorId(author.id).then(foundBooks => {
-                const model = {
-                    id: author.get('id'),
-                    firstName: author.get('firstName'),
-                    lastName: author.get('lastName'),
-                    birthYear: author.get('birthYear'),
-                    books: foundBooks
-                }
-
-                res.render("author.hbs", model)
-            }).catch(() => {
-                console.log("Fel i find books");
-                // TODO: render author but error message on books?
-            })
-        }
-    })
-
-    // const errors = validation.validateAuthor(req.body)
-
-    // if (0 < errors.length) {
-    //     model.errors = errors
-    //     model.postError = true
-    //     res.render("search-authors.hbs", model)
-    // } else {
-    //     dbAuthors.addAuthor({
-    //         firstName: req.body.firstName,
-    //         lastName: req.body.lastName,
-    //         birthYear: req.body.birthYear
-    //     }).then(author => {
-    //         if (author) {
-    //             dbAuthors.findBooksFromAuthor(author.id).then(foundBooks => {
-    //                 const model = {
-    //                     id: author.get('id'),
-    //                     name: author.get('firstName') + " " + author.get('lastName'),
-    //                     birthYear: author.get('birthYear'),
-    //                     books: foundBooks
-    //                 }
-    //                 res.render("author.hbs", model)
-    //             })
-    //         } else {
-
-    //             model = {addAuthorFailute: true}
-    //             res.render("author.hbs", model)
-    //         }
-    //     })
-    // }
-})
 
 router.post('/edit/:id', (req, res) => {
 

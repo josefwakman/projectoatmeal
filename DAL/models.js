@@ -30,8 +30,7 @@ const Authors = sequelize.define("Authors", {
         type: Sequelize.STRING
     },
     birthYear: {
-        type: Sequelize.STRING,
-        validate: { min: 0, max: new Date().getFullYear }
+        type: Sequelize.STRING
     }
 })
 
