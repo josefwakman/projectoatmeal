@@ -1,19 +1,10 @@
 <h2>Search Authors</h2>
 
-<form id="create-author-form" action="/authors" method="post" autocomplete="off" class="create-author-form">
-    <div class="form-group create-author-div">
-        <input type="text" placeholder="First name" class="form-control" name="firstName">
-        <input type="text" placeholder="Last name" class="form-control" name="lastName">
-        <input type="number" placeholder="Birthyear" class="form-control" name="birthYear">
-    </div>
-    <button type="submit" class="btn btn-primary">Create Author</button>
-</form>
-
 <form action="/authors/search" method="get" autocomplete="off">
 <div class="form-group form-inline">
     <input class="form-control" type="text" name="search" id="search">
 </div>
-<button type="submit" class="btn btn-primary">Submit</button>
+<button type="submit" class="btn btn-primary">Search Author</button>
 </form>
 
 {{#if validationError}}

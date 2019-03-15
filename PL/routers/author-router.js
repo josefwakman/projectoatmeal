@@ -4,6 +4,15 @@ const bookManager = require("../../BLL/book-manager")
 
 const router = express.Router()
 
+router.get("/new", (req, res) => {
+    model = {searched: false}
+
+    res.render("newAuthor.hbs", model)
+})
+
+router.post("/new", (req, res) => {
+    
+})
 
 router.get('/search', function (req, res) {
     model = { searched: false }
