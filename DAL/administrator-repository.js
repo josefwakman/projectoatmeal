@@ -1,4 +1,4 @@
-const {Administrators} = require("./models")
+const {Administrators, Op} = require("./models")
 
 function getAdministrators() {
     return Administrators.findAll().then(administrators => {

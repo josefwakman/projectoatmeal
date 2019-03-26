@@ -8,6 +8,8 @@ const administratorRouter = require("./routers/administrator-router")
 const authorRouter = require("./routers/author-router")
 const bookRouter = require("./routers/book-router")
 
+const administratorManager = require("../BLL/administrator-manager")
+
 const db = require("../DAL/classification-repository")
 const dbBooks = require("../DAL/book-repository")
 
@@ -38,23 +40,49 @@ app.get('/', function (req, res) {
 })
 
 app.get('/test', (req, res) => {
-    console.log(req.cookies);
-    
-    let model = {}
-    if (req.cookies.beenherebefore) {
-        model = {
-            yesCookie: true
-        }
-    } else {
-        model = {
-            noCookie: true
-        }
-        res.cookie("beenherebefore", true)
-    }
+    console.log("Cookies:", req.cookies);
 
-    res.render("test-cookies.hbs", model)
+    if (req.cookies.sessionId == 1776) {
+        const model = {
+            loginSucess: true,
+            firstName: "Thomas",
+            lastName: "Jefferson",
+        }
+        res.render('test-cookies.hbs', model)
+    } else {
+        res.cookie("sessionId", null).render("test-cookies.hbs")
+    }
 })
 
+app.post('/test', (req, res) => {
+    console.log("Cookies:", req.cookies)
+    console.log("Req.body:", req.body);
+    
+
+    const email = req.body.email
+    const password = req.body.password
+
+    administratorManager.getAdministratorWithCredentials(email, password).then(administrator => {
+        if (!administrator) { 
+            const model = {
+                loginFailed: true
+            }
+            res.cookie("sessionId", "").render('test-cookies.hbs', model)
+        } 
+        else {
+            const model = {
+                loginSucess: true,
+                firstName: administrator.get('firstName'),
+                lastName: administrator.get('lastName'),
+            }
+            res.cookie("sessionId", 1776).render('test-cookies.hbs', model)
+        }
+    }).catch(error => {
+        console.log(error)
+        // TODO: error page
+    })
+    
+})
 
 
 app.get('/search-classifications', (req, res) => {
