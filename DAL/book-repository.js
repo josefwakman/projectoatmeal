@@ -84,11 +84,7 @@ function editBook(newValues) {
                     break
             }
         }
-        foundBook.save().then(book => {
-            return book
-        }).catch(error => {
-            throw error
-        })
+        return foundBook.save()
     }).catch(error => {
         throw error
     })

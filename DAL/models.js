@@ -18,8 +18,6 @@ const Op = Sequelize.Op
 
 const Authors = sequelize.define("Authors", {
 
-    // !!! fungerar det att skriva firstname: Sequelize.STRING istället? 
-
     id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
@@ -81,7 +79,6 @@ const Books = sequelize.define("Books", {
     },
     publicationYear: {
         type: Sequelize.STRING,
-        validate: { min: 0, max: new Date().getFullYear }
     },
     publicationInfo: {
         type: Sequelize.STRING

@@ -25,6 +25,9 @@ function getAuthorWithId(id) {
 }
 
 function addAuthor(author) {
+    if (author.birthYear == "") {
+        author.birthYear = null
+    }
     return Authors.create({
         firstName: author.firstName,
         lastName: author.lastName,
@@ -37,7 +40,7 @@ function addAuthor(author) {
 }
 
 function editAuthor(newValues) {
-    Authors.findOne({
+    return Authors.findOne({
         where: { id: newValues.id }
     }).then(foundAuthor => {
         for (key of Object.keys(newValues)) {
@@ -52,11 +55,7 @@ function editAuthor(newValues) {
                     foundAuthor.birthYear = newValues.birthYear
             }
         }
-        foundAuthor.save().then(() => {
-            // TODO: kanske skicka användaren till uppdaterade författaren?
-        }).catch(error => {
-            throw error
-        })
+        return foundAuthor.save()
     }).catch(error => {
         throw error
     })

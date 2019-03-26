@@ -1,7 +1,7 @@
 const bookRepository = require('../DAL/book-repository')
 const validator = require('./validation')
 
-const validBookKeys = [
+const requiredBookKeys = [
     "ISBN",
     "title",
     "signID",
@@ -25,8 +25,7 @@ function findBookWithISBN(ISBN) {
     return bookRepository.findBookWithISBN(ISBN).then(book => {
         return book
     }).catch(error => {
-        console.log("Error: " + error);
-        throw "500 server error"
+        throw error
     })
 }
 
@@ -41,33 +40,36 @@ function findBooksWithAuthorId(id) {
 
 function addBook(book, callback) {
     let errors = validator.validateBook(book)
-    const missingKeys = validator.getMissingKeys(book, validBookKeys)
+    const missingKeys = validator.getMissingKeys(book, requiredBookKeys)
     for (key of missingKeys) {
         errors.push("Nothing entered in " + key)
     }
 
-    if (errors) {
-        callback(null, errors)
+    if (errors.length) {
+        callback(errors)
     } else {
 
-        bookRepository.addBook(book).then(book => {
-            callback(book)
+        bookRepository.addBook(book).then(addedBook => {
+            callback([], null, addedBook)
+
         }).catch(error => {
-            callback(null, error) // TODO: kanske skicka ett error objekt? Typ {code: 500, message: internal server error}
+            callback([], error)
         })
     }
 }
 
-function editBook(book, callback) {
-    const errors = validator.validateBook(book)
+function editBook(newValues, callback) {
+    newValues = validator.removeEmptyValues(newValues)
+    const errors = validator.validateBook(newValues)
     if (errors.length > 0) {
         callback(errors)
     } else {
 
-        bookRepository.editBook(book).then(book => {
-            callback([], book)
+        bookRepository.editBook(newValues).then(book => {
+            callback([], null, book)
+
         }).catch(error => {
-            // TODO: callback("Passande felmeddelande")
+            callback([], error)
         })
     }
 }
