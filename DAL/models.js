@@ -53,7 +53,7 @@ const BookAuthors = sequelize.define("BookAuthors", {
 })
 
 const Classifications = sequelize.define("Classifications", {
-    signID: {
+    signId: {
         type: Sequelize.INTEGER,
         primaryKey: true
     },

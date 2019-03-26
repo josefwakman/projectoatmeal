@@ -1,7 +1,6 @@
 const express = require("express")
 const expressHandlebars = require("express-handlebars")
 const bodyParser = require("body-parser")
-const cookieParser = require("cookie-parser")
 const session = require("express-session")
 
 const administratorRouter = require("./routers/administrator-router")
@@ -30,8 +29,12 @@ app.engine('hbs', expressHandlebars({
 
 app.use(express.static(path.join(__dirname, '/public')))
 app.use(bodyParser.urlencoded({ extended: false }))
-app.use(cookieParser())
-
+app.use(session({
+    saveUninitialized: false,
+    resave: false,
+    secret: 'eatyourporridge'
+})
+)
 
 // --------------------
 
@@ -52,6 +55,7 @@ app.get('/test', (req, res) => {
     } else {
         res.cookie("sessionId", null).render("test-cookies.hbs")
     }
+
 })
 
 app.post('/test', (req, res) => {
@@ -95,7 +99,7 @@ app.get('/search-classifications', (req, res) => {
     db.getClassifications().then(classifications => {
         for (classification of classifications) {
             model.classifications.push({
-                signID: classification.get('signID'),
+                signId: classification.get('signId'),
                 signum: classification.get('signum'),
                 description: classification.get('description')
             })
@@ -107,12 +111,12 @@ app.get('/search-classifications', (req, res) => {
                 return clas.signum == req.query.classification
             })
 
-            dbBooks.findBooksWithSignID(selectedClassification.signID).then(books => {
+            dbBooks.findBooksWithSignId(selectedClassification.signId).then(books => {
                 for (book of books) {
                     model.books.push({
                         ISBN: book.get('ISBN'),
                         title: book.get('title'),
-                        signID: book.get('signID'),
+                        signId: book.get('signId'),
                         publicationYear: book.get('publicationYear'),
                         publicationInfo: book.get('publicationInfo'),
                         pages: book.get('pages')
