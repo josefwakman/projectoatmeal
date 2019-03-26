@@ -66,7 +66,14 @@ function getAdministratorWithId(id) {
     })
 }
 
+function getAdministratorWithCredentials(email, password) {
+    return administratorRepository.getAdministratorWithCredentials(email, password).then(administrator => {
+        return administrator
+    })
+}
+
 exports.getAdministrators = getAdministrators
 exports.addAdministrator = addAdministrator
 exports.updateAdministrator = updateAdministrator
 exports.getAdministratorWithId = getAdministratorWithId
+exports.getAdministratorWithCredentials = getAdministratorWithCredentials

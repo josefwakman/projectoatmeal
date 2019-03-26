@@ -1,6 +1,8 @@
 const express = require("express")
 const expressHandlebars = require("express-handlebars")
 const bodyParser = require("body-parser")
+const cookieParser = require("cookie-parser")
+const session = require("express-session")
 
 const administratorRouter = require("./routers/administrator-router")
 const authorRouter = require("./routers/author-router")
@@ -26,14 +28,32 @@ app.engine('hbs', expressHandlebars({
 
 app.use(express.static(path.join(__dirname, '/public')))
 app.use(bodyParser.urlencoded({ extended: false }))
+app.use(cookieParser())
 
-// Vi använder routers istället för det här sen va?
-// --- SEARCH-BOOKS ----------
+
+// --------------------
 
 app.get('/', function (req, res) {
     res.render("search-books.hbs")
 })
 
+app.get('/test', (req, res) => {
+    console.log(req.cookies);
+    
+    let model = {}
+    if (req.cookies.beenherebefore) {
+        model = {
+            yesCookie: true
+        }
+    } else {
+        model = {
+            noCookie: true
+        }
+        res.cookie("beenherebefore", true)
+    }
+
+    res.render("test-cookies.hbs", model)
+})
 
 
 
@@ -83,7 +103,20 @@ app.get('/search-classifications', (req, res) => {
 
 
 app.get('/login', function (req, res) {
-    res.render("login.hbs")
+    let model = {}
+
+    const username = req.query.username
+    const password = req.query.password
+
+    if (!(password || username)) {
+        model = {
+            noCredentials: true
+        }
+    } else {
+        
+    }
+
+    res.render("login.hbs", model)
 })
 
 // --------------------------------------
