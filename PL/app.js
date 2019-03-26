@@ -2,6 +2,7 @@ const express = require("express")
 const expressHandlebars = require("express-handlebars")
 const bodyParser = require("body-parser")
 const session = require("express-session")
+const connectSqlite3 = require("connect-sqlite3")
 
 const administratorRouter = require("./routers/administrator-router")
 const authorRouter = require("./routers/author-router")
@@ -13,6 +14,7 @@ const db = require("../DAL/classification-repository")
 const dbBooks = require("../DAL/book-repository")
 
 const app = express()
+const SQLiteStore = connectSqlite3(session)
 
 const path = require('path')
 
@@ -30,11 +32,12 @@ app.engine('hbs', expressHandlebars({
 app.use(express.static(path.join(__dirname, '/public')))
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(session({
+    store: new SQLiteStore({ db: "sessions-db.db" }),
     saveUninitialized: false,
     resave: false,
-    secret: 'eatyourporridge'
-})
-)
+    secret: 'eatyourporridge',
+    cookie: { maxAge: 60 * 60 * 1000 } // maxAge is in milliseconds, expires after 1 hour
+}))
 
 // --------------------
 
@@ -42,10 +45,29 @@ app.get('/', function (req, res) {
     res.render("search-books.hbs")
 })
 
-app.get('/test', (req, res) => {
-    console.log("Cookies:", req.cookies);
+app.get('/nytest', (req, res) => {
+    console.log("Session.id:", req.session.id);
+    console.log("first session Counter:", req.session.counter);
+    
+    let counter = 1
 
-    if (req.cookies.sessionId == 1776) {
+    if (req.session.counter) {
+        counter = req.session.counter + 1
+    }
+    req.session.counter = counter
+
+    model = {
+        counter: counter
+    }
+    res.render("nytest.hbs", model)
+})
+
+app.get('/test', (req, res) => {
+    console.log("Cookies:", req.session.cookie);
+    console.log("Session.id:", req.session.id);
+    
+
+    if (req.session.cookie.sessionId == 1776) {
         const model = {
             loginSucess: true,
             firstName: "Thomas",
@@ -53,14 +75,16 @@ app.get('/test', (req, res) => {
         }
         res.render('test-cookies.hbs', model)
     } else {
-        res.cookie("sessionId", null).render("test-cookies.hbs")
+        res.render("test-cookies.hbs")
     }
-
 })
 
 app.post('/test', (req, res) => {
-    console.log("Cookies:", req.cookies)
-    console.log("Req.body:", req.body);
+    console.log("Cookies:", req.session.cookie);
+    console.log("Session.id:", req.session.id);
+    console.log("tjoho:", req.session.tjoho);
+    
+    let sess = req.session
     
 
     const email = req.body.email
@@ -71,7 +95,9 @@ app.post('/test', (req, res) => {
             const model = {
                 loginFailed: true
             }
-            res.cookie("sessionId", "").render('test-cookies.hbs', model)
+            sess.tjoho = 123
+            req.session.save()
+            res.render('test-cookies.hbs', model)
         } 
         else {
             const model = {
@@ -79,7 +105,7 @@ app.post('/test', (req, res) => {
                 firstName: administrator.get('firstName'),
                 lastName: administrator.get('lastName'),
             }
-            res.cookie("sessionId", 1776).render('test-cookies.hbs', model)
+            res.cookie.render('test-cookies.hbs', model)
         }
     }).catch(error => {
         console.log(error)
@@ -135,20 +161,35 @@ app.get('/search-classifications', (req, res) => {
 
 
 app.get('/login', function (req, res) {
-    let model = {}
+    res.render("login.hbs")
+})
 
-    const username = req.query.username
-    const password = req.query.password
+app.post('/login', (req, res) => {
+    let sess = req.session
+    const email = req.body.email
+    const password = req.body.password
 
-    if (!(password || username)) {
-        model = {
-            noCredentials: true
+    administratorManager.getAdministratorWithCredentials(email, password).then(administrator => {
+        if (!administrator) { 
+            const model = {
+                loginFailed: true
+            }
+            res.render('test-cookies.hbs', model)
+        } 
+        else {
+            administratorManager.addSession(sess.id, administrator.get('id')).then(() => {
+                const model = {
+                    loginSucess: true,
+                    firstName: administrator.get('firstName'),
+                    lastName: administrator.get('lastName'),
+                }
+                res.render('test-cookies.hbs', model)
+            })
         }
-    } else {
-        
-    }
-
-    res.render("login.hbs", model)
+    }).catch(error => {
+        console.log(error)
+        // TODO: error page
+    })
 })
 
 // --------------------------------------

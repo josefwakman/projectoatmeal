@@ -7,3 +7,11 @@
     <input type="text" class="form-control mb-2 mr-sm-2" id="password" name="password">
     <button type="submit" class="btn btn-primary mb-2">Submit</button>
 </form>
+
+{{#if loginFailed}}
+<p>No user with that email or password!</p>
+{{/if}}
+
+{{#if loginSucess}}
+<p>Logged in as {{firstName}} {{lastName}}</p>
+{{/if}}
