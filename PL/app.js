@@ -45,27 +45,10 @@ app.get('/', function (req, res) {
     res.render("search-books.hbs")
 })
 
-app.get('/nytest', (req, res) => {
-    console.log("Session.id:", req.session.id);
-    console.log("first session Counter:", req.session.counter);
-    
-    let counter = 1
-
-    if (req.session.counter) {
-        counter = req.session.counter + 1
-    }
-    req.session.counter = counter
-
-    model = {
-        counter: counter
-    }
-    res.render("nytest.hbs", model)
-})
-
 app.get('/test', (req, res) => {
     console.log("Cookies:", req.session.cookie);
     console.log("Session.id:", req.session.id);
-    
+
 
     if (req.session.cookie.sessionId == 1776) {
         const model = {
@@ -83,22 +66,22 @@ app.post('/test', (req, res) => {
     console.log("Cookies:", req.session.cookie);
     console.log("Session.id:", req.session.id);
     console.log("tjoho:", req.session.tjoho);
-    
+
     let sess = req.session
-    
+
 
     const email = req.body.email
     const password = req.body.password
 
     administratorManager.getAdministratorWithCredentials(email, password).then(administrator => {
-        if (!administrator) { 
+        if (!administrator) {
             const model = {
                 loginFailed: true
             }
             sess.tjoho = 123
             req.session.save()
             res.render('test-cookies.hbs', model)
-        } 
+        }
         else {
             const model = {
                 loginSucess: true,
@@ -111,7 +94,7 @@ app.post('/test', (req, res) => {
         console.log(error)
         // TODO: error page
     })
-    
+
 })
 
 
@@ -170,21 +153,21 @@ app.post('/login', (req, res) => {
     const password = req.body.password
 
     administratorManager.getAdministratorWithCredentials(email, password).then(administrator => {
-        if (!administrator) { 
+        if (!administrator) {
             const model = {
                 loginFailed: true
             }
-            res.render('test-cookies.hbs', model)
-        } 
+            res.render('login.hbs', model)
+        }
         else {
-            administratorManager.addSession(sess.id, administrator.get('id')).then(() => {
-                const model = {
-                    loginSucess: true,
-                    firstName: administrator.get('firstName'),
-                    lastName: administrator.get('lastName'),
-                }
-                res.render('test-cookies.hbs', model)
-            })
+            req.session.userId = administrator.get('id')
+            req.session.save()
+            model = {
+                loginSucess: true,
+                firstName: administrator.get('firstName'),
+                lastName: administrator.get('lastName')
+            }
+            res.render('login.hbs', model)
         }
     }).catch(error => {
         console.log(error)

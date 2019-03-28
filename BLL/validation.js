@@ -175,7 +175,3 @@ function getMissingKeys(object, requiredKeys) {
     }
     return missingKeys
 }
-
-function validateSession(sessionId) {
-    
-}
