@@ -1,7 +1,8 @@
 const privilegies = Object.freeze({
     "admin": 1,
-    "superAdmin": 2
-})
+    "superAdmin": 2,
+    "adminSupreme": 3
+}) // TODO: replace with global variable (from validation?)
 
 
 // Returns an array of errors. If there are no error, the array is empty

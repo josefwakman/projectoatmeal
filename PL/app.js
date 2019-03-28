@@ -35,7 +35,7 @@ app.use(session({
     store: new SQLiteStore({ db: "sessions-db.db" }),
     saveUninitialized: false,
     resave: false,
-    secret: 'eatyourporridge',
+    secret: '2,5dlvatten1dlhavregryn1nypasalt',
     cookie: { maxAge: 60 * 60 * 1000 } // maxAge is in milliseconds, expires after 1 hour
 }))
 
@@ -169,7 +169,8 @@ app.post('/login', (req, res) => {
     administratorManager.getAdministratorWithCredentials(email, password).then(administrator => {
         if (!administrator) {
             const model = {
-                loginFailed: true
+                loginFailed: true,
+                previousEmailInput: email
             }
             res.render('login.hbs', model)
         }
