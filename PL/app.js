@@ -144,11 +144,25 @@ app.get('/search-classifications', (req, res) => {
 
 
 app.get('/login', function (req, res) {
-    res.render("login.hbs")
+    if (req.session.userId) {
+        administratorManager.getAdministratorWithId(req.session.userId).then(administrator => {
+            model = {
+                loggedIn: true,
+                firstName: administrator.get('firstName'),
+                lastName: administrator.get('lastName')
+            }
+            res.render("login.hbs", model)
+        }).catch(error => {
+            console.log(error)
+            // TODO: error page
+        })
+    } else {
+        res.render("login.hbs")
+    }
+
 })
 
 app.post('/login', (req, res) => {
-    let sess = req.session
     const email = req.body.email
     const password = req.body.password
 
@@ -163,7 +177,7 @@ app.post('/login', (req, res) => {
             req.session.userId = administrator.get('id')
             req.session.save()
             model = {
-                loginSucess: true,
+                loggedIn: true,
                 firstName: administrator.get('firstName'),
                 lastName: administrator.get('lastName')
             }
