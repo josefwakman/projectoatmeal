@@ -92,7 +92,7 @@ router.post('/', (req, res) => {
             administratorManager.getAdministrators().then(administrators => {
                 model = {
                     errors: errors,
-                    postFailed: true,
+                    validationError: true,
                     privilegies: { // TODO: replace with global variable (from validation?)
                         1: "admin",
                         2: "super admin",
@@ -158,7 +158,7 @@ router.post('/edit/:id', (req, res) => {
     administratorManager.updateAdministrator(newValues, (validationErrors, serverError, administrator) => {
         if (validationErrors.length) {
             model = {
-                postFailed: true,
+                validationError: true,
                 errors: errors
             }
             res.render("edit-administrator.hbs", model)
