@@ -52,8 +52,6 @@ router.get('/', function (req, res) {
 
 router.get('/:id', (req, res) => {
     const userId = req.session.userId
-    console.log("userId", userId);
-    
 
     administrator = administratorManager.getAdministratorWithId(req.params.id).then(administrator => {
         let model = {
@@ -66,18 +64,13 @@ router.get('/:id', (req, res) => {
         if (userId) {
             authorization.getAccessLevelOfAdministratorId(userId).then(accesslevel => {
 
-                console.log("Accesslevel: ", accesslevel)
-
                 for (let i = 1; i <= accesslevel; i++) {
                     model[authorization.accessLevels[i]] = true
                 }
-
-                console.log("Model:", model);
-
                 res.render("administrator.hbs", model)
             }).catch(error => {
-                console.log("-----------------Error 79", error);
-                
+                console.log(error)
+                // TODO: error page
             })
         } else {
             res.render("administrator.hbs", model)
@@ -87,13 +80,6 @@ router.get('/:id', (req, res) => {
         // TODO: error page
     })
 })
-
-// router.get('/:id', (req, res) => {
-//     foundAdmin = administrators.filter((admin) => {
-//         return admin.id == req.params.id
-//     })
-//     res.render("administrator.hbs", foundAdmin[0])
-// })
 
 router.post('/', (req, res) => {
     let model = {}
