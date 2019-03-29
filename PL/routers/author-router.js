@@ -6,15 +6,15 @@ const authorization = require("../../BLL/authorization")
 const router = express.Router()
 
 router.get("/add", (req, res) => {
-    model = { searched: false }
+    let model = { searched: false }
 
     const userId = req.session.userId
     if (!userId) {
-        error = {
+        model = {
             code: 403,
             message: "You need to be logged in as administrator to add author"
         }
-        // TODO: error page
+        res.render("error-page.hbs", model)
     }
     else {
         res.render("newAuthor.hbs", model)
@@ -27,11 +27,11 @@ router.post('/add', (req, res) => {
 
     const userId = req.session.userId
     if (!userId) {
-        error = {
+        model = {
             code: 403,
             message: "You need to be logged in as administrator to add author"
         }
-        // TODO: error page
+        res.render("error-page.hbs", model)
     }
     else {
         authorManager.addAuthor(req.body, (validationErrors, serverError, author) => {
@@ -65,7 +65,7 @@ router.post('/add', (req, res) => {
 })
 
 router.get('/search', function (req, res) {
-    model = { searched: false }
+    let model = { searched: false }
 
     if (0 < Object.keys(req.query).length) {
 
@@ -85,11 +85,13 @@ router.get('/search', function (req, res) {
             }
             res.render("search-authors.hbs", model)
 
-        }).catch(() => {
-            error = {
+        }).catch(error => {
+            console.log(error)
+            model = {
                 code: 500,
                 message: "Internal server error"
             }
+            res.render("error-page.hbs", model)
         })
     } else {
         res.render("search-authors.hbs", model)
@@ -133,18 +135,22 @@ router.get('/:id', (req, res) => {
                 res.render("author.hbs", model)
             }
 
-        }).catch(() => {
-            error = {
+        }).catch(error => {
+            console.log(error)
+            const model = {
                 code: 500,
                 message: "Internal server error"
             }
+            res.render("error-page.hbs", model)
         })
 
-    }).catch(() => {
-        error = {
-            code: 500,
-            message: "Internal server error"
-        }
+    }).catch(error => {
+        console.log(error)
+            const model = {
+                code: 500,
+                message: "Internal server error"
+            }
+            res.render("error-page.hbs", model)
     })
 })
 
@@ -154,10 +160,11 @@ router.post('/edit/:id', (req, res) => {
 
     const userId = req.session.userId
     if (!userId) {
-        error = {
+        const model = {
             code: 403,
             message: "Need to be logged in as administrator to edit author"
         }
+        res.render("error-page", model)
     }
     else {
         let newValues = req.body
@@ -172,10 +179,12 @@ router.post('/edit/:id', (req, res) => {
                 }
                 res.render("edit-author.hbs", model)
             } else if (serverError) {
-                error = {
+                console.log(serverError)
+                model = {
                     code: 500,
                     message: "Internal server error"
                 }
+                res.render("error-page.hbs", model)
             } else {
                 bookManager.findBooksWithAuthorId(author.id).then(foundBooks => {
                     const model = {
@@ -199,13 +208,14 @@ router.post('/edit/:id', (req, res) => {
 router.get('/edit/:id', (req, res) => {
     const userId = req.session.userId
     if (!userId) {
-        error = {
+        const model = {
             code: 403,
             message: "Need to be logged in as administrator to edit author"
         }
+        res.render("error-page.hbs", model)
     }
     else {
-        model = { id: req.params.id }
+        const model = { id: req.params.id }
         res.render("edit-author.hbs", model)
     }
 
