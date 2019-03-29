@@ -45,6 +45,13 @@ router.get('/', function (req, res) {
             })
         }
         res.render("administrators.hbs", model)
+    }).catch(error => {
+        console.log(error)
+        model = {
+            code: 500,
+            message: "Internal server error"
+        }
+        res.render("error-page.hbs", model)
     })
 })
 
@@ -70,14 +77,22 @@ router.get('/:id', (req, res) => {
                 res.render("administrator.hbs", model)
             }).catch(error => {
                 console.log(error)
-                // TODO: error page
+                model = {
+                    code: 500,
+                    message: "Internal server error"
+                }
+                res.render("error-page.hbs", model)
             })
         } else {
             res.render("administrator.hbs", model)
         }
     }).catch(error => {
         console.log(error)
-        // TODO: error page
+        model = {
+            code: 500,
+            message: "Internal server error"
+        }
+        res.render("error-page.hbs", model)
     })
 })
 
@@ -112,13 +127,13 @@ router.post('/', (req, res) => {
                 res.render("administrators.hbs", model)
             })
         } else if (serverError) {
-            error = {
+            model = {
                 code: 500,
                 message: "Internal server error"
-                // TODO: error page
             }
-
-        } else {
+            res.render("error-page.hbs", model)
+        }
+        else {
             model = {
                 firstName: administrator.firstName,
                 lastName: administrator.lastName,
@@ -143,11 +158,11 @@ router.get('/edit/:id', (req, res) => {
         }
         res.render("edit-administrator.hbs", model)
     }).catch(() => {
-        error = {
+        model = {
             code: 500,
             message: "Internal server error"
-            // TODO: error page
         }
+        res.render("error-page.hbs", model)
     })
 })
 
@@ -164,12 +179,11 @@ router.post('/edit/:id', (req, res) => {
             res.render("edit-administrator.hbs", model)
         } else if (serverError) {
 
-            error = {
+            model = {
                 code: 500,
                 message: "Internal server error"
             }
-            // TODO: error page
-            console.log("We need an error page!");
+            res.render("error-page.hbs", model)
 
         }
         else {

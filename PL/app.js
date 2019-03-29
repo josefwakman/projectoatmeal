@@ -154,7 +154,11 @@ app.get('/login', function (req, res) {
             res.render("login.hbs", model)
         }).catch(error => {
             console.log(error)
-            // TODO: error page
+            model = {
+                code: 500,
+                message: "Internal server error"
+            }
+            res.render("error-page.hbs", model)
         })
     } else {
         res.render("login.hbs")
@@ -186,7 +190,11 @@ app.post('/login', (req, res) => {
         }
     }).catch(error => {
         console.log(error)
-        // TODO: error page
+        model = {
+            code: 500,
+            message: "Internal server error"
+        }
+        res.render("error-page.hbs", model)
     })
 })
 
