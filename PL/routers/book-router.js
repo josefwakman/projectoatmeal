@@ -30,36 +30,37 @@ router.post("/new", (req, res) => {
     }
     else {
         let model = {}
-        bookManager.addBook(req.body, (book, errors) => {
-            if (errors.length) {
-                model.errors = errors
-                model.postError = true
+        bookManager.addBook(req.body, (validationErrors, serverError, book) => {
+            if (validationErrors.length) {
+                model.errors = validationErrors
+                model.validationError = true
                 res.render("newBook.hbs", model)
             }
-            else {
-                model = {
-                    admin: true,
-                    ISBN: book.get('ISBN'),
-                    title: book.get('title'),
-                    signID: book.get('signID'),
-                    publicationYear: book.get('publicationYear'),
-                    publicationInfo: book.get('publicationInfo'),
-                    pages: book.get('pages'),
-                }
-                res.render("newBook.hbs", model)
+            else if (serverError) {
+                    const error = {
+                        code: 500,
+                        message: "Internal server error"
+                    }
+                // TODO: add error page
             }
-        }).catch(error => {
-            console.log(error)
-            err = {
-                code: 500,
-                message: "Internal server error"
+        else {
+            model = {
+                admin: true,
+                ISBN: book.get('ISBN'),
+                title: book.get('title'),
+                signID: book.get('signID'),
+                publicationYear: book.get('publicationYear'),
+                publicationInfo: book.get('publicationInfo'),
+                pages: book.get('pages'),
             }
+                res.render("book.hbs", model)
+            } 
         })
-    }
-
-})
-
-router.get('/search', function (req, res) {
+    }  
+    
+}) 
+    
+    router.get('/search', function (req, res) {
     let model = { searched: false }
 
     if (0 < Object.keys(req.query).length) {
@@ -167,7 +168,7 @@ router.post('/', (req, res) => {
                 }
                 // TODO: error page
             } else {
-                authorManager.findAuthorsWithBookISBN(book.ISBN).then(foundAuthors => {
+            authorManager.findAuthorsWithBookISBN(book.ISBN).then(foundAuthors => {
                     const model = {
                         admin: true,
                         ISBN: book.get('ISBN'),
@@ -228,7 +229,7 @@ router.get('/edit/:ISBN', (req, res) => {
 router.post('/edit/:ISBN', (req, res) => {
     const newValues = req.body
     newValues.ISBN = req.params.ISBN
-    const userId = req.session.userId 
+const userId = req.session.userId 
 
     if (!userId) {
         const error = {

@@ -26,7 +26,7 @@ function validateBook(book) {
                 break
             case "ISBN":
                 if (!validISBN.test(book.ISBN)) {
-                    errors.push("ISBN not entered correctly. Only numbers allowed, at most 10")
+                    errors.push("ISBN not entered correctly. Only 10 or 13 digits allowed, 13 digit ISBN:s have the prefix 978 or 979")
                 }
                 break
             case "signID":
