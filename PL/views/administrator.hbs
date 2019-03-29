@@ -6,4 +6,8 @@
 
 <p>Contact: {{email}}</p>
 
-<a href="/administrators/edit/{{id}}">Edit</a>
+{{#if adminSupreme}}
+<a href="/administrators/edit/{{id}}">Create or delete or edit administrator</a>
+{{else if superAdmin}}
+<a href="/administrators/edit/{{id}}">Change password</a>
+{{/if}}

@@ -1,4 +1,4 @@
-const {Administrators} = require("./models")
+const {Administrators, Op} = require("./models")
 
 function getAdministrators() {
     return Administrators.findAll().then(administrators => {
@@ -61,7 +61,23 @@ function getAdministratorWithId(id) {
     })
 }
 
+function getAdministratorWithCredentials(email, password) {
+    return Administrators.findOne({
+        where: {
+            [Op.and]: [
+                {
+                    email: email
+                }, {
+                    password: password
+                }
+            ]  
+        }
+    })
+}
+
 exports.getAdministrators = getAdministrators
 exports.addAdministrator = addAdministrator
 exports.updateAdministrator = updateAdministrator
 exports.getAdministratorWithId = getAdministratorWithId
+exports.getAdministratorWithCredentials = getAdministratorWithCredentials
+

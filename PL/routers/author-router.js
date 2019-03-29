@@ -1,75 +1,67 @@
 const express = require("express")
 const authorManager = require("../../BLL/author-manager")
 const bookManager = require("../../BLL/book-manager")
+const authorization = require("../../BLL/authorization")
 
 const router = express.Router()
 
 router.get("/add", (req, res) => {
     model = { searched: false }
 
-    res.render("newAuthor.hbs", model)
+    const userId = req.session.userId
+    if (!userId) {
+        error = {
+            code: 403,
+            message: "You need to be logged in as administrator to add author"
+        }
+        // TODO: error page
+    }
+    else {
+        res.render("newAuthor.hbs", model)
+    }
+
 })
 
 router.post('/add', (req, res) => {
-    console.log("nu är vi här");
-
     let model = { searched: false }
 
-    authorManager.addAuthor(req.body, (validationErrors, serverError, author) => {
-        if (validationErrors.length > 0) {
-            model = {
-                validationError: true,
-                errors: validationErrors
-            }
-            res.render("search-authors.hbs", model)
-        } else if (serverError) {
-            console.log("Servererror:", serverError);
-
-            error = {
-                code: 500,
-                message: "Internal server error"
-            }
-        } else {
-            const model = {
-                id: author.get('id'),
-                firstName: author.get('firstName'),
-                lastName: author.get('lastName'),
-                birthYear: author.get('birthYear')
-            }
-
-            res.render("author.hbs", model)
+    const userId = req.session.userId
+    if (!userId) {
+        error = {
+            code: 403,
+            message: "You need to be logged in as administrator to add author"
         }
-    })
+        // TODO: error page
+    }
+    else {
+        authorManager.addAuthor(req.body, (validationErrors, serverError, author) => {
+            if (validationErrors.length > 0) {
+                model = {
+                    validationError: true,
+                    errors: validationErrors
+                }
+                res.render("search-authors.hbs", model)
+            } else if (serverError) {
+                console.log("Servererror:", serverError);
 
-    // const errors = validation.validateAuthor(req.body)
+                error = {
+                    code: 500,
+                    message: "Internal server error"
+                }
+            } else {
+                const model = {
+                    id: author.get('id'),
+                    firstName: author.get('firstName'),
+                    lastName: author.get('lastName'),
+                    birthYear: author.get('birthYear'),
+                    admin: true
+                }
 
-    // if (0 < errors.length) {
-    //     model.errors = errors
-    //     model.postError = true
-    //     res.render("search-authors.hbs", model)
-    // } else {
-    //     dbAuthors.addAuthor({
-    //         firstName: req.body.firstName,
-    //         lastName: req.body.lastName,
-    //         birthYear: req.body.birthYear
-    //     }).then(author => {
-    //         if (author) {
-    //             dbAuthors.findBooksFromAuthor(author.id).then(foundBooks => {
-    //                 const model = {
-    //                     id: author.get('id'),
-    //                     name: author.get('firstName') + " " + author.get('lastName'),
-    //                     birthYear: author.get('birthYear'),
-    //                     books: foundBooks
-    //                 }
-    //                 res.render("author.hbs", model)
-    //             })
-    //         } else {
+                res.render("author.hbs", model)
+            }
+        })
+    }
 
-    //             model = {addAuthorFailute: true}
-    //             res.render("author.hbs", model)
-    //         }
-    //     })
-    // }
 })
 
 router.get('/search', function (req, res) {
@@ -105,8 +97,9 @@ router.get('/search', function (req, res) {
 })
 
 router.get('/:id', (req, res) => {
-
     const id = req.params.id
+    const userId = req.session.userId
+
     authorManager.getAuthorWithId(id).then(author => {
 
         bookManager.findBooksWithAuthorId(id).then(foundBooks => {
@@ -121,14 +114,24 @@ router.get('/:id', (req, res) => {
                     pages: book.get('pages')
                 })
             }
-            author = {
+            let model = {
                 id: author.get('id'),
                 firstName: author.get('firstName'),
                 lastName: author.get('lastName'),
                 birthYear: author.get('birthYear'),
                 books: books
             }
-            res.render("author.hbs", author)
+            if (userId) {
+                authorization.getAccessLevelOfAdministratorId(userId).then(accessLevel => {
+
+                    for (let i = 1; i <= accessLevel; i++) {
+                        model[authorization.accessLevels[i]] = true
+                    }
+                    res.render("author.hbs", model)
+                })
+            } else {
+                res.render("author.hbs", model)
+            }
 
         }).catch(() => {
             error = {
@@ -143,81 +146,69 @@ router.get('/:id', (req, res) => {
             message: "Internal server error"
         }
     })
-
-    // const id = req.params.id
-    // dbAuthors.getAuthor(id).then(author => {
-    //     if (author) {
-    //         dbAuthors.findBooksFromAuthor(id).then(foundBooks => {
-    //             const authorModel = {
-    //                 id: id,
-    //                 name: author.get('firstName') + " " + author.get('lastName'),
-    //                 birthYear: author.get('birthYear'),
-    //                 books: foundBooks
-    //             }
-    //             res.render("author.hbs", authorModel)
-    //         })
-    //     } else {
-    //         console.log("author är null!");
-    //         res.render("author.hbs")
-    //     }
-    // })
 })
 
 
 
 router.post('/edit/:id', (req, res) => {
 
-    let newValues = req.body
-    newValues.id = req.params.id
-
-    authorManager.editAuthor(newValues, (validationErrors, serverError, author) => {
-        if (validationErrors.length) {
-            model = {
-                id: req.params.id,
-                validationError: true,
-                errors: validationErrors
-            }
-            res.render("edit-author.hbs", model)
-        } else if (serverError) {
-            error = {
-                code: 500,
-                message: "Internal server error"
-            }
-        } else {
-            bookManager.findBooksWithAuthorId(author.id).then(foundBooks => {
-                const model = {
-                    id: author.get('id'),
-                    firstName: author.get('firstName'),
-                    lastName: author.get('lastName'),
-                    birthYear: author.get('birthYear'),
-                    books: foundBooks
-                }
-
-                res.render("author.hbs", model)
-            }).catch(() => {
-                // TODO: render author but error message on books?
-            })
+    const userId = req.session.userId
+    if (!userId) {
+        error = {
+            code: 403,
+            message: "Need to be logged in as administrator to edit author"
         }
-    })
+    }
+    else {
+        let newValues = req.body
+        newValues.id = req.params.id
 
-    // const body = removeEmptyValues(req.body)
-    // const errors = validation.validateBook(body)
+        authorManager.editAuthor(newValues, (validationErrors, serverError, author) => {
+            if (validationErrors.length) {
+                model = {
+                    id: req.params.id,
+                    validationError: true,
+                    errors: validationErrors
+                }
+                res.render("edit-author.hbs", model)
+            } else if (serverError) {
+                error = {
+                    code: 500,
+                    message: "Internal server error"
+                }
+            } else {
+                bookManager.findBooksWithAuthorId(author.id).then(foundBooks => {
+                    const model = {
+                        id: author.get('id'),
+                        firstName: author.get('firstName'),
+                        lastName: author.get('lastName'),
+                        birthYear: author.get('birthYear'),
+                        books: foundBooks
+                    }
 
-    // if (0 < Object.keys(errors)) {
-    //     model = {
-    //         failedValidation: true,
-    //         errors: errors
-    //     }
-    //     res.render('edit-author.hbs', model)
-    // } else {
-    //     dbAuthors.editAuthor(body)
-    //     res.render("edit-author.hbs")
-    // }
+                    res.render("author.hbs", model)
+                }).catch(() => {
+                    // TODO: render author but error message on books?
+                })
+            }
+        })
+    }
+
 })
 
 router.get('/edit/:id', (req, res) => {
-    model = { id: req.params.id }
-    res.render("edit-author.hbs", model)
+    const userId = req.session.userId
+    if (!userId) {
+        error = {
+            code: 403,
+            message: "Need to be logged in as administrator to edit author"
+        }
+    }
+    else {
+        model = { id: req.params.id }
+        res.render("edit-author.hbs", model)
+    }
+
 })
 
 module.exports = router

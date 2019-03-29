@@ -16,6 +16,16 @@ sequelize
     })
 const Op = Sequelize.Op
 
+const Sessions = sequelize.define("Session", {
+    id: {
+        type: Sequelize.INTEGER,
+        primaryKey: true
+    },
+    administratorId: {
+        type:Sequelize.INTEGER
+    }
+})
+
 const Authors = sequelize.define("Authors", {
 
     id: {
@@ -53,7 +63,7 @@ const BookAuthors = sequelize.define("BookAuthors", {
 })
 
 const Classifications = sequelize.define("Classifications", {
-    signID: {
+    signId: {
         type: Sequelize.INTEGER,
         primaryKey: true
     },
@@ -115,6 +125,7 @@ const Administrators = sequelize.define("Administrators", {
 // ----------- Exports -----------------
 exports.Op = Op
 
+exports.Sessions = Sessions
 exports.Administrators = Administrators
 exports.Authors = Authors
 exports.Books = Books

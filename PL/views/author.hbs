@@ -8,8 +8,9 @@
     <a href="/books/{{ISBN}}">{{title}}</a><br>
 {{/each}}
 
-
+{{#if admin}}
 <a href="/authors/edit/{{id}}">Edit</a>
+{{/if}}
 
 {{#if getFailed}}
 <div class="alert alert-warning">
