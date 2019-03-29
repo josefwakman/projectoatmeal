@@ -18,3 +18,7 @@ input.form-control {
 td:hover {
     cursor: pointer;
 }
+
+a.test{
+    color: white;
+}

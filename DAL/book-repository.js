@@ -60,6 +60,17 @@ function addBook(book) {
     })
 }
 
+function addBookForAuthor(book){
+    return BookAuthors.create({
+        BookISBN: book.ISBN,
+        AuthorId: book.authorID
+    }).then(book => {
+        return book
+    }).catch(error => {
+        throw error
+    })
+}
+
 function editBook(newValues) {
 
     return Books.findOne({

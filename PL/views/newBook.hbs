@@ -1,4 +1,4 @@
-<form id="create-book-form" action="/books/new" method="post" autocomplete="off" class="create-book-form">
+<form id="create-book-form" action="/authors/{{authorId}}/addBook" method="post" autocomplete="off" class="create-book-form">
     <div class="form-group create-book-div">
         <input type="text", placeholder="ISBN", class="form-control" name="ISBN">
         <input type="text" placeholder="Title" class="form-control" name="title">

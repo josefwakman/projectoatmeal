@@ -163,8 +163,6 @@ router.get('/:id', (req, res) => {
     // })
 })
 
-
-
 router.post('/edit/:id', (req, res) => {
 
     let newValues = req.body
@@ -218,6 +216,23 @@ router.post('/edit/:id', (req, res) => {
 router.get('/edit/:id', (req, res) => {
     model = { id: req.params.id }
     res.render("edit-author.hbs", model)
+})
+
+router.get('/:id/addBook', (req, res) => {
+
+    const authorId = req.params.id;
+
+    let model = {
+        authorId: authorId  ,
+        postError: false
+    }
+    
+    res.render("newBook.hbs", model)
+
+})
+
+router.post("/:id/addBook", (req, res) => {
+
 })
 
 module.exports = router

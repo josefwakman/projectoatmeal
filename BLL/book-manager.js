@@ -51,6 +51,7 @@ function addBook(book, callback) {
         
     } else {
         book.publicationInfo = book.publicationCity + " : " + book.publicationCompany + ", " + book.publicationYear
+        book.authorId = 
         bookRepository.addBook(book).then(addedBook => {
             callback([], null, addedBook)
 
@@ -59,6 +60,7 @@ function addBook(book, callback) {
         })
     }
 }
+
 
 function editBook(newValues, callback) {
     newValues = validator.removeEmptyValues(newValues)

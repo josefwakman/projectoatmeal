@@ -1,15 +1,24 @@
 <h2>Author page</h2>
 
 <h3>{{firstName}} {{lastName}}</h3>
-<p>Born {{birthYear}}</p>
+<p>Born: {{birthYear}}</p>
 
 <h4>Books:</h4>
 {{#each books}}
-    <a href="/books/{{ISBN}}">{{title}}</a><br>
+<a href="/books/{{ISBN}}">{{title}}</a><br>
 {{/each}}
 
+<br>
 
-<a href="/authors/edit/{{id}}">Edit</a>
+<button class="btn btn-primary">
+    <a class="test" href="/authors/{{id}}/addBook">Add Book</a>
+</button>
+
+<br>
+
+<button id="editAuthorBtn" class="btn btn-primary">
+    <a class="test" href="/authors/edit/{{id}}">Edit Author</a>
+</button>
 
 {{#if getFailed}}
 <div class="alert alert-warning">

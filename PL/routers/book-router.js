@@ -5,21 +5,25 @@ const authorManager = require("../../BLL/author-manager")
 const router = express.Router()
 
 router.get("/new", (req, res) => {
-    model = { searched: false }
+    const model = { searched: false }
+
+    const authorId = req.query.id;
+    console.log(authorId);
+    
 
     res.render("newBook.hbs", model);
 })
 
 router.post("/new", (req, res) => {
 
-    model = { searched: false }
+    const model = { searched: false }
 
     bookManager.addBook(req.body, (book, errors) => {
         if (errors.length) {
             model.errors = errors
             model.postError = true
             res.render("newBook.hbs", model)
-        } 
+        }
     })
 })
 
@@ -92,7 +96,6 @@ router.get('/:ISBN', (req, res) => {
         // TODO: error page
     })
 })
-
 
 router.post('/', (req, res) => {
     model = { searched: false }
