@@ -4,6 +4,16 @@ const authorization = require("../../BLL/authorization")
 
 const router = express.Router()
 
+function deleteButtonPressed() {
+    if (confirm("Do you really want to delete this user?")) {
+        console.log("Radera jäveln");
+        
+    } else {
+        console.log("Ok, inte");
+        
+    }
+}
+
 // ---- PLACEHOLDERS - TO BE DELETED ----------------
 
 administrators = [
@@ -146,24 +156,43 @@ router.post('/', (req, res) => {
 })
 
 router.get('/edit/:id', (req, res) => {
-    // TODO: authorization
+    const userId = req.session.userId
 
-    administratorManager.getAdministratorWithId(req.params.id).then(administrator => {
+    if (!userId) {
         model = {
-            id: administrator.id,
-            firstName: administrator.firstName,
-            lastName: administrator.lastName,
-            email: administrator.email,
-            privilegies: administrator.privilegies
-        }
-        res.render("edit-administrator.hbs", model)
-    }).catch(() => {
-        model = {
-            code: 500,
-            message: "Internal server error"
+            code: 403,
+            message: "You need to be logged in as administrator to edit administrators"
         }
         res.render("error-page.hbs", model)
-    })
+    }
+    else {
+        administratorManager.getAdministratorWithId(req.params.id).then(administrator => {
+            model = {
+                id: administrator.id,
+                firstName: administrator.firstName,
+                lastName: administrator.lastName,
+                email: administrator.email,
+                privilegies: administrator.privilegies
+            }
+    
+            authorization.getAccessLevelOfAdministratorId(userId).then(accesslevel => {
+    
+                for (let i = 1; i <= accesslevel; i++) {
+                    model[authorization.accessLevels[i]] = true
+                }
+                res.render("edit-administrator.hbs", model)
+    
+            })
+    
+        }).catch(error => {
+            console.log(error)
+            model = {
+                code: 500,
+                message: "Internal server error"
+            }
+            res.render("error-page.hbs", model)
+        })
+    }
 })
 
 router.post('/edit/:id', (req, res) => {
