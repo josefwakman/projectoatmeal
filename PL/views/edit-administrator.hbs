@@ -14,26 +14,20 @@
 </form>
 {{/if}}
 
+{{#if superAdmin}}
+<form action="/administrators/edit/{{id}}" method="post">
+    <input type="text" name="password" placeholder="New password">
+    <input type="text" name="passwordRepeat" placeholder="Enter password again">
+    <input type="submit">
+</form>
+{{/if}}
+
 {{#if validationError}}
 <div class="alert alert-warning">
     <strong>Fields not filled in correctly!</strong>
     {{#each errors}}
     <p>{{this}}</p>
     {{/each}}
-</div>
-{{/if}}
-
-{{#if superAdmin}}
-<form action="/administrators/edit/{{id}}" method="post">
-    <input type="text" name="password" placeholder="New password">
-    <input type="text" name="passwordAgain" placeholder="Enter password again">
-    <input type="submit">
-</form>
-{{/if}}
-
-{{#if passwordsNotMatching }}
-<div class="alert alert-warning">
-    <strong>Passwords don't match!</strong>
 </div>
 {{/if}}
 
