@@ -174,6 +174,8 @@ app.post('/login', (req, res) => {
     const password = req.body.password
 
     administratorManager.getAdministratorWithCredentials(email, password).then(administrator => {
+        console.log("Administrator i app.js:", administrator);
+        
         if (!administrator) {
             const model = {
                 loginFailed: true,

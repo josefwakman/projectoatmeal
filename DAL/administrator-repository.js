@@ -61,17 +61,23 @@ function getAdministratorWithId(id) {
     })
 }
 
-function getAdministratorWithCredentials(email, password) {
+// function getAdministratorWithCredentials(email, password) {
+//     return Administrators.findOne({
+//         where: {
+//             [Op.and]: [
+//                 {
+//                     email: email
+//                 }, {
+//                     password: password
+//                 }
+//             ]  
+//         }
+//     })
+// }
+
+function getAdministratorWithEmail(email) {
     return Administrators.findOne({
-        where: {
-            [Op.and]: [
-                {
-                    email: email
-                }, {
-                    password: password
-                }
-            ]  
-        }
+        where: { email: email }
     })
 }
 
@@ -79,5 +85,5 @@ exports.getAdministrators = getAdministrators
 exports.addAdministrator = addAdministrator
 exports.updateAdministrator = updateAdministrator
 exports.getAdministratorWithId = getAdministratorWithId
-exports.getAdministratorWithCredentials = getAdministratorWithCredentials
-
+// exports.getAdministratorWithCredentials = getAdministratorWithCredentials
+exports.getAdministratorWithEmail = getAdministratorWithEmail
