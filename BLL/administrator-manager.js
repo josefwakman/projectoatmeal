@@ -1,5 +1,6 @@
 const administratorRepository = require("../DAL/administrator-repository")
 const validator = require("./validation")
+const hashing = require("./hashing")
 
 const requiredAdministratorKeys = [
     "firstName",
@@ -32,6 +33,8 @@ function addAdministrator(administrator, callback) {
         callback(errors)
 
     } else {
+
+
         administratorRepository.addAdministrator(administrator).then(addedAdministrator => {
             callback([], null, addedAdministrator)
 

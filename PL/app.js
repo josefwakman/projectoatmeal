@@ -9,6 +9,7 @@ const authorRouter = require("./routers/author-router")
 const bookRouter = require("./routers/book-router")
 
 const administratorManager = require("../BLL/administrator-manager")
+const hashing = require("../BLL/hashing")
 
 const db = require("../DAL/classification-repository")
 const dbBooks = require("../DAL/book-repository")
@@ -46,20 +47,22 @@ app.get('/', function (req, res) {
 })
 
 app.get('/test', (req, res) => {
-    console.log("Cookies:", req.session.cookie);
-    console.log("Session.id:", req.session.id);
+    
+    const plaintextpsw = "Pleasehashme"
 
+    let hashedpsw = ""
+    hashing.generateHashForPassword(plaintextpsw).then(hash => {
+        hashedpsw = hash
+        console.log("Hashedpsw:", hashedpsw)
 
-    if (req.session.cookie.sessionId == 1776) {
-        const model = {
-            loginSucess: true,
-            firstName: "Thomas",
-            lastName: "Jefferson",
-        }
-        res.render('test-cookies.hbs', model)
-    } else {
-        res.render("test-cookies.hbs")
-    }
+        hashing.compareHashAndPassword("otherpsw", hashedpsw).then(result => {
+            console.log("compare otherpsw and hashedpsw", result)
+        })
+
+        hashing.compareHashAndPassword(plaintextpsw, hashedpsw).then(result => {
+            console.log("compare plaintextpsw and hashedpsw", result)
+        })
+    })
 })
 
 app.post('/test', (req, res) => {
