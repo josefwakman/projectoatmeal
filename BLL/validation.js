@@ -135,6 +135,11 @@ function validateAdministrator(admin) {
                     errors.push("No valid privilegium given")
                 }
                 break
+            case "password":
+                if (admin.password != admin.passwordRepeat) {
+                    errors.push("Passwords does not match!")
+                }
+                break
         }
     }
     return errors
