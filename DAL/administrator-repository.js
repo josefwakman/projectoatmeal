@@ -23,8 +23,6 @@ function addAdministrator(administrator) {
 }
 
 function updateAdministrator(newValues) {
-    console.log(newValues);
-    
     return Administrators.findOne({
         where: { id: newValues.id }
     }).then(administrator => {

@@ -34,9 +34,15 @@ function addAdministrator(administrator, callback) {
 
     } else {
 
-
-        administratorRepository.addAdministrator(administrator).then(addedAdministrator => {
-            callback([], null, addedAdministrator)
+        hashing.generateHashForPassword(administrator.password).then(hashedPassword => {
+            
+            administrator.password = hashedPassword
+            administratorRepository.addAdministrator(administrator).then(addedAdministrator => {
+                callback([], null, addedAdministrator)
+    
+            }).catch(error => {
+                callback([], error)
+            })
 
         }).catch(error => {
             callback([], error)
@@ -87,11 +93,8 @@ function getAdministratorWithId(id) {
 function getAdministratorWithCredentials(email, password) {
     return administratorRepository.getAdministratorWithEmail(email).then(administrator => {
         if (administrator) {
-            console.log("Comparing " + password + " and " + administrator.get("password"));
             
             return hashing.compareHashAndPassword(password, administrator.get("password")).then(result => {
-                console.log("Reslut is:", result);
-                
                 if (result) {
                     return administrator
                 }

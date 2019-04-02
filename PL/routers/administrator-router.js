@@ -116,7 +116,7 @@ router.post('/', (req, res) => {
         if (0 < validationErrors.length) {
             administratorManager.getAdministrators().then(administrators => {
                 model = {
-                    errors: errors,
+                    errors: validationErrors,
                     validationError: true,
                     privilegies: { // TODO: replace with global variable (from validation?)
                         1: "admin",
