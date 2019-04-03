@@ -162,7 +162,7 @@ router.get('/edit/:id', (req, res) => {
                 message: "You need to be logged in to edit administrators"
             }
             res.render("error-page.hbs", model)
-        } 
+        }
         else {
             administratorManager.getAdministratorWithId(req.params.id).then(administrator => {
                 model = {
@@ -172,12 +172,12 @@ router.get('/edit/:id', (req, res) => {
                     email: administrator.email,
                     privilegies: administrator.privilegies
                 }
-    
-                    for (let i = 1; i <= accesslevel; i++) {
-                        model[authorization.accessLevels[i]] = true
-                    }
-                    res.render("edit-administrator.hbs", model)
-    
+
+                for (let i = 1; i <= accesslevel; i++) {
+                    model[authorization.accessLevels[i]] = true
+                }
+                res.render("edit-administrator.hbs", model)
+
             })
         }
 
@@ -189,7 +189,7 @@ router.get('/edit/:id', (req, res) => {
         }
         res.render("error-page.hbs", model)
     })
-    
+
 })
 
 router.post('/edit/:id', (req, res) => {
@@ -197,36 +197,37 @@ router.post('/edit/:id', (req, res) => {
     newValues.id = req.params.id
     const userId = req.session.userId
 
-        administratorManager.updateAdministrator(newValues, userId, (validationErrors, error, administrator) => {
-            if (validationErrors.length) {
-                let model = {
-                    id: req.params.id,
-                    validationError: true,
-                    errors: validationErrors
-                }
-                authorization.getAccessLevelOfAdministratorId(userId).then(accesslevel => {
-
-                    for (let i = 1; i <= accesslevel; i++) {
-                        model[authorization.accessLevels[i]] = true
-                    }
-                    res.render("edit-administrator.hbs", model)
-                })
-            } else if (error) {
-                res.render("error-page.hbs", error)
-
+    administratorManager.updateAdministrator(newValues, userId, (validationErrors, error, administrator) => {
+        if (validationErrors.length) {
+            let model = {
+                id: req.params.id,
+                validationError: true,
+                errors: validationErrors
             }
-            else {
-                model = {
-                    id: administrator.get('id'),
-                    firstName: administrator.get('firstName'),
-                    lastName: administrator.get('lastName'),
-                    email: administrator.get('email'),
-                    privilegies: administrator.get('privilegies')
-                }
+            authorization.getAccessLevelOfAdministratorId(userId).then(accesslevel => {
 
-                res.render("administrator.hbs", model)
+                for (let i = 1; i <= accesslevel; i++) {
+                    model[authorization.accessLevels[i]] = true
+                }
+                res.render("edit-administrator.hbs", model)
+            })
+        } else if (error) {
+            res.render("error-page.hbs", error)
+
+        }
+        else {
+            model = {
+                id: administrator.get('id'),
+                firstName: administrator.get('firstName'),
+                lastName: administrator.get('lastName'),
+                email: administrator.get('email'),
+                privilegies: administrator.get('privilegies')
             }
-        })
+
+            res.render("administrator.hbs", model)
+        }
+    })
+
 })
 
 module.exports = router
