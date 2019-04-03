@@ -109,9 +109,9 @@ router.get('/:id', (req, res) => {
 router.post('/', (req, res) => {
     let model = {}
     const body = req.body
+    const userId = req.session.userId
 
-
-    administratorManager.addAdministrator(body, (validationErrors, serverError, administrator) => {
+    administratorManager.addAdministrator(body, userId, (validationErrors, error, administrator) => {
 
         if (0 < validationErrors.length) {
             administratorManager.getAdministrators().then(administrators => {
@@ -136,12 +136,8 @@ router.post('/', (req, res) => {
                 }
                 res.render("administrators.hbs", model)
             })
-        } else if (serverError) {
-            model = {
-                code: 500,
-                message: "Internal server error"
-            }
-            res.render("error-page.hbs", model)
+        } else if (error) {
+            res.render("error-page.hbs", error)
         }
         else {
             model = {
@@ -200,17 +196,9 @@ router.post('/edit/:id', (req, res) => {
     newValues.id = req.params.id
     const userId = req.session.userId
 
-    // if (!userId) {
-    //     model = {
-    //         code: 403,
-    //         message: "You need to be logged in as administrator to edit administrators"
-    //     }
-    //     res.render("error-page.hbs", model)
-    // }
-    // else {
-        administratorManager.updateAdministrator(newValues, (validationErrors, serverError, administrator) => {
+        administratorManager.updateAdministrator(newValues, userId, (validationErrors, error, administrator) => {
             if (validationErrors.length) {
-                model = {
+                let model = {
                     id: req.params.id,
                     validationError: true,
                     errors: validationErrors
@@ -222,13 +210,8 @@ router.post('/edit/:id', (req, res) => {
                     }
                     res.render("edit-administrator.hbs", model)
                 })
-            } else if (serverError) {
-
-                model = {
-                    code: 500,
-                    message: "Internal server error"
-                }
-                res.render("error-page.hbs", model)
+            } else if (error) {
+                res.render("error-page.hbs", error)
 
             }
             else {
@@ -243,7 +226,6 @@ router.post('/edit/:id', (req, res) => {
                 res.render("administrator.hbs", model)
             }
         })
-    // }
 })
 
 module.exports = router

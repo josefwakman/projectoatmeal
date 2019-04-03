@@ -1,11 +1,7 @@
-const {Administrators, Op} = require("./models")
+const { Administrators, Op } = require("./models")
 
 function getAdministrators() {
-    return Administrators.findAll().then(administrators => {
-        return administrators
-    }).catch(error => {
-        throw error
-    })
+    return Administrators.findAll()
 }
 
 function addAdministrator(administrator) {
@@ -17,8 +13,6 @@ function addAdministrator(administrator) {
         password: administrator.password
     }).then(administrator => {
         return administrator
-    }).catch(err => {
-        throw err
     })
 }
 
@@ -79,9 +73,22 @@ function getAdministratorWithEmail(email) {
     })
 }
 
+function getAccessLevelOfAdministratorWithId(id) {
+    return Administrators.findOne({
+        where: { id: id }
+    }).then(administrator => {
+        if (administrator) {
+            return administrator.get('privilegies')
+        } else {
+            return null
+        }
+    })
+}
+
 exports.getAdministrators = getAdministrators
 exports.addAdministrator = addAdministrator
 exports.updateAdministrator = updateAdministrator
 exports.getAdministratorWithId = getAdministratorWithId
 // exports.getAdministratorWithCredentials = getAdministratorWithCredentials
 exports.getAdministratorWithEmail = getAdministratorWithEmail
+exports.getAccessLevelOfAdministratorWithId = getAccessLevelOfAdministratorWithId
