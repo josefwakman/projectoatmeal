@@ -156,65 +156,79 @@ router.get('/:id', (req, res) => {
 router.post('/edit/:id', (req, res) => {
 
     const userId = req.session.userId
-    if (!userId) {
-        const model = {
-            code: 403,
-            message: "Need to be logged in as administrator to edit author"
-        }
-        res.render("error-page", model)
-    }
-    else {
-        let newValues = req.body
-        newValues.id = req.params.id
+    let newValues = req.body
+    newValues.id = req.params.id
 
-        authorManager.editAuthor(newValues, (validationErrors, serverError, author) => {
-            if (validationErrors.length) {
-                model = {
-                    id: req.params.id,
-                    validationError: true,
-                    errors: validationErrors
-                }
-                res.render("edit-author.hbs", model)
-            } else if (serverError) {
-                console.log(serverError)
-                model = {
-                    code: 500,
-                    message: "Internal server error"
-                }
-                res.render("error-page.hbs", model)
-            } else {
-                bookManager.findBooksWithAuthorId(author.id).then(foundBooks => {
-                    const model = {
-                        id: author.get('id'),
-                        firstName: author.get('firstName'),
-                        lastName: author.get('lastName'),
-                        birthYear: author.get('birthYear'),
-                        books: foundBooks
-                    }
-
-                    res.render("author.hbs", model)
-                }).catch(() => {
-                    // TODO: render author but error message on books?
-                })
+    authorManager.editAuthor(newValues, userId, (validationErrors, error, author) => {
+        if (validationErrors.length) {
+            model = {
+                id: req.params.id,
+                validationError: true,
+                errors: validationErrors
             }
-        })
-    }
+            res.render("edit-author.hbs", model)
+
+        } else if (error) {
+            res.render("error-page.hbs", error)
+
+        } else {
+            bookManager.findBooksWithAuthorId(author.id).then(foundBooks => {
+                const model = {
+                    id: author.get('id'),
+                    firstName: author.get('firstName'),
+                    lastName: author.get('lastName'),
+                    birthYear: author.get('birthYear'),
+                    books: foundBooks
+                }
+
+                res.render("author.hbs", model)
+            }).catch(() => {
+                const model = {
+                    id: author.get('id'),
+                    firstName: author.get('firstName'),
+                    lastName: author.get('lastName'),
+                    birthYear: author.get('birthYear'),
+                    bookErrorMessage: "There was an error fetching books :("
+                }
+                res.render("author.hbs", model)
+            })
+        }
+    })
 
 })
 
 router.get('/edit/:id', (req, res) => {
     const userId = req.session.userId
-    if (!userId) {
+    const authorId = req.params.id
+
+    authorization.getAccessLevelOfAdministratorId(userId).then(accessLevel => { // TODO: this goes PL -> DAL, which is bad
+        if (!authorization.privilegiesOfAccessLevel.authors.edit.includes(accessLevel)) {
+            const model = {
+                code: 403,
+                message: "Need to be logged in as administrator to edit author"
+            }
+            res.render("error-page.hbs", model)
+        }
+        else {
+            authorManager.getAuthorWithId(authorId).then(author => {
+                const model = {
+                    id: author.get('id'),
+                    firstName: author.get('firstName'),
+                    lastName: author.get('lastName'),
+                    birthYear: author.get('birthYear')
+                }
+                res.render("edit-author.hbs", model)
+            })
+
+        }
+    }).catch(error => {
+        console.log(error)
         const model = {
-            code: 403,
-            message: "Need to be logged in as administrator to edit author"
+            code: 500,
+            message: "Internal server error"
         }
         res.render("error-page.hbs", model)
-    }
-    else {
-        const model = { id: req.params.id }
-        res.render("edit-author.hbs", model)
-    }
+    })
 
 })
 

@@ -56,20 +56,39 @@ function addAuthor(author, userId, callback) {
 
 }
 
-function editAuthor(newValues, callback) {
-    newValues = validator.removeEmptyValues(newValues)
-    console.log(newValues);
+function editAuthor(newValues, userId, callback) {
 
-    const errors = validator.validateAuthor(newValues)
-    if (errors.length > 0) {
-        callback(errors)
-    } else {
-        authorRepository.editAuthor(newValues).then(author => {
-            callback([], null, author)
-        }).catch(error => {
+    getAccessLevelOfAdministratorWithId(userId).then(accessLevel => {
+        if (!authorization.privilegiesOfAccessLevel.authors.edit.includes(accessLevel)) {
+            const error = {
+                code: 403,
+                message: "Not authorized to edit authors"
+            }
             callback([], error)
-        })
-    }
+        }
+        else {
+            newValues = validator.removeEmptyValues(newValues)
+            const errors = validator.validateAuthor(newValues)
+            if (errors.length > 0) {
+                callback(errors)
+
+            } else {
+                authorRepository.editAuthor(newValues).then(author => {
+                    callback([], null, author)
+                }).catch(serverError => {
+                    console.log(serverError)
+                    const error = {
+                        code: 500,
+                        message: "Internal server error"
+                    }
+                    callback([], error)
+                })
+            }
+        }
+    })
+
+
+
 }
 
 function findAuthorsWithBookISBN(ISBN) {
