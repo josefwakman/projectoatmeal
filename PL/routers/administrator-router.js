@@ -216,15 +216,20 @@ router.post('/edit/:id', (req, res) => {
 
         }
         else {
-            model = {
-                id: administrator.get('id'),
-                firstName: administrator.get('firstName'),
-                lastName: administrator.get('lastName'),
-                email: administrator.get('email'),
-                privilegies: administrator.get('privilegies')
-            }
+            authorization.getAccessLevelOfAdministratorId(userId).then(accesslevel => {
+                const model = {
+                    id: administrator.get('id'),
+                    firstName: administrator.get('firstName'),
+                    lastName: administrator.get('lastName'),
+                    email: administrator.get('email'),
+                    privilegies: administrator.get('privilegies')
+                }
 
-            res.render("administrator.hbs", model)
+                for (let i = 1; i <= accesslevel; i++) {
+                    model[authorization.accessLevels[i]] = true
+                }
+                res.render("administrator.hbs", model)
+            })
         }
     })
 
