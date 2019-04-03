@@ -2,25 +2,18 @@ const {Authors, BookAuthors, Op} = require("./models")
 
 function findAuthorsWithName(string) {
     return Authors.findAll({
-        // TODO: lägg till limit: (nummer)?
         where: {
             [Op.or]: [
                 { firstName: { [Op.like]: "%" + string + "%" } },
                 { lastName: { [Op.like]: "%" + string + "%" } }
             ]
         }
-    }).then(foundAuthors => {
-        return foundAuthors
-    }).catch(error => {
-        throw error
     })
 }
 
 function getAuthorWithId(id) {
-    return Authors.findOne({ where: { id: id } }).then(author => {
-        return author
-    }).catch(error => {
-        throw error
+    return Authors.findOne({ 
+        where: { id: id } 
     })
 }
 
@@ -34,8 +27,6 @@ function addAuthor(author) {
         birthYear: author.birthYear
     }).then(author => {
         return author
-    }).catch(error => {
-        throw error
     })
 }
 
@@ -56,8 +47,6 @@ function editAuthor(newValues) {
             }
         }
         return foundAuthor.save()
-    }).catch(error => {
-        throw error
     })
 }
 
@@ -77,10 +66,8 @@ function findAuthorsWithBookISBN(ISBN) { // returns array of authors belonging t
             where: {
                 [Op.or]: foundAuthors
             }
-        }).then(authors => {
-            return authors
-        }).catch(error => {throw error})
-    }).catch(error => {throw error})
+        })
+    })
 }
 
 // ----- Exports --------------

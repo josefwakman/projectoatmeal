@@ -9,16 +9,24 @@ router.get("/add", (req, res) => {
     let model = { searched: false }
 
     const userId = req.session.userId
-    if (!userId) {
-        model = {
-            code: 403,
-            message: "You need to be logged in as administrator to add author"
+    authorization.getAccessLevelOfAdministratorId(userId).then(accessLevel => {
+        if (!authorization.privilegiesOfAccessLevel.authors.add.includes(accessLevel)) {
+            const model = {
+                code: 403,
+                message: "Not authorized to add authors"
+            }
+            res.render("error-page.hbs", model)
+        } else {
+            res.render("newAuthor.hbs", model)
+        }
+    }).catch(error => {
+        console.log(error)
+        const model = {
+            code: 500,
+            message: "Internal server error"
         }
         res.render("error-page.hbs", model)
-    }
-    else {
-        res.render("newAuthor.hbs", model)
-    }
+    })
 
 })
 
@@ -26,42 +34,31 @@ router.post('/add', (req, res) => {
     let model = { searched: false }
 
     const userId = req.session.userId
-    if (!userId) {
-        model = {
-            code: 403,
-            message: "You need to be logged in as administrator to add author"
-        }
-        res.render("error-page.hbs", model)
-    }
-    else {
-        authorManager.addAuthor(req.body, (validationErrors, serverError, author) => {
-            if (validationErrors.length > 0) {
-                model = {
-                    validationError: true,
-                    errors: validationErrors
-                }
-                res.render("search-authors.hbs", model)
-            } else if (serverError) {
-                console.log("Servererror:", serverError);
 
-                error = {
-                    code: 500,
-                    message: "Internal server error"
-                }
-            } else {
-                const model = {
-                    id: author.get('id'),
-                    firstName: author.get('firstName'),
-                    lastName: author.get('lastName'),
-                    birthYear: author.get('birthYear'),
-                    admin: true
-                }
-
-                res.render("author.hbs", model)
+    authorManager.addAuthor(req.body, userId, (validationErrors, error, author) => {
+        if (validationErrors.length > 0) {
+            model = {
+                firstName: req.body.firstName,
+                lastName: req.body.lastName,
+                validationError: true,
+                errors: validationErrors
             }
-        })
-    }
+            res.render("newAuthor.hbs", model)
 
+        } else if (error) {
+            res.render("error-page.hbs", error)
+
+        } else {
+            const model = {
+                id: author.get('id'),
+                firstName: author.get('firstName'),
+                lastName: author.get('lastName'),
+                birthYear: author.get('birthYear'),
+                admin: true
+            }
+            res.render("author.hbs", model)
+        }
+    })
 })
 
 router.get('/search', function (req, res) {
@@ -146,11 +143,11 @@ router.get('/:id', (req, res) => {
 
     }).catch(error => {
         console.log(error)
-            const model = {
-                code: 500,
-                message: "Internal server error"
-            }
-            res.render("error-page.hbs", model)
+        const model = {
+            code: 500,
+            message: "Internal server error"
+        }
+        res.render("error-page.hbs", model)
     })
 })
 

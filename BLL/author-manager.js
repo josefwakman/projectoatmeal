@@ -1,5 +1,7 @@
 const authorRepository = require('../DAL/author-repository')
 const validator = require('./validation')
+const authorization = require('./authorization')
+const { getAccessLevelOfAdministratorWithId } = require('../DAL/administrator-repository')
 
 const requiredAuthorKeys = [
     "firstName",
@@ -22,28 +24,42 @@ function getAuthorWithId(id) {
     })
 }
 
-function addAuthor(author, callback) {
-    const errors = validator.validateAuthor(author)
-    const missingkeys = validator.getMissingKeys(author, requiredAuthorKeys)
-    for (key of missingkeys) {
-        errors.push("Nothing entered in " + key)
-    }
-    if (errors.length) {
-        callback(errors)
-    } else {
-        authorRepository.addAuthor(author).then(author => {
-            callback([], null, author)
-        }).catch(error => {
+function addAuthor(author, userId, callback) {
+
+    getAccessLevelOfAdministratorWithId(userId).then(accessLevel => {
+        if (!authorization.privilegiesOfAccessLevel.authors.add.includes(accessLevel)) {
+            error = {
+                code: 403,
+                message: "Not authorized to add author"
+            }
             callback([], error)
-        })
-    }
-    
+        }
+        else {
+            const errors = validator.validateAuthor(author)
+            const missingkeys = validator.getMissingKeys(author, requiredAuthorKeys)
+            for (key of missingkeys) {
+                errors.push("Nothing entered in " + key)
+            }
+            if (errors.length) {
+                callback(errors)
+            }
+            else {
+
+                authorRepository.addAuthor(author).then(author => {
+                    callback([], null, author)
+                }).catch(error => {
+                    callback([], error)
+                })
+            }
+        }
+    })
+
 }
 
 function editAuthor(newValues, callback) {
     newValues = validator.removeEmptyValues(newValues)
     console.log(newValues);
-    
+
     const errors = validator.validateAuthor(newValues)
     if (errors.length > 0) {
         callback(errors)
