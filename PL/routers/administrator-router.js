@@ -154,41 +154,42 @@ router.post('/', (req, res) => {
 router.get('/edit/:id', (req, res) => {
     const userId = req.session.userId
 
-    if (!userId) {
-        model = {
-            code: 403,
-            message: "You need to be logged in as administrator to edit administrators"
-        }
-        res.render("error-page.hbs", model)
-    }
-    else {
-        administratorManager.getAdministratorWithId(req.params.id).then(administrator => {
+    authorization.getAccessLevelOfAdministratorId(userId).then(accesslevel => {
+
+        if (!authorization.privilegiesOfAccessLevel.administrators.edit.includes(accesslevel)) {
             model = {
-                id: administrator.id,
-                firstName: administrator.firstName,
-                lastName: administrator.lastName,
-                email: administrator.email,
-                privilegies: administrator.privilegies
-            }
-
-            authorization.getAccessLevelOfAdministratorId(userId).then(accesslevel => {
-
-                for (let i = 1; i <= accesslevel; i++) {
-                    model[authorization.accessLevels[i]] = true
-                }
-                res.render("edit-administrator.hbs", model)
-
-            })
-
-        }).catch(error => {
-            console.log(error)
-            model = {
-                code: 500,
-                message: "Internal server error"
+                code: 403,
+                message: "You need to be logged in to edit administrators"
             }
             res.render("error-page.hbs", model)
-        })
-    }
+        } 
+        else {
+            administratorManager.getAdministratorWithId(req.params.id).then(administrator => {
+                model = {
+                    id: administrator.id,
+                    firstName: administrator.firstName,
+                    lastName: administrator.lastName,
+                    email: administrator.email,
+                    privilegies: administrator.privilegies
+                }
+    
+                    for (let i = 1; i <= accesslevel; i++) {
+                        model[authorization.accessLevels[i]] = true
+                    }
+                    res.render("edit-administrator.hbs", model)
+    
+            }).catch(error => {
+                console.log(error)
+                model = {
+                    code: 500,
+                    message: "Internal server error"
+                }
+                res.render("error-page.hbs", model)
+            })
+        }
+
+    })
+    
 })
 
 router.post('/edit/:id', (req, res) => {
