@@ -1,5 +1,6 @@
 const administratorRepository = require("../DAL/administrator-repository")
 const validator = require("./validation")
+const hashing = require("./hashing")
 
 const requiredAdministratorKeys = [
     "firstName",
@@ -32,8 +33,16 @@ function addAdministrator(administrator, callback) {
         callback(errors)
 
     } else {
-        administratorRepository.addAdministrator(administrator).then(addedAdministrator => {
-            callback([], null, addedAdministrator)
+
+        hashing.generateHashForPassword(administrator.password).then(hashedPassword => {
+            
+            administrator.password = hashedPassword
+            administratorRepository.addAdministrator(administrator).then(addedAdministrator => {
+                callback([], null, addedAdministrator)
+    
+            }).catch(error => {
+                callback([], error)
+            })
 
         }).catch(error => {
             callback([], error)
@@ -43,17 +52,32 @@ function addAdministrator(administrator, callback) {
 
 function updateAdministrator(administrator, callback) {
     const errors = validator.validateAdministrator(administrator)
-    
+
     if (errors.length) {
         callback(errors)
-        
-    } else {
-        administratorRepository.updateAdministrator(administrator).then(updatedAdministrator => {
-            callback([], null, updatedAdministrator)
 
-        }).catch(error => {
-            callback([], error)
-        })
+    } else {
+
+        if (administrator.password) {
+            hashing.generateHashForPassword(administrator.password).then(hashedPassword => {
+                administrator.password = hashedPassword
+                administratorRepository.updateAdministrator(administrator).then(updatedAdministrator => {
+                    callback([], null, updatedAdministrator)
+    
+                })
+            }).catch(error => {
+                callback([], error)
+            })
+        }
+        else {
+
+            administratorRepository.updateAdministrator(administrator).then(updatedAdministrator => {
+                callback([], null, updatedAdministrator)
+
+            }).catch(error => {
+                callback([], error)
+            })
+        }
     }
 }
 
@@ -67,8 +91,21 @@ function getAdministratorWithId(id) {
 }
 
 function getAdministratorWithCredentials(email, password) {
-    return administratorRepository.getAdministratorWithCredentials(email, password).then(administrator => {
-        return administrator
+    return administratorRepository.getAdministratorWithEmail(email).then(administrator => {
+        if (administrator) {
+            
+            return hashing.compareHashAndPassword(password, administrator.get("password")).then(result => {
+                if (result) {
+                    return administrator
+                }
+                else {
+                    return false
+                }
+            })
+        }
+        else {
+            return false
+        }
     })
 }
 

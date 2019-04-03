@@ -116,7 +116,7 @@ router.post('/', (req, res) => {
         if (0 < validationErrors.length) {
             administratorManager.getAdministrators().then(administrators => {
                 model = {
-                    errors: errors,
+                    errors: validationErrors,
                     validationError: true,
                     privilegies: { // TODO: replace with global variable (from validation?)
                         1: "admin",
@@ -200,14 +200,14 @@ router.post('/edit/:id', (req, res) => {
     newValues.id = req.params.id
     const userId = req.session.userId
 
-    if (!userId) {
-        model = {
-            code: 403,
-            message: "You need to be logged in as administrator to edit administrators"
-        }
-        res.render("error-page.hbs", model)
-    }
-    else {
+    // if (!userId) {
+    //     model = {
+    //         code: 403,
+    //         message: "You need to be logged in as administrator to edit administrators"
+    //     }
+    //     res.render("error-page.hbs", model)
+    // }
+    // else {
         administratorManager.updateAdministrator(newValues, (validationErrors, serverError, administrator) => {
             if (validationErrors.length) {
                 model = {
@@ -243,7 +243,7 @@ router.post('/edit/:id', (req, res) => {
                 res.render("administrator.hbs", model)
             }
         })
-    }
+    // }
 })
 
 module.exports = router
