@@ -178,16 +178,16 @@ router.get('/edit/:id', (req, res) => {
                     }
                     res.render("edit-administrator.hbs", model)
     
-            }).catch(error => {
-                console.log(error)
-                model = {
-                    code: 500,
-                    message: "Internal server error"
-                }
-                res.render("error-page.hbs", model)
             })
         }
 
+    }).catch(error => {
+        console.log(error)
+        model = {
+            code: 500,
+            message: "Internal server error"
+        }
+        res.render("error-page.hbs", model)
     })
     
 })

@@ -109,11 +109,7 @@ function updateAdministrator(administrator, userId, callback) {
 
 
 function getAdministratorWithId(id) {
-    return administratorRepository.getAdministratorWithId(id).then(administrator => {
-        return administrator
-    }).catch(error => {
-        throw error
-    })
+    return administratorRepository.getAdministratorWithId(id)
 }
 
 function getAdministratorWithCredentials(email, password) {

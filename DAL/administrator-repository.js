@@ -46,26 +46,8 @@ function updateAdministrator(newValues) {
 function getAdministratorWithId(id) {
     return Administrators.findOne({
         where: { id: id }
-    }).then(administrator => {
-        return administrator
-    }).catch(error => {
-        throw error
     })
 }
-
-// function getAdministratorWithCredentials(email, password) {
-//     return Administrators.findOne({
-//         where: {
-//             [Op.and]: [
-//                 {
-//                     email: email
-//                 }, {
-//                     password: password
-//                 }
-//             ]  
-//         }
-//     })
-// }
 
 function getAdministratorWithEmail(email) {
     return Administrators.findOne({
@@ -89,6 +71,5 @@ exports.getAdministrators = getAdministrators
 exports.addAdministrator = addAdministrator
 exports.updateAdministrator = updateAdministrator
 exports.getAdministratorWithId = getAdministratorWithId
-// exports.getAdministratorWithCredentials = getAdministratorWithCredentials
 exports.getAdministratorWithEmail = getAdministratorWithEmail
 exports.getAccessLevelOfAdministratorWithId = getAccessLevelOfAdministratorWithId
