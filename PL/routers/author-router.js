@@ -201,7 +201,7 @@ router.get('/edit/:id', (req, res) => {
     const userId = req.session.userId
     const authorId = req.params.id
 
-    authorization.getAccessLevelOfAdministratorId(userId).then(accessLevel => { // TODO: this goes PL -> DAL, which is bad
+    authorization.getAccessLevelOfAdministratorId(userId).then(accessLevel => { 
         if (!authorization.privilegiesOfAccessLevel.authors.edit.includes(accessLevel)) {
             const model = {
                 code: 403,
