@@ -1,5 +1,6 @@
 const bookRepository = require('../DAL/book-repository')
 const validator = require('./validation')
+const authorization = require('./authorization')
 
 const requiredBookKeys = [
     "ISBN",
@@ -38,26 +39,38 @@ function findBooksWithAuthorId(id) {
     })
 }
 
-function addBook(book, callback) {
-    let errors = validator.validateBook(book)
+function addBook(book, userId, callback) {
 
-    const missingKeys = validator.getMissingKeys(book, requiredBookKeys)
-    for (key of missingKeys) {
-        errors.push("Nothing entered in " + key)
-    }
-
-    if (errors.length) {
-        callback(errors)
-        
-    } else {
-        book.publicationInfo = book.publicationCity + " : " + book.publicationCompany + ", " + book.publicationYear
-        bookRepository.addBook(book).then(addedBook => {
-            callback([], null, addedBook)
-
-        }).catch(error => {
+    authorization.getAccessLevelOfAdministratorId(userId).then(accessLevel => {
+        if (!authorization.privilegiesOfAccessLevel.books.add.includes(accessLevel)) {
+            const error = {
+                code: 403,
+                message: "Not authorized to add book"
+            }
             callback([], error)
-        })
-    }
+        }
+        else {
+            let errors = validator.validateBook(book)
+
+            const missingKeys = validator.getMissingKeys(book, requiredBookKeys)
+            for (key of missingKeys) {
+                errors.push("Nothing entered in " + key)
+            }
+
+            if (errors.length) {
+                callback(errors)
+
+            } else {
+                book.publicationInfo = book.publicationCity + " : " + book.publicationCompany + ", " + book.publicationYear
+                bookRepository.addBook(book).then(addedBook => {
+                    callback([], null, addedBook)
+
+                })
+            }
+        }
+    }).catch(error => {
+        callback([], error)
+    })
 }
 
 function editBook(newValues, callback) {

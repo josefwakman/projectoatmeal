@@ -49,7 +49,7 @@ function getAccessLevelOfAdministratorId(id) {
     return new Promise((resolve, reject) => {
         administratorRepository.getAdministratorWithId(id).then(administrator => {
             if (!administrator) {
-                reject("No administrator with id: " + id)
+                resolve(false)
             } 
             else {
                 resolve(administrator.get('privilegies'))
