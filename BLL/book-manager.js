@@ -73,20 +73,32 @@ function addBook(book, userId, callback) {
     })
 }
 
-function editBook(newValues, callback) {
-    newValues = validator.removeEmptyValues(newValues)
-    const errors = validator.validateBook(newValues)
-    if (errors.length > 0) {
-        callback(errors)
-    } else {
+function editBook(newValues, userId, callback) {
 
-        bookRepository.editBook(newValues).then(book => {
-            callback([], null, book)
-
-        }).catch(error => {
+    authorization.getAccessLevelOfAdministratorId(userId).then(accessLevel => {
+        if (!authorization.privilegiesOfAccessLevel.books.add.includes(accessLevel)) {
+            const error = {
+                code: 403,
+                message: "Not authorized to add book"
+            }
             callback([], error)
-        })
-    }
+        }
+        else {
+            newValues = validator.removeEmptyValues(newValues)
+            const errors = validator.validateBook(newValues)
+            if (errors.length > 0) {
+                callback(errors)
+            }
+            else {
+                bookRepository.editBook(newValues).then(book => {
+                    callback([], null, book)
+
+                })
+            }
+        }
+    }).catch(error => {
+        callback([], error)
+    })
 }
 
 exports.findBooksWithTitle = findBooksWithTitle
