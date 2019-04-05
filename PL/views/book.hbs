@@ -9,4 +9,6 @@
     <a href="/authors/{{id}}">{{firstName}} {{lastName}}</a><br><br>
 {{/each}}
 
+{{#if admin}}
 <a href="/books/edit/{{ISBN}}">Edit Book</a>
+{{/if}}

@@ -7,6 +7,9 @@
 {{#each books}}
 <a href="/books/{{ISBN}}">{{title}}</a><br>
 {{/each}}
+{{#if bookErrorMessage}}
+    <p>{{bookErrorMessage}}</p>
+{{/if}}
 
 <br>
 
@@ -19,6 +22,10 @@
 <button id="editAuthorBtn" class="btn btn-primary">
     <a class="test" href="/authors/edit/{{id}}">Edit Author</a>
 </button>
+
+{{#if admin}}
+<a href="/authors/edit/{{id}}">Edit</a>
+{{/if}}
 
 {{#if getFailed}}
 <div class="alert alert-warning">
