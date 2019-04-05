@@ -1,7 +1,8 @@
 const DELTA = 2
 
+function getPaginationWithDots(currentPage, amountOfPages) { // Credit to users "kottentator" and "anotherstarburst" on gist.github, comment here: https://gist.github.com/kottenator/9d936eb3e4e3c3e02598#gistcomment-2209229
+    console.log("currentPage:", currentPage);
 
-function pagination(currentPage, amountOfPages) { // Credit to user "anotherstarburst" on gist.github, comment here: https://gist.github.com/kottenator/9d936eb3e4e3c3e02598#gistcomment-2209229
     const delta = DELTA
     let range = []
     rangeWithDots = []
@@ -19,20 +20,30 @@ function pagination(currentPage, amountOfPages) { // Credit to user "anotherstar
     }
     range.push(amountOfPages)
 
+
     let l
     for (let i of range) {
         if (l) {
-            if (i - l === 2) {
-                rangeWithDots.push(l + 1)
+            if (i - l === 2) {  // TODO: förstå den här if-satsen
+                rangeWithDots.push({
+                    value: l + 1,
+                    isNumber: true
+                })
             } else if (i - l !== 1) {
-                rangeWithDots.push("...")
+                rangeWithDots.push({
+                    value: '...',
+                    isnumber: false
+                })
             }
         }
-        rangeWithDots.push(i)
+        rangeWithDots.push({
+            value: i,
+            isNumber: true
+        })
         l = i
     }
 
     return rangeWithDots
 }
 
-exports.pagination = pagination
+exports.getPaginationWithDots = getPaginationWithDots

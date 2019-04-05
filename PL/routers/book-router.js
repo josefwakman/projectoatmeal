@@ -91,7 +91,7 @@ router.get('/search', function (req, res) {
                 foundBooks = foundBooks.slice(0, BOOKS_PER_PAGE)
             }
 
-            const paginationWithDots = pagination.pagination(page, amountOfPages)
+            const paginationWithDots = pagination.getPaginationWithDots(parseInt(page), amountOfPages)
 
             model = {
                 searched: true,
