@@ -1,0 +1,19 @@
+<h2>Add Author</h2>
+
+<form id="create-author-form" action="/authors/add" method="post" autocomplete="off" class="create-author-form">
+    <div class="form-group create-author-div">
+        <input type="text" placeholder="First name" class="form-control" name="firstName" value={{firstName}}>
+        <input type="text" placeholder="Last name" class="form-control" name="lastName" value={{firstName}}>
+        <input type="number" placeholder="Birthyear" class="form-control" name="birthYear">
+    </div>
+    <button type="submit" class="btn btn-primary">Create Author</button>
+</form>
+
+{{#if validationError}}
+<div class="alert alert-warning">
+    <strong>All fields not filled in correctly!</strong>
+    {{#each errors}}
+    <p>{{this}}</p>
+    {{/each}}
+</div>
+{{/if}}

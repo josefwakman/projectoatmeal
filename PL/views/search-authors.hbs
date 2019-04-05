@@ -1,10 +1,10 @@
 <h2>Search Authors</h2>
 
-<form action="/search-authors" method="get" autocomplete="off">
+<form action="/authors/search" method="get" autocomplete="off">
 <div class="form-group form-inline">
     <input class="form-control" type="text" name="search" id="search">
 </div>
-<button type="submit" class="btn btn-primary">Submit</button>
+<button type="submit" class="btn btn-primary">Search Author</button>
 </form>
 
 <div class="search-books-table-div">
@@ -19,8 +19,8 @@
             {{#if searched}}
                 {{#each authors}}
                 <tr>
-                    <td>{{this.id}}</td>
-                    <td><a href="/author/{{this.id}}">{{this.name}}</a></td>
+                    <td>{{id}}</td>
+                    <td><a href="/authors/{{id}}">{{firstName}} {{lastName}}</a></td>
                 </tr>
                 {{/each}}
             {{/if}}

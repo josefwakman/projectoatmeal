@@ -1,10 +1,14 @@
-<h2>Book page</h2>
+<h2>Book Info</h2>
 
 <p>{{title}}</p>
+<p>{{ISBN}}</p>
+<p>Pages: {{pages}}</p>
+<p>Publication info: {{publicationInfo}}</p>
 {{#each authors}}
-    <a href="/author/{{this.id}}">{{this.name}}</a><br>
+    <span>Author: </span><br>
+    <a href="/authors/{{id}}">{{firstName}} {{lastName}}</a><br><br>
 {{/each}}
-<p>{{publicationDate}}</p>
-<p>{{publisher}}</p>
 
-<a href="/edit-book/{{id}}">Edit</a>
+{{#if admin}}
+<a href="/books/edit/{{ISBN}}">Edit Book</a>
+{{/if}}

@@ -1,7 +1,19 @@
 <h2>Edit author</h2>
 
-<form action="/edit-books" method="post">
-    Name: {{name}} - <input type="text"><br>
-    Bio: {{bio}} - <input type="text"><br>
-    <input type="submit">
+<form id="update-author-form" action="/authors/edit/{{id}}" method="post" autocomplete="off" class="update-author-form">
+    <div class="form-group update-author-div">
+        <input type="text" placeholder="First name" class="form-control" name="firstName" value={{firstName}}>
+        <input type="text" placeholder="Last name" class="form-control" name="lastName" value={{lastName}}>
+        <input type="number" placeholder="Birthyear" class="form-control" name="birthYear" value={{birthYear}}>
+    </div>
+    <button type="submit" class="btn btn-primary">Update Author</button>
 </form>
+
+{{#if validationError}}
+<div class="alert alert-warning">
+    <strong>All fields not filled in correctly!</strong>
+    {{#each errors}}
+    <p>{{this}}</p>
+    {{/each}}
+</div>
+{{/if}}

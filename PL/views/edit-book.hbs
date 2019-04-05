@@ -1,9 +1,27 @@
 <h2>Edit book</h2>
 
-<form action="/edit-books" method="post">
-    Title: {{title}} - <input type="text"><br>
-    Author: {{author}} - <input type="text"><br>
-    Publication Date: {{publicationDate}} - <input type="text"><br>
-    Publisher: {{publisher}} - <input type="text"><br>
-    <input type="submit">
+<form id="update-book-form" action="/books/edit/{{ISBN}}" method="post" autocomplete="off" class="update-book-form">
+    <div class="form-group update-book-div">
+        <input type="text" placeholder="Title" class="form-control" name="title" value={{title}}>
+        <input type="number" placeholder="SignID" class="form-control" name="signID" value={{signID}}>
+        <div id="publication-info-div" class="form-group form-inline">
+            <input type="text" placeholder="Publication City" class="form-control" name="publicationCity"
+                style="margin-right: 1.3%" value={{publicationCity}}>
+            <input type="text" placeholder="Publication Company" class="form-control" name="publicationCompany"
+                style="margin-right: 1.3%" value={{publicationCompany}}>
+            <input type="number" placeholder="Publication Year" class="form-control" name="publicationYear"
+                style="margin-right: 1.3%" value={{publicationYear}}>
+        </div>
+        <input type="number" placeholder="Number of Pages" class="form-control" name="pages" value={{pages}}>
+    </div>
+    <button type="submit" class="btn btn-primary">Update Book</button>
 </form>
+
+{{#if validationError}}
+<div class="alert alert-warning">
+    <strong>All fields not filled in correctly!</strong>
+    {{#each errors}}
+    <p>{{this}}</p>
+    {{/each}}
+</div>
+{{/if}}

@@ -1,16 +1,63 @@
-const jwt = require('jsonwebtoken')
+const administratorRepository = require('../DAL/administrator-repository')
 
-function createToken(id) {
-    const claims = {
-        sub: id, // subject
-        iss: 'Project Oatmeal' // issuer
+const accessLevels = Object.freeze({
+    1: "admin",
+    2: "superAdmin",
+    3: "adminSupreme",
+})
+
+const privilegiesOfAccessLevel = {
+    administrators: {
+        add: [
+            3
+        ],
+        edit: [
+            3
+        ],
+        delete: [
+            3
+        ],
+        changePassword: [
+            2, 3
+        ]
+    },
+    books: {
+        add: [
+            1, 2, 3
+        ],
+        edit: [
+            1, 2, 3
+        ],
+        delete: [
+            1, 2, 3
+        ],
+    },
+    authors: {
+        add: [
+            1, 2, 3
+        ],
+        edit: [
+            1, 2, 3
+        ],
+        delete: [
+            1, 2, 3
+        ],
     }
-    const token = jwt.sign(claims, "1dlvatten2,5dlhavregryn")
-    return token
 }
 
-// ----------------
-//      Exports
-//------------------
+function getAccessLevelOfAdministratorId(id) {
+    return new Promise((resolve, reject) => {
+        administratorRepository.getAdministratorWithId(id).then(administrator => {
+            if (!administrator) {
+                resolve(false)
+            } 
+            else {
+                resolve(administrator.get('privilegies'))
+            }
+        })
+    })
+}
 
-exports.createToken = createToken
+exports.accessLevels = accessLevels
+exports.privilegiesOfAccessLevel = privilegiesOfAccessLevel
+exports.getAccessLevelOfAdministratorId = getAccessLevelOfAdministratorId
