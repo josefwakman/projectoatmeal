@@ -32,11 +32,11 @@
 
 <p>Page: {{page}}</p>
 <div>
-    {{#each paginationWithDots}} 
+    {{#each paginationWithDots}}
     {{#if isNumber}}
-        <a href="/books/search?search={{../search}}&page={{value}}">{{value}} </a>
+    <a href="/books/search?search={{../search}}&page={{value}}">{{value}} </a>
     {{else}}
-        <a>{{value}}</a>
+    <a>{{value}}</a>
     {{/if}}
     {{/each}}
 </div>

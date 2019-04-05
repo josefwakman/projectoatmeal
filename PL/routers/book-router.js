@@ -68,10 +68,10 @@ router.get('/search', function (req, res) {
         let page = req.query.page
         const search = req.query.search
 
-        bookManager.findBooksWithTitle(search).then(books => {
-            let foundBooks = []
-            for (book of books) {
-                foundBooks.push({
+        bookManager.findBooksWithTitle(search).then(foundBooks => {
+            let books = []
+            for (book of foundBooks) {
+                books.push({
                     ISBN: book.get('ISBN'),
                     title: book.get('title'),
                     signID: book.get('signID'),
@@ -81,14 +81,14 @@ router.get('/search', function (req, res) {
                 })
             }
 
-            const amountOfPages = Math.ceil(foundBooks.length / BOOKS_PER_PAGE)
+            const amountOfPages = Math.ceil(books.length / BOOKS_PER_PAGE)
             if (page) {
                 const startIndex = (page - 1) * BOOKS_PER_PAGE
                 const endIndex = startIndex + BOOKS_PER_PAGE
-                foundBooks = foundBooks.slice(startIndex, endIndex)
+                books = books.slice(startIndex, endIndex)
             } else {
                 page = 1
-                foundBooks = foundBooks.slice(0, BOOKS_PER_PAGE)
+                books = books.slice(0, BOOKS_PER_PAGE)
             }
 
             const paginationWithDots = pagination.getPaginationWithDots(parseInt(page), amountOfPages)
@@ -96,11 +96,10 @@ router.get('/search', function (req, res) {
             model = {
                 searched: true,
                 search: search,
-                books: foundBooks,
+                books: books,
                 paginationWithDots: paginationWithDots,
                 page: page
             }
-            console.log("Model: ", model);
             
             res.render("search-books.hbs", model)
         }).catch(error => {

@@ -2,6 +2,7 @@ const express = require("express")
 const authorManager = require("../../BLL/author-manager")
 const bookManager = require("../../BLL/book-manager")
 const authorization = require("../../BLL/authorization")
+const pagination = require("../pagination")
 
 const AUTHORS_PER_PAGE = 10
 
@@ -69,7 +70,7 @@ router.get('/search', function (req, res) {
     if (0 < Object.keys(req.query).length) {
 
         const search = req.query.search
-        const page = req.query.page
+        let page = req.query.page
 
         authorManager.findAuthorsWithName(search).then(foundAuthors => {
             let authors = []
@@ -82,22 +83,22 @@ router.get('/search', function (req, res) {
                 })
             }
 
-            const amountOfPages = Math.floor(foundAuthors.length / AUTHORS_PER_PAGE)
+            const amountOfPages = Math.ceil(authors.length / AUTHORS_PER_PAGE)
             if (page) {
                 const startIndex = (page - 1) * AUTHORS_PER_PAGE
                 const endIndex = startIndex + AUTHORS_PER_PAGE
-                foundAuthors = foundAuthors.slice(startIndex, endIndex)
+                authors = authors.slice(startIndex, endIndex)
             } else {
                 page = 1
-                foundAuthors = foundAuthors.slice(0, AUTHORS_PER_PAGE)
+                authors = authors.slice(0, AUTHORS_PER_PAGE)
             }
-
+            
             const paginationWithDots = pagination.getPaginationWithDots(parseInt(page), amountOfPages)
-
+            
             model = {
                 searched: true,
                 authors: authors,
-                pagination: paginationWithDots,
+                paginationWithDots: paginationWithDots,
                 search: search,
                 page: page
             }
