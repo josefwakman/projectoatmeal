@@ -174,7 +174,6 @@ app.post('/login', (req, res) => {
     const password = req.body.password
 
     administratorManager.getAdministratorWithCredentials(email, password).then(administrator => {
-        console.log("Administrator i app.js:", administrator);
         
         if (!administrator) {
             const model = {
@@ -186,7 +185,7 @@ app.post('/login', (req, res) => {
         else {
             req.session.userId = administrator.get('id')
             req.session.save()
-            model = {
+            const model = {
                 loggedIn: true,
                 firstName: administrator.get('firstName'),
                 lastName: administrator.get('lastName')

@@ -7,58 +7,54 @@ const router = express.Router()
 
 router.get("/new", (req, res) => {
     const userId = req.session.userId
-    if (!userId) {
+
+    authorization.getAccessLevelOfAdministratorId(userId).then(accessLevel => {
+        if (!authorization.privilegiesOfAccessLevel.books.add.includes(accessLevel)) {
+            const model = {
+                code: 403,
+                message: "Not authorized to add author"
+            }
+            res.render("error-page.hbs", model)
+        }
+        else {
+            res.render("newBook.hbs")
+        }
+    }).catch(error => {
+        console.log(error)
         const model = {
-            code: 403,
-            message: "You need to be logged in as administrator to add book"
+            code: 500,
+            message: "Internal server error"
         }
         res.render("error-page.hbs", model)
-    }
-    else {
-        res.render("newBook.hbs")
-    }
+    })
 })
 
 router.post("/new", (req, res) => {
     const userId = req.session.userId
-    if (!userId) {
-        const model = {
-            code: 403,
-            message: "You need to be logged in as administrator to add book"
-        }
-        res.render("error-page.hbs", model)
-    }
-    else {
-        let model = {}
-        bookManager.addBook(req.body, (validationErrors, serverError, book) => {
-            if (validationErrors.length) {
-                model.errors = validationErrors
-                model.validationError = true
-                res.render("newBook.hbs", model)
-            }
-            else if (serverError) {
-                console.log(serverError)
-                const model = {
-                    code: 500,
-                    message: "Internal server error"
-                }
-                res.render("error-page.hbs", model)
-            }
-            else {
-                model = {
-                    admin: true,
-                    ISBN: book.get('ISBN'),
-                    title: book.get('title'),
-                    signID: book.get('signID'),
-                    publicationYear: book.get('publicationYear'),
-                    publicationInfo: book.get('publicationInfo'),
-                    pages: book.get('pages'),
-                }
-                res.render("book.hbs", model)
-            }
-        })
-    }
 
+    let model = {}
+    bookManager.addBook(req.body, userId, (validationErrors, error, book) => {
+        if (validationErrors.length) {
+            model.errors = validationErrors
+            model.validationError = true
+            res.render("newBook.hbs", model)
+        }
+        else if (error) {
+            res.render("error-page.hbs", error)
+        }
+        else {
+            model = {
+                admin: true,
+                ISBN: book.get('ISBN'),
+                title: book.get('title'),
+                signID: book.get('signID'),
+                publicationYear: book.get('publicationYear'),
+                publicationInfo: book.get('publicationInfo'),
+                pages: book.get('pages'),
+            }
+            res.render("book.hbs", model)
+        }
+    })
 })
 
 router.get('/search', function (req, res) {
@@ -153,92 +149,81 @@ router.post('/', (req, res) => {
 
     const userId = req.session.userId
 
-    if (!userId) {
-        const model = {
-            code: 403,
-            message: "You need to be logged in to edit book"
+
+    bookManager.addBook(req.body, userId, (validationErrors, error, book) => {
+        if (validationErrors.length) {
+            model.errors = validationErrors
+            model.validationError = true
+            res.render("newBook.hbs", model) // Replace with motsvarande in newBook
+        }
+        else if (error) {
+            res.render("error-page.hbs", error)
+        }
+        else {
+            authorManager.findAuthorsWithBookISBN(book.ISBN).then(foundAuthors => {
+                const model = {
+                    admin: true,
+                    ISBN: book.get('ISBN'),
+                    title: book.get('title'),
+                    signID: book.get('signID'),
+                    publicationYear: book.get('publicationYear'),
+                    publicationInfo: book.get('publicationInfo'),
+                    pages: book.get('pages'),
+                    authors: foundAuthors
+                }
+                res.render("book.hbs", model)
+            })
+        }
+    }).catch(error => {
+        console.log(error)
+        model = {
+            code: 500,
+            message: "Internal server error"
         }
         res.render("error-page.hbs", model)
-    }
-    else {
-        bookManager.addBook(req.body, (validationErrors, serverError, book) => {
-            if (validationErrors.length) {
-                model.errors = validationErrors
-                model.validationError = true
-                res.render("search-books.hbs", model) // Replace with motsvarande in newBook
-            } else if (serverError) {
-                console.log(serverError);
-                const model = {
-                    code: 500,
-                    message: "Internal server error"
-                }
-                res.render("error-page.hbs", model)
-            } else {
-                authorManager.findAuthorsWithBookISBN(book.ISBN).then(foundAuthors => {
-                    const model = {
-                        admin: true,
-                        ISBN: book.get('ISBN'),
-                        title: book.get('title'),
-                        signID: book.get('signID'),
-                        publicationYear: book.get('publicationYear'),
-                        publicationInfo: book.get('publicationInfo'),
-                        pages: book.get('pages'),
-                        authors: foundAuthors
-                    }
-                    res.render("book.hbs", model)
-                }).catch(error => {
-                    model = {
-                        code: 500,
-                        message: "Internal server error"
-                    }
-                    res.render("error-page.hbs", model)
-                })
-            }
-        })
-    }
-
+    })
 })
 
 router.get('/edit/:ISBN', (req, res) => {
     const ISBN = req.params.ISBN
     const userId = req.session.userId
 
-    if (!userId) {
-        const model = {
-            code: 403,
-            message: "You need to be logged in to edit book"
-        }
-        res.render("error-page.hbs", model)
-    }
-    else {
-        bookManager.findBookWithISBN(ISBN).then(book => {
-            if (!book) {
-                model = {
-                    code: 404,
-                    message: "No book with ISBN " + ISBN + " found"
-                }
-                res.render("error-page.hbs", model)
-            }
+    authorization.getAccessLevelOfAdministratorId(userId).then(accessLevel => {
+        if (!authorization.privilegiesOfAccessLevel.books.edit.includes(accessLevel)) {
             const model = {
-                ISBN: book.get('ISBN'),
-                title: book.get('title'),
-                signID: book.get('signID'),
-                publicationYear: book.get('publicationYear'),
-                publicationInfo: book.get('publicationInfo'),
-                pages: book.get('pages'),
-            }
-            res.render("edit-book.hbs", model)
-        }).catch(error => {
-            console.log(error)
-            const model = {
-                code: 500,
-                message: "Internal server error"
+                code: 403,
+                message: "Not authorized to edit books"
             }
             res.render("error-page.hbs", model)
-        })
-    }
-
-
+        }
+        else {
+            bookManager.findBookWithISBN(ISBN).then(book => {
+                if (!book) {
+                    model = {
+                        code: 404,
+                        message: "No book with ISBN " + ISBN + " found"
+                    }
+                    res.render("error-page.hbs", model)
+                }
+                const model = {
+                    ISBN: book.get('ISBN'),
+                    title: book.get('title'),
+                    signID: book.get('signID'),
+                    publicationYear: book.get('publicationYear'),
+                    publicationInfo: book.get('publicationInfo'),
+                    pages: book.get('pages'),
+                }
+                res.render("edit-book.hbs", model)
+            })
+        }
+    }).catch(error => {
+        console.log(error)
+        const model = {
+            code: 500,
+            message: "Internal server error"
+        }
+        res.render("error-page.hbs", model)
+    })
 })
 
 router.post('/edit/:ISBN', (req, res) => {
@@ -246,30 +231,25 @@ router.post('/edit/:ISBN', (req, res) => {
     newValues.ISBN = req.params.ISBN
     const userId = req.session.userId
 
-    if (!userId) {
-        const model = {
-            code: 403,
-            message: "You need to be logged in to edit book"
-        }
-        res.render("error-page.hbs", model)
-    }
-    else {
-        bookManager.editBook(newValues, (validationErrors, serverError, book) => {
+    
+        bookManager.editBook(newValues, userId, (validationErrors, error, book) => {
             if (validationErrors.length) {
                 model = {
-                    ISBN: ISBN,
+                    ISBN: newValues.ISBN,
+                    signID: newValues.signID,
+                    publicationCity: newValues.publicationCity,
+                    publicationCompany: newValues.publicationCompany,
+                    publicationYear: newValues.publicationYear,
+                    pages: newValues.pages,
                     validationError: true,
                     errors: validationErrors
                 }
                 res.render("edit-book.hbs", model)
-            } else if (serverError) {
-                console.log(serverError)
-                const model = {
-                    code: 500,
-                    message: "Internal server error"
-                }
-                res.render("error-page.hbs", model)
-            } else {
+            } 
+            else if (error) {
+                res.render("error-page.hbs", error)
+            } 
+            else {
                 const model = {
                     ISBN: book.get('ISBN'),
                     title: book.get('title'),
@@ -294,16 +274,7 @@ router.post('/edit/:ISBN', (req, res) => {
                     // TODO: render book page but error message on author?
                 })
             }
-        }).catch(error => {
-            console.log(error)
-            model = {
-                code: 500,
-                message: "Internal server error"
-            }
-            res.render("error-page.hbs", model)
         })
-    }
-
 })
 
 module.exports = router

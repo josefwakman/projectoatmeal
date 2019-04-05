@@ -109,9 +109,9 @@ router.get('/:id', (req, res) => {
 router.post('/', (req, res) => {
     let model = {}
     const body = req.body
+    const userId = req.session.userId
 
-
-    administratorManager.addAdministrator(body, (validationErrors, serverError, administrator) => {
+    administratorManager.addAdministrator(body, userId, (validationErrors, error, administrator) => {
 
         if (0 < validationErrors.length) {
             administratorManager.getAdministrators().then(administrators => {
@@ -136,12 +136,8 @@ router.post('/', (req, res) => {
                 }
                 res.render("administrators.hbs", model)
             })
-        } else if (serverError) {
-            model = {
-                code: 500,
-                message: "Internal server error"
-            }
-            res.render("error-page.hbs", model)
+        } else if (error) {
+            res.render("error-page.hbs", error)
         }
         else {
             model = {
@@ -158,24 +154,24 @@ router.post('/', (req, res) => {
 router.get('/edit/:id', (req, res) => {
     const userId = req.session.userId
 
-    if (!userId) {
-        model = {
-            code: 403,
-            message: "You need to be logged in as administrator to edit administrators"
-        }
-        res.render("error-page.hbs", model)
-    }
-    else {
-        administratorManager.getAdministratorWithId(req.params.id).then(administrator => {
-            model = {
-                id: administrator.id,
-                firstName: administrator.firstName,
-                lastName: administrator.lastName,
-                email: administrator.email,
-                privilegies: administrator.privilegies
-            }
+    authorization.getAccessLevelOfAdministratorId(userId).then(accesslevel => {
 
-            authorization.getAccessLevelOfAdministratorId(userId).then(accesslevel => {
+        if (!authorization.privilegiesOfAccessLevel.administrators.edit.includes(accesslevel)) {
+            model = {
+                code: 403,
+                message: "You need to be logged in to edit administrators"
+            }
+            res.render("error-page.hbs", model)
+        }
+        else {
+            administratorManager.getAdministratorWithId(req.params.id).then(administrator => {
+                model = {
+                    id: administrator.id,
+                    firstName: administrator.firstName,
+                    lastName: administrator.lastName,
+                    email: administrator.email,
+                    privilegies: administrator.privilegies
+                }
 
                 for (let i = 1; i <= accesslevel; i++) {
                     model[authorization.accessLevels[i]] = true
@@ -183,16 +179,17 @@ router.get('/edit/:id', (req, res) => {
                 res.render("edit-administrator.hbs", model)
 
             })
+        }
 
-        }).catch(error => {
-            console.log(error)
-            model = {
-                code: 500,
-                message: "Internal server error"
-            }
-            res.render("error-page.hbs", model)
-        })
-    }
+    }).catch(error => {
+        console.log(error)
+        model = {
+            code: 500,
+            message: "Internal server error"
+        }
+        res.render("error-page.hbs", model)
+    })
+
 })
 
 router.post('/edit/:id', (req, res) => {
@@ -200,39 +197,27 @@ router.post('/edit/:id', (req, res) => {
     newValues.id = req.params.id
     const userId = req.session.userId
 
-    // if (!userId) {
-    //     model = {
-    //         code: 403,
-    //         message: "You need to be logged in as administrator to edit administrators"
-    //     }
-    //     res.render("error-page.hbs", model)
-    // }
-    // else {
-        administratorManager.updateAdministrator(newValues, (validationErrors, serverError, administrator) => {
-            if (validationErrors.length) {
-                model = {
-                    id: req.params.id,
-                    validationError: true,
-                    errors: validationErrors
-                }
-                authorization.getAccessLevelOfAdministratorId(userId).then(accesslevel => {
-
-                    for (let i = 1; i <= accesslevel; i++) {
-                        model[authorization.accessLevels[i]] = true
-                    }
-                    res.render("edit-administrator.hbs", model)
-                })
-            } else if (serverError) {
-
-                model = {
-                    code: 500,
-                    message: "Internal server error"
-                }
-                res.render("error-page.hbs", model)
-
+    administratorManager.updateAdministrator(newValues, userId, (validationErrors, error, administrator) => {
+        if (validationErrors.length) {
+            let model = {
+                id: req.params.id,
+                validationError: true,
+                errors: validationErrors
             }
-            else {
-                model = {
+            authorization.getAccessLevelOfAdministratorId(userId).then(accesslevel => {
+
+                for (let i = 1; i <= accesslevel; i++) {
+                    model[authorization.accessLevels[i]] = true
+                }
+                res.render("edit-administrator.hbs", model)
+            })
+        } else if (error) {
+            res.render("error-page.hbs", error)
+
+        }
+        else {
+            authorization.getAccessLevelOfAdministratorId(userId).then(accesslevel => {
+                const model = {
                     id: administrator.get('id'),
                     firstName: administrator.get('firstName'),
                     lastName: administrator.get('lastName'),
@@ -240,10 +225,14 @@ router.post('/edit/:id', (req, res) => {
                     privilegies: administrator.get('privilegies')
                 }
 
+                for (let i = 1; i <= accesslevel; i++) {
+                    model[authorization.accessLevels[i]] = true
+                }
                 res.render("administrator.hbs", model)
-            }
-        })
-    // }
+            })
+        }
+    })
+
 })
 
 module.exports = router
