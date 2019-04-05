@@ -81,7 +81,7 @@ router.get('/search', function (req, res) {
                 })
             }
 
-            const amountOfPages = Math.floor(foundBooks.length / BOOKS_PER_PAGE)
+            const amountOfPages = Math.ceil(foundBooks.length / BOOKS_PER_PAGE)
             if (page) {
                 const startIndex = (page - 1) * BOOKS_PER_PAGE
                 const endIndex = startIndex + BOOKS_PER_PAGE
@@ -100,6 +100,8 @@ router.get('/search', function (req, res) {
                 paginationWithDots: paginationWithDots,
                 page: page
             }
+            console.log("Model: ", model);
+            
             res.render("search-books.hbs", model)
         }).catch(error => {
             console.log(error)
