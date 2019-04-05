@@ -18,3 +18,8 @@ input.form-control {
 td:hover {
     cursor: pointer;
 }
+
+span.usernames {
+    color: white;
+    font-size: 10px;
+}

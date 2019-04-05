@@ -21,14 +21,15 @@ const path = require('path')
 
 // -----------
 
-//Handlebars Setup
+//Express Setup
 app.set('views', path.join(__dirname, 'views'))
 
 app.engine('hbs', expressHandlebars({
     defaultLayout: 'main',
     extname: '.hbs',
-    layoutsDir: path.join(__dirname, 'layouts')
+    layoutsDir: path.join(__dirname, 'layouts'),
 }))
+
 
 app.use(express.static(path.join(__dirname, '/public')))
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -39,6 +40,27 @@ app.use(session({
     secret: '2,5dlvatten1dlhavregryn1nypasalt',
     cookie: { maxAge: 60 * 60 * 1000 } // maxAge is in milliseconds, expires after 1 hour
 }))
+/* Set data for the navbar */
+app.use((req, res, next) => {
+    const userId = req.session.userId
+
+    if (!userId) {
+        res.locals.navBarData = {
+            loggedOut: true
+        }
+        next()
+    }
+    else {
+        administratorManager.getAdministratorWithId(userId).then(administrator => {
+            res.locals.navBarData = {
+                loggedIn: true,
+                firstName: administrator.get('firstName'),
+                lastName: administrator.get('lastName')
+            }
+            next()
+        })
+    }
+})
 
 // --------------------
 
@@ -47,7 +69,7 @@ app.get('/', function (req, res) {
 })
 
 app.get('/test', (req, res) => {
-    
+
     const plaintextpsw = "Pleasehashme"
 
     let hashedpsw = ""
@@ -174,7 +196,7 @@ app.post('/login', (req, res) => {
     const password = req.body.password
 
     administratorManager.getAdministratorWithCredentials(email, password).then(administrator => {
-        
+
         if (!administrator) {
             const model = {
                 loginFailed: true,

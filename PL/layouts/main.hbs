@@ -26,28 +26,40 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav ml-auto">
-                            <li>
-                                <a class="nav-link" href="/books/search">Search Books</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="/books/new">Add Books</a>
-                            </li>
+                    <li>
+                        <a class="nav-link" href="/books/search">Search Books</a>
+                    </li>
+                    {{#if navBarData.loggedIn}}
+                    <li class="nav-item">
+                        <a class="nav-link" href="/books/new">Add Books</a>
+                    </li>
+                    {{/if}}
                     <li class="nav-item">
                         <a class="nav-link" href="/authors/search">Search Authors</a>
                     </li>
+                    {{#if navBarData.loggedIn}}
                     <li class="nav-item">
                         <a class="nav-link" href="/authors/add">Add Authors</a>
                     </li>
+                    {{/if}}
                     <li>
                         <a class="nav-link" href="/administrators">Administrators</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/search-classifications">Classifications</a>
                     </li>
+                    {{#if navBarData.loggedOut}}
                     <li class="nav-item">
                         <a class="nav-link" href="/login">Login</a>
                     </li>
+                    {{/if}}
+                    {{#if navBarData.loggedIn}}
+                    <li class="navbar-right">
+                        <span class="usernames">Logged in as: {{navBarData.firstName}} {{navBarData.lastName}}</span>
+                    </li>
+                    {{/if}}
                 </ul>
+
             </div>
         </div>
     </nav>
