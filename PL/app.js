@@ -39,6 +39,27 @@ app.use(session({
     secret: '2,5dlvatten1dlhavregryn1nypasalt',
     cookie: { maxAge: 60 * 60 * 1000 } // maxAge is in milliseconds, expires after 1 hour
 }))
+/* Set data for the navbar */
+app.use((req, res, next) => {
+    const userId = req.session.userId
+
+    if (!userId) {
+        res.locals.navBarData = {
+            loggedOut: true
+        }
+        next()
+    }
+    else {
+        administratorManager.getAdministratorWithId(userId).then(administrator => {
+            res.locals.navBarData = {
+                loggedIn: true,
+                firstName: administrator.get('firstName'),
+                lastName: administrator.get('lastName')
+            }
+            next()
+        })
+    }
+})
 
 // --------------------
 
