@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "PL/app.js -L"
+    "start": "node PL/app.js -L"
   },
   "repository": {
     "type": "git",
