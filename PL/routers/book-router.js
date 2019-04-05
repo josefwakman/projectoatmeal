@@ -5,6 +5,9 @@ const authorization = require("../../BLL/authorization")
 
 const router = express.Router()
 
+const pagination = require('../pagination')
+const BOOKS_PER_PAGE = 10
+
 router.get("/new", (req, res) => {
     const userId = req.session.userId
 
@@ -61,8 +64,11 @@ router.get('/search', function (req, res) {
     let model = { searched: false }
 
     if (0 < Object.keys(req.query).length) {
+        
+        let page = req.query.page
+        const search = req.query.search
 
-        bookManager.findBooksWithTitle(req.query.search).then(books => {
+        bookManager.findBooksWithTitle(search).then(books => {
             let foundBooks = []
             for (book of books) {
                 foundBooks.push({
@@ -74,9 +80,25 @@ router.get('/search', function (req, res) {
                     pages: book.get('pages'),
                 })
             }
+
+            const amountOfPages = Math.floor(foundBooks.length / BOOKS_PER_PAGE)
+            if (page) {
+                const startIndex = (page - 1) * BOOKS_PER_PAGE
+                const endIndex = startIndex + BOOKS_PER_PAGE
+                foundBooks = foundBooks.slice(startIndex, endIndex)
+            } else {
+                page = 1
+                foundBooks = foundBooks.slice(0, BOOKS_PER_PAGE)
+            }
+
+            const paginationWithDots = pagination.getPaginationWithDots(parseInt(page), amountOfPages)
+
             model = {
                 searched: true,
-                books: foundBooks
+                search: search,
+                books: foundBooks,
+                paginationWithDots: paginationWithDots,
+                page: page
             }
             res.render("search-books.hbs", model)
         }).catch(error => {
