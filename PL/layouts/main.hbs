@@ -32,21 +32,27 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/authors/search">Search Authors</a>
                     </li>
+                    {{#if navBarData.loggedIn}}
                     <li class="nav-item">
                         <a class="nav-link" href="/authors/add">Add Authors</a>
                     </li>
+                    {{/if}}
                     <li>
                         <a class="nav-link" href="/administrators">Administrators</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/search-classifications">Classifications</a>
                     </li>
+                    {{#if navBarData.loggedOut}}
                     <li class="nav-item">
                         <a class="nav-link" href="/login">Login</a>
                     </li>
+                    {{/if}}
+                    {{#if navBarData.loggedIn}}
                     <li class="nav-item">
                         <a class="nav-link" href="/logout">Logout</a>
                     </li>
+                    {{/if}}
                 </ul>
             </div>
         </div>
