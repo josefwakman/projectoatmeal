@@ -4,16 +4,6 @@ const authorization = require("../../BLL/authorization")
 
 const router = express.Router()
 
-function deleteButtonPressed() {
-    if (confirm("Do you really want to delete this user?")) {
-        console.log("Radera jäveln");
-
-    } else {
-        console.log("Ok, inte");
-
-    }
-}
-
 // ---- PLACEHOLDERS - TO BE DELETED ----------------
 
 administrators = [

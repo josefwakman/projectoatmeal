@@ -30,4 +30,9 @@
     </table>
 </div>
 
+
+<div>
+    {{#each paginationWithDots}} <a href="/books/search?search={{search}}&page={{this}}">{{this}} </a>{{/each}}
+</div>
+
 {{/if}}
