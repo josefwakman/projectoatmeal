@@ -21,8 +21,8 @@
             {{#if searched}}
             {{#each books}}
             <tr>
-                <td>{{this.ISBN}}</td>
-                <td><a href="/books/{{this.ISBN}}">{{this.title}}</a></td>
+                <td>{{ISBN}}</td>
+                <td><a href="/books/{{ISBN}}">{{title}}</a></td>
             </tr>
             {{/each}}
             {{/if}}
@@ -30,14 +30,13 @@
     </table>
 </div>
 
-
+<p>Page: {{page}}</p>
 <div>
-    <p>Current page: {{page}}</p>
-    {{#each paginationWithDots}} 
-    {{#if this.isNumber}} 
-        <a href="/books/search?search={{search}}&page={{this.value}}">{{this.value}} </a>
+    {{#each paginationWithDots}}
+    {{#if isNumber}}
+    <a href="/books/search?search={{../search}}&page={{value}}">{{value}} </a>
     {{else}}
-        <a>{{this.value}}</a>
+    <a>{{value}}</a>
     {{/if}}
     {{/each}}
 </div>
