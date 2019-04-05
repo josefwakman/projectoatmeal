@@ -199,7 +199,7 @@ router.get('/edit/:id', (req, res) => {
     const userId = req.session.userId
     const authorId = req.params.id
 
-    authorization.getAccessLevelOfAdministratorId(userId).then(accessLevel => { 
+    authorization.getAccessLevelOfAdministratorId(userId).then(accessLevel => {
         if (!authorization.privilegiesOfAccessLevel.authors.edit.includes(accessLevel)) {
             const model = {
                 code: 403,
@@ -230,20 +230,23 @@ router.get('/edit/:id', (req, res) => {
 
 })
 
-router.get('/:id/addBook', (req, res) => {
+router.get('/addBook/:id', (req, res) => {
 
     const authorId = req.params.id;
 
     let model = {
-        authorId: authorId  ,
+        authorId: authorId,
         postError: false
     }
-    
+
     res.render("newBook.hbs", model)
 
 })
 
-router.post("/:id/addBook", (req, res) => {    
+router.post('/addBook/:id', (req, res) => {
+
+    const userId = req.session.userId
+
     let newBook = req.body;
     let authorId = req.params.id;
 
@@ -254,30 +257,43 @@ router.post("/:id/addBook", (req, res) => {
 
     bookManager.findBookWithISBN(newBook.ISBN).then(foundBook => {
 
-        if(foundBook){
-            console.log("Book found");
-
+        if (foundBook) {
             const model = {
-                error: true,
-                errorMessage: "A book with this ISBN already exists"
+                code: 400,
+                message: "A book with this ISBN already exists"
             }
 
-            res.render("newBook.hbs", model)
-            
-        }else{
-            console.log("no book found");
+            res.render("error-page.hbs", model)
 
-            const model = {
-                error: "404"
-            }
+        } else {
+            bookManager.addBook(newBook, userId, authorId, (validationErrors, error, book) => {
+                if (validationErrors.length > 0) {
 
-            res.render("newBook.hbs", model)
+                    const model = {
+                        validationError: true,
+                        errors: validationErrors
+                    }
+
+                    res.render("newBook.hbs", model)
+
+                } else if (error) {
+
+                    res.render("error-page.hbs", error)
+                
+                } else {
+                    const model = {
+                        book: book
+                    }
+
+                    res.render("book.hbs", model);
+                }
+            })
         }
-        
-    })   
-        
-    
-    
+
+    })
+
+
+
 })
 
 module.exports = router

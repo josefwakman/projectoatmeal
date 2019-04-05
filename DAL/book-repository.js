@@ -71,6 +71,17 @@ function addBookForAuthor(book){
     })
 }
 
+function addBookForAuthor(book, authorId){
+    return BookAuthors.create({
+        bookISBN: book.ISBN,
+        authorID: authorId
+    }).then(book => {
+        return book
+    }).catch(error => {
+        throw error
+    })
+}
+
 function editBook(newValues) {
 
     return Books.findOne({
@@ -115,3 +126,4 @@ exports.findBooksWithAuthorId = findBooksWithAuthorId
 exports.findBooksWithTitle = findBooksWithTitle
 exports.addBook = addBook
 exports.editBook = editBook
+exports.addBookForAuthor = addBookForAuthor

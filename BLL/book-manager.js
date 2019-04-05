@@ -39,7 +39,7 @@ function findBooksWithAuthorId(id) {
     })
 }
 
-function addBook(book, userId, callback) {
+function addBook(book, userId, authorId, callback) {
 
     authorization.getAccessLevelOfAdministratorId(userId).then(accessLevel => {
         if (!authorization.privilegiesOfAccessLevel.books.add.includes(accessLevel)) {
@@ -63,7 +63,15 @@ function addBook(book, userId, callback) {
             } else {
                 book.publicationInfo = book.publicationCity + " : " + book.publicationCompany + ", " + book.publicationYear
                 bookRepository.addBook(book).then(addedBook => {
+
+                    const newBook = {
+                    book: addedBook,
+                    author: authorId
+                }
+
                     callback([], null, addedBook)
+
+                    bookRepository.addBookForAuthor(newBook.book, newBook.author);
 
                 })
             }
