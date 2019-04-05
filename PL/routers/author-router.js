@@ -231,8 +231,41 @@ router.get('/:id/addBook', (req, res) => {
 
 })
 
-router.post("/:id/addBook", (req, res) => {
+router.post("/:id/addBook", (req, res) => {    
+    let newBook = req.body;
+    let authorId = req.params.id;
 
+    let model = {
+        newBook: newBook,
+        authorId: authorId
+    }
+
+    bookManager.findBookWithISBN(newBook.ISBN).then(foundBook => {
+
+        if(foundBook){
+            console.log("Book found");
+
+            const model = {
+                error: true,
+                errorMessage: "A book with this ISBN already exists"
+            }
+
+            res.render("newBook.hbs", model)
+            
+        }else{
+            console.log("no book found");
+
+            const model = {
+                error: "404"
+            }
+
+            res.render("newBook.hbs", model)
+        }
+        
+    })   
+        
+    
+    
 })
 
 module.exports = router
