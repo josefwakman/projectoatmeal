@@ -13,14 +13,12 @@
     <table class="table table-striped">
         <thead>
             <tr>
-                <th>ID</th>
                 <th>Name</th>
             </tr>
         </thead>
         <tbody>
             {{#each authors}}
             <tr>
-                <td>{{id}}</td>
                 <td><a href="/authors/{{id}}">{{firstName}} {{lastName}}</a></td>
             </tr>
             {{/each}}

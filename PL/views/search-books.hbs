@@ -13,7 +13,6 @@
     <table class="table table-striped" id="bookTable">
         <thead>
             <tr>
-                <th>ISBN</th>
                 <th>Title</th>
             </tr>
         </thead>
@@ -21,7 +20,6 @@
             {{#if searched}}
             {{#each books}}
             <tr>
-                <td>{{ISBN}}</td>
                 <td><a href="/books/{{ISBN}}">{{title}}</a></td>
             </tr>
             {{/each}}
