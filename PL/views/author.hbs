@@ -11,6 +11,7 @@
     <p>{{bookErrorMessage}}</p>
 {{/if}}
 
+{{#if admin}}
 <br>
 
 <button class="btn btn-primary">
@@ -22,9 +23,6 @@
 <button id="editAuthorBtn" class="btn btn-primary">
     <a class="test" href="/authors/edit/{{id}}">Edit Author</a>
 </button>
-
-{{#if admin}}
-<a href="/authors/edit/{{id}}">Edit</a>
 {{/if}}
 
 {{#if getFailed}}

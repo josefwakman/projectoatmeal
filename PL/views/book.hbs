@@ -1,11 +1,11 @@
 <h2>Book Info</h2>
 
-<p>{{title}}</p>
-<p>{{ISBN}}</p>
+<strong>{{title}}</strong>
+<p>ISBN: {{ISBN}}</p>
 <p>Pages: {{pages}}</p>
-<p>Publication info: {{publicationInfo}}</p>
+<p>Publication Info: {{publicationInfo}}</p>
 {{#each authors}}
-    <span>Author: </span><br>
+    <span>Author: </span>
     <a href="/authors/{{id}}">{{firstName}} {{lastName}}</a><br><br>
 {{/each}}
 

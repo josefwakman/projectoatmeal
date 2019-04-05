@@ -202,6 +202,16 @@ app.post('/login', (req, res) => {
     })
 })
 
+app.get("/logout", (req, res) => {
+    if(req.session){
+        req.session.destroy(function(err) {
+            if(!err){
+                res.redirect("/")
+            } 
+        })
+    }
+})
+
 // --------------------------------------
 
 app.use("/administrators", administratorRouter)
