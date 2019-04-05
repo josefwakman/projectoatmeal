@@ -11,7 +11,8 @@
     "url": "git+https://github.com/josefwakman/projectoatmeal.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "josefwakman",
+  "contributors": ["ster1666"],
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/josefwakman/projectoatmeal/issues"
