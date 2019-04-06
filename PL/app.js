@@ -15,7 +15,6 @@ const db = require("../DAL/classification-repository")
 const dbBooks = require("../DAL/book-repository")
 
 const app = express()
-const SQLiteStore = connectSqlite3(session)
 
 const path = require('path')
 
@@ -33,7 +32,6 @@ app.engine('hbs', expressHandlebars({
 app.use(express.static(path.join(__dirname, '/public')))
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(session({
-    store: new SQLiteStore({ db: "sessions-db.db" }),
     saveUninitialized: false,
     resave: false,
     secret: '2,5dlvatten1dlhavregryn1nypasalt',
