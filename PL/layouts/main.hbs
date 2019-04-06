@@ -26,9 +26,9 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav ml-auto">
-                            <li>
-                                <a class="nav-link" href="/books/search">Search Books</a>
-                            </li>
+                    <li>
+                        <a class="nav-link" href="/books/search">Search Books</a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/authors/search">Search Authors</a>
                     </li>
@@ -55,6 +55,12 @@
                     {{/if}}
                 </ul>
             </div>
+            {{#if navBarData.loggedIn}}
+            <div >
+                <span class="usernames">Logged in as: </span><br>
+                <span class="usernames">{{navBarData.firstName}} {{navBarData.lastName}}</span>
+            </div>
+            {{/if}}
         </div>
     </nav>
 
