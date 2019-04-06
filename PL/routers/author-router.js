@@ -142,12 +142,15 @@ router.get('/:id', (req, res) => {
                 birthYear: author.get('birthYear'),
                 books: books
             }
+            console.log("Books model:", model);
             if (userId) {
                 authorization.getAccessLevelOfAdministratorId(userId).then(accessLevel => {
 
                     for (let i = 1; i <= accessLevel; i++) {
                         model[authorization.accessLevels[i]] = true
                     }
+                    
+                    
                     res.render("author.hbs", model)
                 })
             } else {

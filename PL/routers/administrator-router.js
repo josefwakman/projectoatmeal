@@ -31,7 +31,7 @@ administrators = [
 
 
 router.get('/', function (req, res) {
-    model = { privilegies: { 1: "admin", 2: "super admin", 3: "admin supreme" } }  // TODO: replace with global variable (from validation?)
+    let model = { accessLevels: authorization.accessLevels } 
 
     administratorManager.getAdministrators().then(administrators => {
         model.administrators = []
@@ -66,7 +66,7 @@ router.get('/:id', (req, res) => {
             firstName: administrator.get('firstName'),
             lastName: administrator.get('lastName'),
             email: administrator.get('email'),
-            accesslevel: administrator.get('accesslevel'),
+            accessLevel: authorization.accessLevels[administrator.get('accessLevel')],
         }
         if (userId) {
             authorization.getAccessLevelOfAdministratorId(userId).then(accesslevel => {
@@ -108,11 +108,7 @@ router.post('/', (req, res) => {
                 model = {
                     errors: validationErrors,
                     validationError: true,
-                    privilegies: { // TODO: replace with global variable (from validation?)
-                        1: "admin",
-                        2: "super admin",
-                        3: "admin supreme"
-                    },
+                    accessLevels: authorization.accessLevels,
                     administrators: []
                 }
                 for (administrator of administrators) {
