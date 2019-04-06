@@ -6,20 +6,20 @@ const session = require("express-session")
 const administratorRouter = require("./routers/administrator-router")
 const authorRouter = require("./routers/author-router")
 const bookRouter = require("./routers/book-router")
+const classificationRouter = require("./routers/classification-router")
 
 const administratorManager = require("../BLL/administrator-manager")
 const hashing = require("../BLL/hashing")
-
-const db = require("../DAL/classification-repository")
-const dbBooks = require("../DAL/book-repository")
 
 const app = express()
 
 const path = require('path')
 
-// -----------
 
-//Handlebars Setup
+/* -----------
+ Express Setup
+ ------------- */ 
+
 app.set('views', path.join(__dirname, 'views'))
 
 app.engine('hbs', expressHandlebars({
@@ -33,10 +33,9 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(session({
     saveUninitialized: false,
     resave: false,
-    secret: '2,5dlvatten1dlhavregryn1nypasalt',
-    cookie: { maxAge: 60 * 60 * 1000 } // maxAge is in milliseconds, expires after 1 hour
+    secret: '2,5dlvatten1dlhavregryn1nypasalt'
 }))
-/* Set data for the navbar */
+/* Sets data for the navbar */
 app.use((req, res, next) => {
     const userId = req.session.userId
 
@@ -58,6 +57,7 @@ app.use((req, res, next) => {
     }
 })
 
+
 // --------------------
 
 app.get('/', function (req, res) {
@@ -65,7 +65,7 @@ app.get('/', function (req, res) {
 })
 
 app.get('/test', (req, res) => {
-    
+
     const plaintextpsw = "Pleasehashme"
 
     let hashedpsw = ""
@@ -118,52 +118,6 @@ app.post('/test', (req, res) => {
 
 })
 
-
-app.get('/search-classifications', (req, res) => {
-    model = {
-        searched: false,
-        classifications: [],
-        books: []
-    }
-
-    db.getClassifications().then(classifications => {
-        for (classification of classifications) {
-            model.classifications.push({
-                signId: classification.get('signId'),
-                signum: classification.get('signum'),
-                description: classification.get('description')
-            })
-        }
-
-        if (0 < Object.keys(req.query).length) {
-            model.searched = true
-            const selectedClassification = model.classifications.find(clas => {
-                return clas.signum == req.query.classification
-            })
-
-            dbBooks.findBooksWithSignId(selectedClassification.signId).then(books => {
-                for (book of books) {
-                    model.books.push({
-                        ISBN: book.get('ISBN'),
-                        title: book.get('title'),
-                        signId: book.get('signId'),
-                        publicationYear: book.get('publicationYear'),
-                        publicationInfo: book.get('publicationInfo'),
-                        pages: book.get('pages')
-                    })
-                }
-                res.render("search-classifications.hbs", model)
-            })
-
-        } else {
-            res.render("search-classifications.hbs", model)
-        }
-    })
-
-})
-
-
-
 app.get('/login', function (req, res) {
     if (req.session.userId) {
         administratorManager.getAdministratorWithId(req.session.userId).then(administrator => {
@@ -192,7 +146,7 @@ app.post('/login', (req, res) => {
     const password = req.body.password
 
     administratorManager.getAdministratorWithCredentials(email, password).then(administrator => {
-        
+
         if (!administrator) {
             const model = {
                 loginFailed: true,
@@ -221,11 +175,11 @@ app.post('/login', (req, res) => {
 })
 
 app.get("/logout", (req, res) => {
-    if(req.session){
-        req.session.destroy(function(err) {
-            if(!err){
+    if (req.session) {
+        req.session.destroy(function (err) {
+            if (!err) {
                 res.redirect("/")
-            } 
+            }
         })
     }
 })
@@ -235,8 +189,9 @@ app.get("/logout", (req, res) => {
 app.use("/administrators", administratorRouter)
 app.use("/authors", authorRouter)
 app.use("/books", bookRouter)
+app.use("/classifications", classificationRouter)
 
 const PORT = process.env.PORT || 8080
-app.listen(PORT, () =>{
+app.listen(PORT, () => {
     console.log(`Listening on port ${PORT}`)
 })

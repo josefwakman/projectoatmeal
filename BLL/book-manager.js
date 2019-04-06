@@ -15,28 +15,19 @@ const requiredBookKeys = [
 // ------------ Functions ----------------
 
 function findBooksWithTitle(string) {
-    return bookRepository.findBooksWithTitle(string).then(book => {
-        return book
-    }).catch(error => {
-        throw error
-    })
+    return bookRepository.findBooksWithTitle(string)
 }
 
 function findBookWithISBN(ISBN) {
-    return bookRepository.findBookWithISBN(ISBN).then(book => {
-        return book
-    }).catch(error => {
-        throw error
-    })
+    return bookRepository.findBookWithISBN(ISBN)
 }
 
 function findBooksWithAuthorId(id) {
+    return bookRepository.findBooksWithAuthorId(id)
+}
 
-    return bookRepository.findBooksWithAuthorId(id).then(books => {
-        return books
-    }).catch(error => {
-        throw error
-    })
+function findBooksWithSignId(signId) {
+    return bookRepository.findBooksWithSignId(signId)
 }
 
 function addBook(book, userId, authorId, callback) {
@@ -112,5 +103,6 @@ function editBook(newValues, userId, callback) {
 exports.findBooksWithTitle = findBooksWithTitle
 exports.findBookWithISBN = findBookWithISBN
 exports.findBooksWithAuthorId = findBooksWithAuthorId
+exports.findBooksWithSignId = findBooksWithSignId
 exports.addBook = addBook
 exports.editBook = editBook
