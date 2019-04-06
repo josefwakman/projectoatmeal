@@ -33,5 +33,7 @@
 {{/if}}
 
 {{#if adminSupreme}}
-    <button onclick="deleteButtonPressed()">Delete</button>
+    <form action="/administrators/delete/{{id}}" method="post">
+        <button type="submit" class="btn btn-primary">Delete Admin</button>
+    </form>
 {{/if}}
