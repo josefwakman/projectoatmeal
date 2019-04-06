@@ -3,6 +3,7 @@
 <form action="/search-classifications" method="get" autocomplete="off">
     <div class="form-group form-inline">
         <select name="classification" id="classification-select">
+            <option value="" selected disabled hidden>Choose book classification</option>
             {{#each classifications}}
             <option value="{{this.signum}}">{{this.signum}}</option>
             {{/each}}
@@ -12,37 +13,37 @@
 </form>
 
 {{#if searched }}
+<h4>Showing results for {{classification}}</h4>
 
 <div class="search-classifications-table-div">
     <table class="table table-striped" id="classificationTable">
         <thead>
             <tr>
-                <th>ID</th>
                 <th>Title</th>
             </tr>
         </thead>
+
+        {{#if searched}}
         <tbody>
-            {{#if searched}}
             {{#each books}}
             <tr>
-                <td>{{this.ISBN}}</td>
                 <td><a href="/books/{{this.ISBN}}">{{this.title}}</a></td>
             </tr>
             {{/each}}
-
-            <p>Page: {{page}}</p>
-            <div>
-                {{#each paginationWithDots}}
-                {{#if isNumber}}
-                <a href="/search-classifications?classification={{../classification}}&page={{value}}">{{value}} </a>
-                {{else}}
-                <a>{{value}}</a>
-                {{/if}}
-                {{/each}}
-            </div>
-            {{/if}}
         </tbody>
+        {{/if}}
     </table>
+
+    <p>Page: {{page}}</p>
+        <div>
+            {{#each paginationWithDots}}
+            {{#if isNumber}}
+            <a href="/search-classifications?classification={{../classification}}&page={{value}}">{{value}} </a>
+            {{else}}
+            <a>{{value}}</a>
+            {{/if}}
+            {{/each}}
+        </div>
 </div>
 
 {{/if}}
