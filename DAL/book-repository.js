@@ -3,7 +3,6 @@ const {Books, BookAuthors, Op} = require("./models")
 
 function findBooksWithTitle(query) {
     return Books.findAll({
-        // TODO: lägg till limit: (nummer)? Så vi inte får för många böcker tillbaka
         where: { title: { [Op.like]: "%" + query + "%" } }
     }).then(foundBooks => {
         return foundBooks
@@ -87,7 +86,7 @@ function editBook(newValues) {
     return Books.findOne({
         where: { ISBN: newValues.ISBN }
     }).then(foundBook => {
-        for (key of Object.keys(newValues)) { // TODO: detta är lite fult. Kanske kan vi skicka in en array rensad från tomma fällt?
+        for (key of Object.keys(newValues)) {
             switch (key) {
                 case "title":
                     foundBook.title = newValues.title

@@ -291,9 +291,13 @@ router.post('/edit/:ISBN', (req, res) => {
                     }
                     model.authors = authors
                     res.render("book.hbs", model)
-                }).catch(() => {
-                    console.log("Error i find authors with ISBN");
-                    // TODO: render book page but error message on author?
+                }).catch(error => {
+                    console.log(error)
+                    model = {
+                        code: 500,
+                        message: "Internal server error"
+                    }
+                    res.render("error-page.hbs", model)
                 })
             }
         })
