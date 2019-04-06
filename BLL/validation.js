@@ -1,4 +1,4 @@
-const privilegies = Object.freeze({
+const accessLevels = Object.freeze({
     "admin": 1,
     "superAdmin": 2,
     "adminSupreme": 3
@@ -127,9 +127,9 @@ function validateAdministrator(admin) {
                     errors.push("Email given is not valid")
                 }
                 break
-            case "privilegies":
-                if (!Object.keys(privilegies).map(privKey => {
-                    return privilegies[privKey]
+            case "accessLevel":
+                if (!Object.keys(accessLevels).map(privKey => {
+                    return accessLevels[privKey]
                 }).includes(parseInt(admin[key]))
                 ) {
                     errors.push("No valid privilegium given")
