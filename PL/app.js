@@ -2,7 +2,6 @@ const express = require("express")
 const expressHandlebars = require("express-handlebars")
 const bodyParser = require("body-parser")
 const session = require("express-session")
-const connectSqlite3 = require("connect-sqlite3")
 
 const administratorRouter = require("./routers/administrator-router")
 const authorRouter = require("./routers/author-router")
@@ -15,7 +14,6 @@ const db = require("../DAL/classification-repository")
 const dbBooks = require("../DAL/book-repository")
 
 const app = express()
-const SQLiteStore = connectSqlite3(session)
 
 const path = require('path')
 
@@ -33,7 +31,6 @@ app.engine('hbs', expressHandlebars({
 app.use(express.static(path.join(__dirname, '/public')))
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(session({
-    store: new SQLiteStore({ db: "sessions-db.db" }),
     saveUninitialized: false,
     resave: false,
     secret: '2,5dlvatten1dlhavregryn1nypasalt',
