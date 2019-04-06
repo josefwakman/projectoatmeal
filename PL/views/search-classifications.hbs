@@ -4,7 +4,7 @@
     <div class="form-group form-inline">
         <select name="classification" id="classification-select">
             {{#each classifications}}
-                <option value="{{this.signum}}">{{this.signum}}</option>
+            <option value="{{this.signum}}">{{this.signum}}</option>
             {{/each}}
         </select>
     </div>
@@ -29,6 +29,17 @@
                 <td><a href="/books/{{this.ISBN}}">{{this.title}}</a></td>
             </tr>
             {{/each}}
+
+            <p>Page: {{page}}</p>
+            <div>
+                {{#each paginationWithDots}}
+                {{#if isNumber}}
+                <a href="/search-classifications?classification={{../classification}}&page={{value}}">{{value}} </a>
+                {{else}}
+                <a>{{value}}</a>
+                {{/if}}
+                {{/each}}
+            </div>
             {{/if}}
         </tbody>
     </table>

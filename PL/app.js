@@ -6,6 +6,7 @@ const session = require("express-session")
 const administratorRouter = require("./routers/administrator-router")
 const authorRouter = require("./routers/author-router")
 const bookRouter = require("./routers/book-router")
+const pagination = require("./pagination")
 
 const administratorManager = require("../BLL/administrator-manager")
 const hashing = require("../BLL/hashing")
@@ -16,6 +17,8 @@ const dbBooks = require("../DAL/book-repository")
 const app = express()
 
 const path = require('path')
+
+const BOOKS_PER_PAGE = 10
 
 // -----------
 
@@ -65,7 +68,7 @@ app.get('/', function (req, res) {
 })
 
 app.get('/test', (req, res) => {
-    
+
     const plaintextpsw = "Pleasehashme"
 
     let hashedpsw = ""
@@ -120,13 +123,16 @@ app.post('/test', (req, res) => {
 
 
 app.get('/search-classifications', (req, res) => {
-    model = {
+    let page = req.query.page
+    const chosenClassification = req.query.classification
+    let model = {
         searched: false,
         classifications: [],
         books: []
     }
 
     db.getClassifications().then(classifications => {
+
         for (classification of classifications) {
             model.classifications.push({
                 signId: classification.get('signId'),
@@ -138,12 +144,13 @@ app.get('/search-classifications', (req, res) => {
         if (0 < Object.keys(req.query).length) {
             model.searched = true
             const selectedClassification = model.classifications.find(clas => {
-                return clas.signum == req.query.classification
+                return clas.signum == chosenClassification
             })
 
-            dbBooks.findBooksWithSignId(selectedClassification.signId).then(books => {
-                for (book of books) {
-                    model.books.push({
+            dbBooks.findBooksWithSignId(selectedClassification.signId).then(foundBooks => {
+                let books = []
+                for (book of foundBooks) {
+                    books.push({
                         ISBN: book.get('ISBN'),
                         title: book.get('title'),
                         signId: book.get('signId'),
@@ -152,6 +159,22 @@ app.get('/search-classifications', (req, res) => {
                         pages: book.get('pages')
                     })
                 }
+                const amountOfPages = Math.ceil(books.length / BOOKS_PER_PAGE)
+                if (page) {
+                    const startIndex = (page - 1) * BOOKS_PER_PAGE
+                    const endIndex = startIndex + BOOKS_PER_PAGE
+                    books = books.slice(startIndex, endIndex)
+                } else {
+                    page = 1
+                    books = books.slice(0, BOOKS_PER_PAGE)
+                }
+
+                const paginationWithDots = pagination.getPaginationWithDots(parseInt(page), amountOfPages)
+                model.paginationWithDots = paginationWithDots
+                model.classification = chosenClassification
+                model.books = books
+                model.page = page
+
                 res.render("search-classifications.hbs", model)
             })
 
@@ -192,7 +215,7 @@ app.post('/login', (req, res) => {
     const password = req.body.password
 
     administratorManager.getAdministratorWithCredentials(email, password).then(administrator => {
-        
+
         if (!administrator) {
             const model = {
                 loginFailed: true,
@@ -221,11 +244,11 @@ app.post('/login', (req, res) => {
 })
 
 app.get("/logout", (req, res) => {
-    if(req.session){
-        req.session.destroy(function(err) {
-            if(!err){
+    if (req.session) {
+        req.session.destroy(function (err) {
+            if (!err) {
                 res.redirect("/")
-            } 
+            }
         })
     }
 })
@@ -237,6 +260,6 @@ app.use("/authors", authorRouter)
 app.use("/books", bookRouter)
 
 const PORT = process.env.PORT || 8080
-app.listen(PORT, () =>{
+app.listen(PORT, () => {
     console.log(`Listening on port ${PORT}`)
 })
