@@ -4,14 +4,15 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon --inspect=0.0.0.0 PL/app.js -L"
+    "start": "node PL/app.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/josefwakman/projectoatmeal.git"
   },
   "keywords": [],
-  "author": "",
+  "author": "josefwakman",
+  "contributors": ["ster1666"],
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/josefwakman/projectoatmeal/issues"

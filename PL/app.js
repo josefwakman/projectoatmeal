@@ -208,7 +208,7 @@ app.post('/login', (req, res) => {
                 firstName: administrator.get('firstName'),
                 lastName: administrator.get('lastName')
             }
-            res.render('login.hbs', model)
+            res.redirect("/")
         }
     }).catch(error => {
         console.log(error)
@@ -236,4 +236,7 @@ app.use("/administrators", administratorRouter)
 app.use("/authors", authorRouter)
 app.use("/books", bookRouter)
 
-app.listen(8080)
+const PORT = process.env.PORT || 8080
+app.listen(PORT, () =>{
+    console.log(`Listening on port ${PORT}`)
+})
