@@ -130,7 +130,7 @@ router.post('/', (req, res) => {
                 firstName: administrator.firstName,
                 lastName: administrator.lastName,
                 email: administrator.email,
-                accesslevel: administrator.accesslevel
+                accessLevel: administrator.accessLevel
             }
             res.render("administrator.hbs", model)
         }
@@ -223,13 +223,20 @@ router.post('/edit/:id', (req, res) => {
 
 router.post("/delete/:id", (req, res) => {
 
-    adminId = req.params.id;
+    const userId = req.session.userId
+    const adminToDelete = req.params.id;
 
-    administratorManager.deleteAdministratorWithId(adminId, (error, admin) => {
+    administratorManager.deleteAdministratorWithId(adminToDelete, userId,  (error) => {
         if(error){
             res.render("error-page.hbs", error)
         }else{
-            res.render("administrators.hbs", admin)
+
+            const model = {
+                success: true,
+                msg: "Admin deleted"
+            }
+
+            res.render("administrators.hbs", model)
         }
     })
 })
