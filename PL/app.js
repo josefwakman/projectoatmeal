@@ -15,9 +15,11 @@ const app = express()
 
 const path = require('path')
 
-// -----------
 
-//Handlebars Setup
+/* -----------
+ Express Setup
+ ------------- */ 
+
 app.set('views', path.join(__dirname, 'views'))
 
 app.engine('hbs', expressHandlebars({
@@ -31,10 +33,9 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(session({
     saveUninitialized: false,
     resave: false,
-    secret: '2,5dlvatten1dlhavregryn1nypasalt',
-    cookie: { maxAge: 60 * 60 * 1000 } // maxAge is in milliseconds, expires after 1 hour
+    secret: '2,5dlvatten1dlhavregryn1nypasalt'
 }))
-/* Set data for the navbar */
+/* Sets data for the navbar */
 app.use((req, res, next) => {
     const userId = req.session.userId
 
@@ -55,6 +56,7 @@ app.use((req, res, next) => {
         })
     }
 })
+
 
 // --------------------
 
