@@ -9,9 +9,9 @@
         <input type="text" placeholder="Password" class="form-control" name="password">
         <input type="text" placeholder="Enter password again" class="form-control" name="passwordRepeat" >
         <div>
-            <p>Privilegies:</p>
-            <select name="privilegies" id="privilegies-select">
-                {{#each privilegies}}
+            <p>Access Level:</p>
+            <select name="accesslevels" id="accesslevels-select">
+                {{#each accessLevels}}
                 <option value={{@key}}>{{this}}</option>
                 {{/each}}
             </select>

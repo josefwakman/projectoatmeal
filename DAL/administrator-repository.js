@@ -9,7 +9,7 @@ function addAdministrator(administrator) {
         firstName: administrator.firstName,
         lastName: administrator.lastName,
         email: administrator.email,
-        privilegies: administrator.privilegies,
+        accessLevel: administrator.accessLevel,
         password: administrator.password
     }).then(administrator => {
         return administrator
@@ -31,8 +31,8 @@ function updateAdministrator(newValues) {
                 case "email":
                     administrator.email = newValues.email
                     break
-                case "privilegies":
-                    administrator.privilegies = newValues.privilegies
+                case "accessLevel":
+                    administrator.accessLevel = newValues.accessLevel
                     break
                 case "password":
                     administrator.password = newValues.password
@@ -60,7 +60,7 @@ function getAccessLevelOfAdministratorWithId(id) {
         where: { id: id }
     }).then(administrator => {
         if (administrator) {
-            return administrator.get('privilegies')
+            return administrator.get('accessLevel')
         } else {
             return null
         }

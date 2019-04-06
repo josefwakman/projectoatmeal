@@ -52,7 +52,7 @@ function getAccessLevelOfAdministratorId(id) {
                 resolve(false)
             } 
             else {
-                resolve(administrator.get('privilegies'))
+                resolve(administrator.get('accessLevel'))
             }
         })
     })

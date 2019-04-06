@@ -7,7 +7,7 @@ const requiredAdministratorKeys = [
     "firstName",
     "lastName",
     "email",
-    "privilegies",
+    "accessLevels",
     "password"
 ]
 

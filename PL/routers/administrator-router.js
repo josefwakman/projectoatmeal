@@ -31,7 +31,7 @@ administrators = [
 
 
 router.get('/', function (req, res) {
-    model = { privilegies: { 1: "admin", 2: "super admin", 3: "admin supreme" } }  // TODO: replace with global variable (from validation?)
+    let model = { accessLevels: authorization.accessLevels } 
 
     administratorManager.getAdministrators().then(administrators => {
         model.administrators = []
@@ -41,7 +41,7 @@ router.get('/', function (req, res) {
                 firstName: administrator.get('firstName'),
                 lastName: administrator.get('lastName'),
                 email: administrator.get('email'),
-                privilegies: administrator.get('privilegies'),
+                accesslevel: administrator.get('accesslevel'),
             })
         }
         res.render("administrators.hbs", model)
@@ -66,7 +66,7 @@ router.get('/:id', (req, res) => {
             firstName: administrator.get('firstName'),
             lastName: administrator.get('lastName'),
             email: administrator.get('email'),
-            privilegies: administrator.get('privilegies'),
+            accessLevel: authorization.accessLevels[administrator.get('accessLevel')],
         }
         if (userId) {
             authorization.getAccessLevelOfAdministratorId(userId).then(accesslevel => {
@@ -108,11 +108,7 @@ router.post('/', (req, res) => {
                 model = {
                     errors: validationErrors,
                     validationError: true,
-                    privilegies: { // TODO: replace with global variable (from validation?)
-                        1: "admin",
-                        2: "super admin",
-                        3: "admin supreme"
-                    },
+                    accessLevels: authorization.accessLevels,
                     administrators: []
                 }
                 for (administrator of administrators) {
@@ -121,7 +117,7 @@ router.post('/', (req, res) => {
                         firstName: administrator.get('firstName'),
                         lastName: administrator.get('lastName'),
                         email: administrator.get('email'),
-                        privilegies: administrator.get('privilegies'),
+                        accesslevel: administrator.get('accesslevel'),
                     })
                 }
                 res.render("administrators.hbs", model)
@@ -134,7 +130,7 @@ router.post('/', (req, res) => {
                 firstName: administrator.firstName,
                 lastName: administrator.lastName,
                 email: administrator.email,
-                privilegies: administrator.privilegies
+                accesslevel: administrator.accesslevel
             }
             res.render("administrator.hbs", model)
         }
@@ -160,7 +156,7 @@ router.get('/edit/:id', (req, res) => {
                     firstName: administrator.firstName,
                     lastName: administrator.lastName,
                     email: administrator.email,
-                    privilegies: administrator.privilegies
+                    accesslevel: administrator.accesslevel
                 }
 
                 for (let i = 1; i <= accesslevel; i++) {
@@ -212,7 +208,7 @@ router.post('/edit/:id', (req, res) => {
                     firstName: administrator.get('firstName'),
                     lastName: administrator.get('lastName'),
                     email: administrator.get('email'),
-                    privilegies: administrator.get('privilegies')
+                    accesslevel: administrator.get('accesslevel')
                 }
 
                 for (let i = 1; i <= accesslevel; i++) {

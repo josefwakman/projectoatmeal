@@ -1,11 +1,6 @@
-const privilegies = Object.freeze({
-    "admin": 1,
-    "superAdmin": 2,
-    "adminSupreme": 3
-}) // TODO: replace with global variable (from validation?)
+const { accessLevels } = require('./authorization')
 
-
-// Returns an array of errors. If there are no error, the array is empty
+// Returns an array of errors. If there are no errors, the array is empty
 function validateBook(book) {
     book = removeEmptyValues(book)
 
@@ -127,12 +122,11 @@ function validateAdministrator(admin) {
                     errors.push("Email given is not valid")
                 }
                 break
-            case "privilegies":
-                if (!Object.keys(privilegies).map(privKey => {
-                    return privilegies[privKey]
-                }).includes(parseInt(admin[key]))
-                ) {
-                    errors.push("No valid privilegium given")
+            case "accessLevel":
+                const adminAccessLevel = parseInt(admin[key])
+                if (!Object.keys(accessLevels).includes(adminAccessLevel)) 
+                {
+                    errors.push("No valid access level given")
                 }
                 break
             case "password":
@@ -144,21 +138,6 @@ function validateAdministrator(admin) {
     }
     return errors
 }
-
-
-// --- EXPORTS ---------------
-
-exports.validateBook = validateBook
-
-exports.validateAuthor = validateAuthor
-
-exports.validateAdministrator = validateAdministrator
-
-exports.removeEmptyValues = removeEmptyValues
-
-exports.getMissingKeys = getMissingKeys
-
-// --------------------------------------------
 
 function removeEmptyValues(arr) {
     let newObject = {}
@@ -181,3 +160,18 @@ function getMissingKeys(object, requiredKeys) {
     }
     return missingKeys
 }
+
+
+// --- EXPORTS ---------------
+
+exports.validateBook = validateBook
+
+exports.validateAuthor = validateAuthor
+
+exports.validateAdministrator = validateAdministrator
+
+exports.removeEmptyValues = removeEmptyValues
+
+exports.getMissingKeys = getMissingKeys
+
+// --------------------------------------------
