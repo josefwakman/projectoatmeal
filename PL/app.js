@@ -6,19 +6,14 @@ const session = require("express-session")
 const administratorRouter = require("./routers/administrator-router")
 const authorRouter = require("./routers/author-router")
 const bookRouter = require("./routers/book-router")
-const pagination = require("./pagination")
+const classificationRouter = require("./routers/classification-router")
 
 const administratorManager = require("../BLL/administrator-manager")
 const hashing = require("../BLL/hashing")
 
-const db = require("../DAL/classification-repository")
-const dbBooks = require("../DAL/book-repository")
-
 const app = express()
 
 const path = require('path')
-
-const BOOKS_PER_PAGE = 10
 
 // -----------
 
@@ -121,72 +116,6 @@ app.post('/test', (req, res) => {
 
 })
 
-
-app.get('/search-classifications', (req, res) => {
-    let page = req.query.page
-    const chosenClassification = req.query.classification
-    let model = {
-        searched: false,
-        classifications: [],
-        books: []
-    }
-
-    db.getClassifications().then(classifications => {
-
-        for (classification of classifications) {
-            model.classifications.push({
-                signId: classification.get('signId'),
-                signum: classification.get('signum'),
-                description: classification.get('description')
-            })
-        }
-
-        if (0 < Object.keys(req.query).length) {
-            model.searched = true
-            const selectedClassification = model.classifications.find(clas => {
-                return clas.signum == chosenClassification
-            })
-
-            dbBooks.findBooksWithSignId(selectedClassification.signId).then(foundBooks => {
-                let books = []
-                for (book of foundBooks) {
-                    books.push({
-                        ISBN: book.get('ISBN'),
-                        title: book.get('title'),
-                        signId: book.get('signId'),
-                        publicationYear: book.get('publicationYear'),
-                        publicationInfo: book.get('publicationInfo'),
-                        pages: book.get('pages')
-                    })
-                }
-                const amountOfPages = Math.ceil(books.length / BOOKS_PER_PAGE)
-                if (page) {
-                    const startIndex = (page - 1) * BOOKS_PER_PAGE
-                    const endIndex = startIndex + BOOKS_PER_PAGE
-                    books = books.slice(startIndex, endIndex)
-                } else {
-                    page = 1
-                    books = books.slice(0, BOOKS_PER_PAGE)
-                }
-
-                const paginationWithDots = pagination.getPaginationWithDots(parseInt(page), amountOfPages)
-                model.paginationWithDots = paginationWithDots
-                model.classification = chosenClassification
-                model.books = books
-                model.page = page
-
-                res.render("search-classifications.hbs", model)
-            })
-
-        } else {
-            res.render("search-classifications.hbs", model)
-        }
-    })
-
-})
-
-
-
 app.get('/login', function (req, res) {
     if (req.session.userId) {
         administratorManager.getAdministratorWithId(req.session.userId).then(administrator => {
@@ -258,6 +187,7 @@ app.get("/logout", (req, res) => {
 app.use("/administrators", administratorRouter)
 app.use("/authors", authorRouter)
 app.use("/books", bookRouter)
+app.use("/classifications", classificationRouter)
 
 const PORT = process.env.PORT || 8080
 app.listen(PORT, () => {
