@@ -67,9 +67,18 @@ function getAccessLevelOfAdministratorWithId(id) {
     })
 }
 
+function deleteAdmin(adminId) {
+    Administrators.destroy({
+        where: {
+            id: adminId
+        }
+    })
+}
+
 exports.getAdministrators = getAdministrators
 exports.addAdministrator = addAdministrator
 exports.updateAdministrator = updateAdministrator
 exports.getAdministratorWithId = getAdministratorWithId
 exports.getAdministratorWithEmail = getAdministratorWithEmail
 exports.getAccessLevelOfAdministratorWithId = getAccessLevelOfAdministratorWithId
+exports.deleteAdmin = deleteAdmin

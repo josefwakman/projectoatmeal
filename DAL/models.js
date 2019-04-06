@@ -113,7 +113,7 @@ const Administrators = sequelize.define("Administrators", {
     email: {
         type: Sequelize.STRING
     },
-    privilegies: {
+    accessLevel: {
         type: Sequelize.INTEGER
     },
     password: {

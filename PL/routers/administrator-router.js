@@ -225,4 +225,17 @@ router.post('/edit/:id', (req, res) => {
 
 })
 
+router.post("/delete/:id", (req, res) => {
+
+    adminId = req.params.id;
+
+    administratorManager.deleteAdministratorWithId(adminId, (error, admin) => {
+        if(error){
+            res.render("error-page.hbs", error)
+        }else{
+            res.render("administrators.hbs", admin)
+        }
+    })
+})
+
 module.exports = router
