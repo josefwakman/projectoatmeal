@@ -37,7 +37,7 @@ function addAdministrator(administrator, userId, callback) {
                         admin.get('email')
                     )
                 }
-                
+
                 const validationErrors = validator.validateAdministrator(administrator, listOfEmails)
                 const missingKeys = validator.getMissingKeys(administrator, requiredAdministratorKeys)
                 for (missingKey of missingKeys) {
@@ -82,29 +82,38 @@ function updateAdministrator(administrator, userId, callback) {
 
         else {
 
-            const validationErrors = validator.validateAdministrator(administrator)
+            administratorRepository.getEmailsOfAllAdministrators().then(administratorsWithEmail => {
+                let listOfEmails = []
+                for (admin of administratorsWithEmail) {
+                    listOfEmails.push(
+                        admin.get('email')
+                    )
+                }
 
-            if (validationErrors.length) {
-                callback(validationErrors)
+                const validationErrors = validator.validateAdministrator(administrator, listOfEmails)
 
-            } else {
+                if (validationErrors.length) {
+                    callback(validationErrors)
 
-                if (administrator.password) {
-                    hashing.generateHashForPassword(administrator.password).then(hashedPassword => {
-                        administrator.password = hashedPassword
+                } else {
+
+                    if (administrator.password) {
+                        hashing.generateHashForPassword(administrator.password).then(hashedPassword => {
+                            administrator.password = hashedPassword
+                            administratorRepository.updateAdministrator(administrator).then(updatedAdministrator => {
+                                callback([], null, updatedAdministrator)
+
+                            })
+                        })
+                    }
+                    else {
+
                         administratorRepository.updateAdministrator(administrator).then(updatedAdministrator => {
                             callback([], null, updatedAdministrator)
-
                         })
-                    })
+                    }
                 }
-                else {
-
-                    administratorRepository.updateAdministrator(administrator).then(updatedAdministrator => {
-                        callback([], null, updatedAdministrator)
-                    })
-                }
-            }
+            })
         }
     }).catch(serverError => {
         console.log(serverError)

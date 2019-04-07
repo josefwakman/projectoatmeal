@@ -5,8 +5,8 @@
     <input type="text" name="firstName" placeholder="First Name" value={{firstName}}>
     <input type="text" name="lastName" placeholder="Last Name" value={{lastName}}>
     <p>Current level: {{accessLevel}}</p>
-    <select name="accesslevels">
-                {{#each accesslevels}}
+    <select name="accessLevel">
+                {{#each accessLevels}}
                 <option value={{@key}}>{{this}}</option>
                 {{/each}}
             </select>

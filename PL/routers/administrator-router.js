@@ -156,7 +156,8 @@ router.get('/edit/:id', (req, res) => {
                     firstName: administrator.firstName,
                     lastName: administrator.lastName,
                     email: administrator.email,
-                    accesslevel: administrator.accesslevel
+                    accessLevel: authorization.accessLevels[administrator.get('accessLevel')],
+                    accessLevels: authorization.accessLevels
                 }
 
                 for (let i = 1; i <= accesslevel; i++) {
