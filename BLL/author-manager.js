@@ -9,19 +9,11 @@ const requiredAuthorKeys = [
 ]
 
 function findAuthorsWithName(string) {
-    return authorRepository.findAuthorsWithName(string).then(authors => {
-        return authors
-    }).catch(error => {
-        throw error
-    })
+    return authorRepository.findAuthorsWithName(string)
 }
 
 function getAuthorWithId(id) {
-    return authorRepository.getAuthorWithId(id).then(author => {
-        return author
-    }).catch(error => {
-        throw error
-    })
+    return authorRepository.getAuthorWithId(id)
 }
 
 function addAuthor(author, userId, callback) {
@@ -86,17 +78,10 @@ function editAuthor(newValues, userId, callback) {
             }
         }
     })
-
-
-
 }
 
 function findAuthorsWithBookISBN(ISBN) {
-    return authorRepository.findAuthorsWithBookISBN(ISBN).then(authors => {
-        return authors
-    }).catch(error => {
-        throw error
-    })
+    return authorRepository.findAuthorsWithBookISBN(ISBN)
 }
 
 exports.findAuthorsWithName = findAuthorsWithName
