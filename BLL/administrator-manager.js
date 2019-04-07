@@ -82,43 +82,34 @@ function updateAdministrator(administrator, userId, callback) {
 
         else {
 
-            administratorRepository.getEmailsOfAllAdministrators().then(administratorsWithEmail => {
-                let listOfEmails = []
-                for (admin of administratorsWithEmail) {
-                    listOfEmails.push(
-                        admin.get('email')
-                    )
-                }
-
-                const validationErrors = validator.validateAdministrator(administrator, listOfEmails)
-                administratorRepository.getAdministrators().then(administrators => {
-                    for (admin in administrators) {
-                        if (admin.get('email') == administrator.email && admin.get('id') != administrator.id) {
-                            validationErrors.push("Given email is already in use, choose another one.")
-                        }
+            const validationErrors = validator.validateAdministrator(administrator)
+            administratorRepository.getAdministrators().then(administrators => {
+                for (admin of administrators) {
+                    if (admin.get('email') == administrator.email && admin.get('id') != administrator.id) {
+                        validationErrors.push("Given email is already in use, choose another one.")
                     }
-                    if (validationErrors.length) {
-                        callback(validationErrors)
+                }
+                if (validationErrors.length) {
+                    callback(validationErrors)
 
-                    } else {
+                } else {
 
-                        if (administrator.password) {
-                            hashing.generateHashForPassword(administrator.password).then(hashedPassword => {
-                                administrator.password = hashedPassword
-                                administratorRepository.updateAdministrator(administrator).then(updatedAdministrator => {
-                                    callback([], null, updatedAdministrator)
-
-                                })
-                            })
-                        }
-                        else {
-
+                    if (administrator.password) {
+                        hashing.generateHashForPassword(administrator.password).then(hashedPassword => {
+                            administrator.password = hashedPassword
                             administratorRepository.updateAdministrator(administrator).then(updatedAdministrator => {
                                 callback([], null, updatedAdministrator)
+
                             })
-                        }
+                        })
                     }
-                })
+                    else {
+
+                        administratorRepository.updateAdministrator(administrator).then(updatedAdministrator => {
+                            callback([], null, updatedAdministrator)
+                        })
+                    }
+                }
             })
         }
     }).catch(serverError => {
