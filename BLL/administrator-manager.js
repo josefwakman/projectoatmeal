@@ -7,7 +7,7 @@ const requiredAdministratorKeys = [
     "firstName",
     "lastName",
     "email",
-    "accessLevels",
+    "accessLevel",
     "password"
 ]
 
@@ -18,7 +18,7 @@ function getAdministrators() {
 }
 
 function addAdministrator(administrator, userId, callback) {
-
+    
     administratorRepository.getAccessLevelOfAdministratorWithId(userId).then(accessLevel => {
         if (!authorization.privilegiesOfAccessLevel.administrators.add.includes(accessLevel)) {
             const error = {

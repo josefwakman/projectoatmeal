@@ -33,7 +33,8 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(session({
     saveUninitialized: false,
     resave: false,
-    secret: '2,5dlvatten1dlhavregryn1nypasalt'
+    secret: '2,5dlvatten1dlhavregryn1nypasalt',
+    cookie: { maxAge: 1000 * 60 * 60 } // Cookie with sessionsId will expire after 1 hour
 }))
 /* Sets data for the navbar */
 app.use((req, res, next) => {
