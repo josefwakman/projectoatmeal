@@ -123,7 +123,7 @@ function validateAdministrator(admin) {
                 }
                 break
             case "accessLevel":
-                const adminAccessLevel = parseInt(admin[key])
+                const adminAccessLevel = admin[key]
                 if (!Object.keys(accessLevels).includes(adminAccessLevel)) 
                 {
                     errors.push("No valid access level given")
