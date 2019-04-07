@@ -21,7 +21,6 @@
   },
   "homepage": "https://github.com/josefwakman/projectoatmeal#readme",
   "dependencies": {
-    "bcrypt": "^3.0.5",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
     "bootstrap": "^4.3.1",
@@ -34,7 +33,6 @@
     "jsonwebtoken": "^8.5.1",
     "mysql": "^2.16.0",
     "mysql2": "^1.6.5",
-    "node-gyp": "^3.8.0",
     "nodemon": "^1.18.10",
     "sequelize": "^4.43.1",
     "table-link": "^1.2.9"
