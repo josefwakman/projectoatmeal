@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/josefwakman/projectoatmeal#readme",
   "dependencies": {
-    "bcrypt": "^3.0.5",
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.3",
     "bootstrap": "^4.3.1",
     "component-matches-selector": "^0.1.6",
