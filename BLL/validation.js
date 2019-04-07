@@ -118,10 +118,7 @@ function validateAdministrator(admin, listOfEmails) {
                 }
                 break
             case "email":
-                if (listOfEmails.includes(admin.email)) {
-                    errors.push("Given email is already in use, choose another one.")
-                }
-                else if (!validEmail.test(admin.email)) {
+                if (!validEmail.test(admin.email)) {
                     errors.push("Email given is not valid")
                 }
                 break

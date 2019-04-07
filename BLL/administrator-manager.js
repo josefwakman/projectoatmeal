@@ -91,28 +91,34 @@ function updateAdministrator(administrator, userId, callback) {
                 }
 
                 const validationErrors = validator.validateAdministrator(administrator, listOfEmails)
+                administratorRepository.getAdministrators().then(administrators => {
+                    for (admin in administrators) {
+                        if (admin.get('email') == administrator.email && admin.get('id') != administrator.id) {
+                            validationErrors.push("Given email is already in use, choose another one.")
+                        }
+                    }
+                    if (validationErrors.length) {
+                        callback(validationErrors)
 
-                if (validationErrors.length) {
-                    callback(validationErrors)
+                    } else {
 
-                } else {
+                        if (administrator.password) {
+                            hashing.generateHashForPassword(administrator.password).then(hashedPassword => {
+                                administrator.password = hashedPassword
+                                administratorRepository.updateAdministrator(administrator).then(updatedAdministrator => {
+                                    callback([], null, updatedAdministrator)
 
-                    if (administrator.password) {
-                        hashing.generateHashForPassword(administrator.password).then(hashedPassword => {
-                            administrator.password = hashedPassword
+                                })
+                            })
+                        }
+                        else {
+
                             administratorRepository.updateAdministrator(administrator).then(updatedAdministrator => {
                                 callback([], null, updatedAdministrator)
-
                             })
-                        })
+                        }
                     }
-                    else {
-
-                        administratorRepository.updateAdministrator(administrator).then(updatedAdministrator => {
-                            callback([], null, updatedAdministrator)
-                        })
-                    }
-                }
+                })
             })
         }
     }).catch(serverError => {
