@@ -1,25 +1,45 @@
 <h2>Edit admin</h2>
+<h6>Current level: {{accessLevel}}</h6>
+
+<br>
 
 {{#if adminSupreme}}
-<form action="/administrators/edit/{{id}}" method="post">
-    <input type="text" name="firstName" placeholder="First Name" value={{firstName}}>
-    <input type="text" name="lastName" placeholder="Last Name" value={{lastName}}>
-    <p>Current level: {{accessLevel}}</p>
-    <select name="accessLevel">
-                {{#each accessLevels}}
-                <option value={{@key}}>{{this}}</option>
-                {{/each}}
-            </select>
-    <input type="text" name="email" placeholder="email" value={{email}}>
-    <input type="submit">
+<form class="edit-values" action="/administrators/edit/{{id}}" method="post">
+        <label for="firstName">First Name: </label>
+        <input class="form-control" type="text" id="firstName" name="firstName" placeholder="First Name" value={{firstName}}>
+        <br>
+        <label for="lastName">Last Name: </label>
+        <input class="form-control" type="text" id="lastName" name="lastName" placeholder="Last Name" value={{lastName}}>
+        <br>
+        <label for="email">Email: </label>
+        <input class="form-control" placeholder="Email" type="text" id="email" name="email" placeholder="email" value={{email}}>
+        <button type="submit" class="btn btn-primary">Update Info</button>
 </form>
+<br>
+
+<!--Update acccess level-->
+<form class="edit-values" action="/administrators/edit/{{id}}" method="post">
+    <label for="accessLevel">Access Levels: </label>
+    <select class="form-control" id="accessLevel" name="accessLevel">
+        {{#each accessLevels}}
+        <option value={{@key}}>{{this}}</option>
+        {{/each}}
+    </select>
+    <button type="submit" class="btn btn-primary">Update Access Level</button>
+</form>
+
+<br>
+
 {{/if}}
 
 {{#if superAdmin}}
-<form action="/administrators/edit/{{id}}" method="post">
-    <input type="password" name="password" placeholder="New password">
-    <input type="password" name="passwordRepeat" placeholder="Enter password again">
-    <input type="submit">
+<form class="edit-values" action="/administrators/edit/{{id}}" method="post">
+<label for="password">New Password: </label>
+    <input class="form-control" id="password" type="password" name="password" placeholder="New password">
+    <br>
+    <label for="passwordRepeat">Reenter Password: </label>
+    <input class="form-control" type="password" id="passwordRepeat" name="passwordRepeat" placeholder="Enter password again">
+    <button type="submit" class="btn btn-primary">Update Password</button>
 </form>
 {{/if}}
 
@@ -32,8 +52,9 @@
 </div>
 {{/if}}
 
+<br>
 {{#if adminSupreme}}
-    <form action="/administrators/delete/{{id}}" method="post">
-        <button type="submit" class="btn btn-primary">Delete Admin</button>
-    </form>
+<form action="/administrators/delete/{{id}}" method="post">
+    <button type="submit" class="btn btn-primary">Delete Admin</button>
+</form>
 {{/if}}
