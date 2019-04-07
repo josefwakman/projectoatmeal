@@ -3,13 +3,13 @@ const expressHandlebars = require("express-handlebars")
 const bodyParser = require("body-parser")
 const session = require("express-session")
 
-const administratorRouter = require("./routers/administrator-router")
-const authorRouter = require("./routers/author-router")
-const bookRouter = require("./routers/book-router")
-const classificationRouter = require("./routers/classification-router")
+const administratorRouter = require("./PL/routers/administrator-router")
+const authorRouter = require("./PL/routers/author-router")
+const bookRouter = require("./PL/routers/book-router")
+const classificationRouter = require("./PL/routers/classification-router")
 
-const administratorManager = require("../BLL/administrator-manager")
-const hashing = require("../BLL/hashing")
+const administratorManager = require("./BLL/administrator-manager")
+const hashing = require("./BLL/hashing")
 
 const app = express()
 
@@ -20,15 +20,15 @@ const path = require('path')
  Express Setup
  ------------- */ 
 
-app.set('views', path.join(__dirname, 'views'))
+app.set('views', path.join(__dirname, './PL/views'))
 
 app.engine('hbs', expressHandlebars({
     defaultLayout: 'main',
     extname: '.hbs',
-    layoutsDir: path.join(__dirname, 'layouts')
+    layoutsDir: path.join(__dirname, './PL/layouts')
 }))
 
-app.use(express.static(path.join(__dirname, '/public')))
+app.use(express.static(path.join(__dirname, './PL/public')))
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(session({
     saveUninitialized: false,
