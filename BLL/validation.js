@@ -98,7 +98,7 @@ function validateAuthor(author) {
     return errors
 }
 
-function validateAdministrator(admin) {
+function validateAdministrator(admin, listOfEmails) {
     let errors = []
     admin = removeEmptyValues(admin)
 
@@ -118,14 +118,16 @@ function validateAdministrator(admin) {
                 }
                 break
             case "email":
-                if (!validEmail.test(admin.email)) {
+                if (listOfEmails.includes(admin.email)) {
+                    errors.push("Given email is already in use, choose another one.")
+                }
+                else if (!validEmail.test(admin.email)) {
                     errors.push("Email given is not valid")
                 }
                 break
             case "accessLevel":
                 const adminAccessLevel = admin[key]
-                if (!Object.keys(accessLevels).includes(adminAccessLevel)) 
-                {
+                if (!Object.keys(accessLevels).includes(adminAccessLevel)) {
                     errors.push("No valid access level given")
                 }
                 break

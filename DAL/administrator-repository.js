@@ -67,6 +67,12 @@ function getAccessLevelOfAdministratorWithId(id) {
     })
 }
 
+function getEmailsOfAllAdministrators() {
+    return Administrators.findAll({
+        attributes: ["email"]
+    })
+}
+
 function deleteAdmin(adminId) {
     Administrators.destroy({
         where: {
@@ -81,4 +87,5 @@ exports.updateAdministrator = updateAdministrator
 exports.getAdministratorWithId = getAdministratorWithId
 exports.getAdministratorWithEmail = getAdministratorWithEmail
 exports.getAccessLevelOfAdministratorWithId = getAccessLevelOfAdministratorWithId
+exports.getEmailsOfAllAdministrators = getEmailsOfAllAdministrators
 exports.deleteAdmin = deleteAdmin

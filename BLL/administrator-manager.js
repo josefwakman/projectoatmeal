@@ -18,7 +18,7 @@ function getAdministrators() {
 }
 
 function addAdministrator(administrator, userId, callback) {
-    
+
     administratorRepository.getAccessLevelOfAdministratorWithId(userId).then(accessLevel => {
         if (!authorization.privilegiesOfAccessLevel.administrators.add.includes(accessLevel)) {
             const error = {
@@ -30,25 +30,34 @@ function addAdministrator(administrator, userId, callback) {
 
         else {
 
-            const validationErrors = validator.validateAdministrator(administrator)
-            const missingKeys = validator.getMissingKeys(administrator, requiredAdministratorKeys)
-            for (missingKey of missingKeys) {
-                validationErrors.push("Nothing entered in " + missingKey)
-            }
-            if (0 < validationErrors.length) {
-                callback(validationErrors)
+            administratorRepository.getEmailsOfAllAdministrators().then(administratorsWithEmail => {
+                let listOfEmails = []
+                for (admin of administratorsWithEmail) {
+                    listOfEmails.push(
+                        admin.get('email')
+                    )
+                }
+                
+                const validationErrors = validator.validateAdministrator(administrator, listOfEmails)
+                const missingKeys = validator.getMissingKeys(administrator, requiredAdministratorKeys)
+                for (missingKey of missingKeys) {
+                    validationErrors.push("Nothing entered in " + missingKey)
+                }
+                if (0 < validationErrors.length) {
+                    callback(validationErrors)
 
-            } else {
+                } else {
 
-                hashing.generateHashForPassword(administrator.password).then(hashedPassword => {
+                    hashing.generateHashForPassword(administrator.password).then(hashedPassword => {
 
-                    administrator.password = hashedPassword
-                    administratorRepository.addAdministrator(administrator).then(addedAdministrator => {
-                        callback([], null, addedAdministrator)
+                        administrator.password = hashedPassword
+                        administratorRepository.addAdministrator(administrator).then(addedAdministrator => {
+                            callback([], null, addedAdministrator)
 
+                        })
                     })
-                })
-            }
+                }
+            })
         }
     }).catch(serverError => {
         console.log(serverError)
@@ -134,18 +143,18 @@ function getAdministratorWithCredentials(email, password) {
 function deleteAdministratorWithId(adminToDelete, loggedInUser, callback) {
 
     administratorRepository.getAccessLevelOfAdministratorWithId(loggedInUser).then(accessLevel => {
-        if(!authorization.privilegiesOfAccessLevel.administrators.delete.includes(accessLevel)){
+        if (!authorization.privilegiesOfAccessLevel.administrators.delete.includes(accessLevel)) {
             const error = {
                 code: 403,
                 message: "You're not authorized to delete this administrator"
             }
             callback(error)
             console.log("trying to delete admin");
-            
-        }else{
-            
+
+        } else {
+
             administratorRepository.deleteAdmin(adminToDelete)
-                callback(null)
+            callback(null)
 
         }
     })
