@@ -124,7 +124,7 @@ router.post('/', (req, res) => {
                         firstName: administrator.get('firstName'),
                         lastName: administrator.get('lastName'),
                         email: administrator.get('email'),
-                        accesslevel: administrator.get('accesslevel'),
+                        accesslevel: authorization.accessLevels[administrator.get('accessLevel')],
                     })
                 }
                 res.render("administrators.hbs", model)
