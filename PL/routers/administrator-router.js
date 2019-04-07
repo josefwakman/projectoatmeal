@@ -4,34 +4,8 @@ const authorization = require("../../BLL/authorization")
 
 const router = express.Router()
 
-// ---- PLACEHOLDERS - TO BE DELETED ----------------
-
-administrators = [
-    {
-        id: 1776,
-        name: "Thomas Jefferson",
-        privilegies: "admin",
-        email: "tea_party_lover@us.gov",
-    },
-    {
-        id: 1789,
-        name: "Marquis de Lafayette",
-        privilegies: "admin",
-        email: "fuckyourobespierre@merde.fr",
-    },
-    {
-        id: 1812,
-        name: "Simon Bolivar",
-        privilegies: "superadmin",
-        email: "1r0n4$$@sandomingoisnicethistimeofyear.vz",
-    }
-]
-
-// ---------------------------------------------------------------------
-
-
 router.get('/', function (req, res) {
-    let model = { accessLevels: authorization.accessLevels } 
+    let model = { accessLevels: authorization.accessLevels }
 
     administratorManager.getAdministrators().then(administrators => {
         model.administrators = []
@@ -55,7 +29,40 @@ router.get('/', function (req, res) {
     })
 })
 
+router.get("/new", (req, res) => {
 
+    const model = { accessLevels: authorization.accessLevels }
+
+    res.render("newAdministrator.hbs", model)
+})
+
+router.post("/new", (req, res) => {
+    const values = req.body
+    let model = {}
+    const userId = req.session.userId;
+
+    administratorManager.addAdministrator(values, userId, (validationErrors, error, administrator) => {
+        if (validationErrors.length > 0) {
+            model = {
+                errors: validationErrors,
+                validationError: true,
+                accessLevels: authorization.accessLevels
+            }
+
+            res.render("newAdministrator.hbs", model)
+        }else if(error){
+            res.render("error-page.hbs", error)
+        }else{
+            model = {
+                firstName: administrator.firstName,
+                lastName: administrator.lastName,
+                email: administrator.email,
+                accessLevel: administrator.accessLevel
+            }
+            res.render("administrator.hbs", model)
+        }
+    })
+})
 
 router.get('/:id', (req, res) => {
     const userId = req.session.userId
@@ -227,17 +234,11 @@ router.post("/delete/:id", (req, res) => {
     const userId = req.session.userId
     const adminToDelete = req.params.id;
 
-    administratorManager.deleteAdministratorWithId(adminToDelete, userId,  (error) => {
-        if(error){
+    administratorManager.deleteAdministratorWithId(adminToDelete, userId, (error) => {
+        if (error) {
             res.render("error-page.hbs", error)
-        }else{
-
-            const model = {
-                success: true,
-                msg: "Admin deleted"
-            }
-
-            res.render("administrators.hbs", model)
+        } else {
+            res.redirect("/administrators")
         }
     })
 })
