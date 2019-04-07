@@ -209,7 +209,7 @@ router.post('/edit/:id', (req, res) => {
                     firstName: administrator.get('firstName'),
                     lastName: administrator.get('lastName'),
                     email: administrator.get('email'),
-                    accesslevel: administrator.get('accesslevel')
+                    accessLevel: authorization.accessLevels[administrator.get('accessLevel')]
                 }
 
                 for (let i = 1; i <= accesslevel; i++) {
