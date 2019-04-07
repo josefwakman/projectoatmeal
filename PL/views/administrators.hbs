@@ -2,12 +2,13 @@
 
 <form id="create-administrator-form" action="/administrators" method="post" autocomplete="off"
     class="createadministrator-form">
+    <input autocomplete="off" name="hidden" type="text" style="display:none;">
     <div class="form-group create-administrator-div">
         <input type="text" placeholder="First name" class="form-control" name="firstName">
         <input type="text" placeholder="Last Name" class="form-control" name="lastName">
-        <input type="text" placeholder="Email" class="form-control" name="email">
-        <input type="text" placeholder="Password" class="form-control" name="password">
-        <input type="text" placeholder="Enter password again" class="form-control" name="passwordRepeat" >
+        <input type="text" placeholder="Email" class="form-control" name="email" autocomplete="off">
+        <input type="password" placeholder="Password" class="form-control" name="password" autocomplete="off">
+        <input type="password" placeholder="Enter password again" class="form-control" name="passwordRepeat" autocomplete="off">
         <div>
             <p>Access Level:</p>
             <select name="accessLevel" id="accesslevels-select">
@@ -33,14 +34,12 @@
     <table class="table table-striped">
         <thead>
             <tr>
-                <th>ID</th>
                 <th>Name</th>
             </tr>
         </thead>
         <tbody>
             {{#each administrators}}
             <tr>
-                <td>{{this.id}}</td>
                 <td><a href="administrators/{{this.id}}">{{this.firstName}} {{this.lastName}}</a></td>
             </tr>
             {{/each}}

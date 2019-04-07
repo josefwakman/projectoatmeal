@@ -131,20 +131,21 @@ function getAdministratorWithCredentials(email, password) {
     })
 }
 
-function deleteAdministratorWithId(adminId, callback) {
+function deleteAdministratorWithId(adminToDelete, loggedInUser, callback) {
 
-    administratorRepository.getAccessLevelOfAdministratorWithId(adminId).then(accessLevel => {
+    administratorRepository.getAccessLevelOfAdministratorWithId(loggedInUser).then(accessLevel => {
         if(!authorization.privilegiesOfAccessLevel.administrators.delete.includes(accessLevel)){
             const error = {
                 code: 403,
                 message: "You're not authorized to delete this administrator"
             }
             callback(error)
+            console.log("trying to delete admin");
+            
         }else{
             
-            administratorRepository.deleteAdministratorWithId(adminId).then(deletedAdmin => {
-                callback(null, deletedAdmin)
-            })
+            administratorRepository.deleteAdmin(adminToDelete)
+                callback(null)
 
         }
     })
